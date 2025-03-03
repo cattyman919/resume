@@ -2,10 +2,8 @@
 ENGINE = pdflatex
 RM = rm -fr	
 
-DOCNAME = resume
-
 all: folders
-	$(ENGINE) -output-directory=out  main.tex
+	$(ENGINE) -output-directory=out -output-format=pdf  main.tex
 
 folders:
 ifneq ($(wildcard ./out/.*),)
