@@ -3,20 +3,19 @@
 \usepackage{packages/preamble}
 
 \begin{document}
-    \newcommand{\AND}{\unskip
-        \cleaders\copy\ANDbox\hskip\wd\ANDbox
-        \ignorespaces
-    }
-    \newsavebox\ANDbox
-    \sbox\ANDbox{}
+\newcommand{\AND}{\unskip
+	\cleaders\copy\ANDbox\hskip\wd\ANDbox
+	\ignorespaces
+}
+\newsavebox\ANDbox
+\sbox\ANDbox{}
 
-    \normalsize
-    \subfile{sections/Header}
-    \vspace{0.3 cm - 0.3 cm}
-    \subfile{sections/Experience}
-    \subfile{sections/Technologies}
-    \subfile{sections/Education}
-    \subfile{sections/Awards}
-    \subfile{sections/Projects}
-    \subfile{sections/Certifications}
+\normalsize
+\subfile{sections/Header}
+\vspace{0.3 cm - 0.3 cm}
+\subfile{sections/Experience}
+\subfile{sections/Education}
+\subfile{sections/Awards}
+\subfile{sections/Projects}
+\subfile{sections/Achivements_Skills.tex}
 \end{document}
