@@ -1,12 +1,12 @@
 % Packages:
 \usepackage[
-    ignoreheadfoot, % set margins without considering header and footer
-    top=2 cm, % seperation between body and page edge from the top
-    bottom=2 cm, % seperation between body and page edge from the bottom
-    left=2 cm, % seperation between body and page edge from the left
-    right=2 cm, % seperation between body and page edge from the right
-    footskip=1.0 cm, % seperation between body and footer
-    % showframe % for debugging 
+	ignoreheadfoot, % set margins without considering header and footer
+	top=2 cm, % seperation between body and page edge from the top
+	bottom=2 cm, % seperation between body and page edge from the bottom
+	left=2 cm, % seperation between body and page edge from the left
+	right=2 cm, % seperation between body and page edge from the right
+	footskip=1.0 cm, % seperation between body and footer
+	% showframe % for debugging 
 ]{geometry} % for adjusting page geometry
 \usepackage{titlesec} % for customizing section titles
 \usepackage{tabularx} % for making tables with fixed width columns
@@ -16,12 +16,13 @@
 \usepackage{enumitem} % for customizing lists
 \usepackage{fontawesome5} % for using icons
 \usepackage{amsmath} % for math
+\usepackage{graphicx}
 \usepackage[
-    pdftitle={Seno Pamungkas Rahman CV},
-    pdfauthor={Seno Pamungkas Rahman},
-    pdfcreator={LaTeX with RenderCV},
-    colorlinks=true,
-    urlcolor=primaryColor
+	pdftitle={Seno Pamungkas Rahman CV},
+	pdfauthor={Seno Pamungkas Rahman},
+	pdfcreator={LaTeX with RenderCV},
+	colorlinks=true,
+	urlcolor=primaryColor
 ]{hyperref} % for links, metadata and bookmarks
 \usepackage[pscoord]{eso-pic} % for floating text on the page
 \usepackage{calc} % for calculating lengths
@@ -32,14 +33,16 @@
 \usepackage{ifthen} % for conditional statements
 \usepackage{needspace} % for avoiding page brake right after the section title
 \usepackage{iftex} % check if engine is pdflatex, xetex or luatex
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
 
 % Ensure that generate pdf is machine readable/ATS parsable:
 \ifPDFTeX
-    \input{glyphtounicode}
-    \pdfgentounicode=1
-    % \usepackage[T1]{fontenc} % this breaks sb2nov
-    \usepackage[utf8]{inputenc}
-    \usepackage{lmodern}
+	\input{glyphtounicode}
+	\pdfgentounicode=1
+	% \usepackage[T1]{fontenc} % this breaks sb2nov
+	\usepackage[utf8]{inputenc}
+	\usepackage{lmodern}
 \fi
 
 \usepackage{subfiles} % Best loaded last in the preamble
@@ -53,70 +56,70 @@
 \setlength{\topskip}{0pt} % no top skip
 \setlength{\columnsep}{0cm} % set column seperation
 
-\titleformat{\section}{\needspace{4\baselineskip}\bfseries\large}{}{0pt}{}[\vspace{1pt}\titlerule]
+\titleformat{\section}{\needspace{4\baselineskip}\bfseries\large\color{NavyBlue}}{}{0pt}{}[\vspace{1pt}\titlerule]
 
 \titlespacing{\section}{
-    % left space:
-    -1pt
+	% left space:
+	-1pt
 }{
-    % top space:
-    0.3 cm
+	% top space:
+	0.3 cm
 }{
-    % bottom space:
-    0.2 cm
+	% bottom space:
+	0.2 cm
 } % section title spacing
 
 \renewcommand\labelitemi{$\circ$} % custom bullet points
 \newenvironment{highlights}{
-    \begin{itemize}[
-        topsep=0.10 cm,
-        parsep=0.10 cm,
-        partopsep=0pt,
-        itemsep=0pt,
-        leftmargin=0.4 cm + 10pt
-    ]
-}{
-    \end{itemize}
+	\begin{itemize}[
+			topsep=0.10 cm,
+			parsep=0.10 cm,
+			partopsep=0pt,
+			itemsep=0pt,
+			leftmargin=0.4 cm + 10pt
+		]
+		}{
+	\end{itemize}
 } % new environment for highlights
 
 \newenvironment{highlightsforbulletentries}{
-    \begin{itemize}[
-        topsep=0.10 cm,
-        parsep=0.10 cm,
-        partopsep=0pt,
-        itemsep=0pt,
-        leftmargin=10pt
-    ]
-}{
-    \end{itemize}
+	\begin{itemize}[
+			topsep=0.10 cm,
+			parsep=0.10 cm,
+			partopsep=0pt,
+			itemsep=0pt,
+			leftmargin=10pt
+		]
+		}{
+	\end{itemize}
 } % new environment for highlights for bullet entries
 
 
 \newenvironment{onecolentry}{
-    \begin{adjustwidth}{
-        0.2 cm + 0.00001 cm
-    }{
-        0.2 cm + 0.00001 cm
-    }
-}{
-    \end{adjustwidth}
+	\begin{adjustwidth}{
+			0.2 cm + 0.00001 cm
+		}{
+			0.2 cm + 0.00001 cm
+		}
+		}{
+	\end{adjustwidth}
 } % new environment for one column entries
 
 \newenvironment{twocolentry}[2][]{
-    \onecolentry
-    \def\secondColumn{#2}
-    \setcolumnwidth{\fill, 6.5 cm}
-    \begin{paracol}{2}
-}{
-    \switchcolumn \raggedleft \secondColumn
-    \end{paracol}
-    \endonecolentry
+	\onecolentry
+	\def\secondColumn{#2}
+	\setcolumnwidth{\fill, 6.5 cm}
+	\begin{paracol}{2}
+		}{
+		\switchcolumn \raggedleft \secondColumn
+	\end{paracol}
+	\endonecolentry
 } % new environment for two column entries
 
 \newenvironment{header}{
-    \setlength{\topsep}{0pt}\par\kern\topsep\centering\linespread{1.5}
+	\setlength{\topsep}{0pt}\par\kern\topsep\centering\linespread{1.5}
 }{
-    \par\kern\topsep
+	\par\kern\topsep
 } % new environment for the header
 
 % save the original href command in a new command:
