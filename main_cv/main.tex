@@ -1,0 +1,21 @@
+\documentclass[10pt, letterpaper]{article}
+
+\usepackage{main_cv/packages/preamble}
+
+\begin{document}
+\newcommand{\AND}{\unskip
+	\cleaders\copy\ANDbox\hskip\wd\ANDbox
+	\ignorespaces
+}
+\newsavebox\ANDbox
+\sbox\ANDbox{}
+
+\normalsize
+\subfile{main_cv/sections/Header}
+\vspace{0.3 cm - 0.3 cm}
+\subfile{main_cv/sections/Experience}
+\subfile{main_cv/sections/Education}
+\subfile{main_cv/sections/Awards}
+\subfile{main_cv/sections/Projects}
+\subfile{main_cv/sections/Achivements_Skills.tex}
+\end{document}

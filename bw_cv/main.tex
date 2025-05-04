@@ -1,0 +1,20 @@
+\documentclass[10pt, letterpaper]{article}
+
+\usepackage{bw_cv/packages/preamble}
+
+\begin{document}
+\newcommand{\AND}{\unskip
+	\cleaders\copy\ANDbox\hskip\wd\ANDbox
+	\ignorespaces
+}
+\newsavebox\ANDbox
+\sbox\ANDbox{$|$}
+
+\subfile{bw_cv/sections/Header}
+\vspace{0.3 cm - 0.3 cm}
+\subfile{bw_cv/sections/Experience}
+\subfile{bw_cv/sections/Education}
+\subfile{bw_cv/sections/Awards}
+\subfile{bw_cv/sections/Projects}
+\subfile{bw_cv/sections/Achivements_Skills.tex}
+\end{document}
