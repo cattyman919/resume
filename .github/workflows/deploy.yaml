@@ -5,43 +5,116 @@ on:
     tags: ['v*']
 
 jobs:
-  build:
+  checkout:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write # Grant write access to repository contets
-
     steps:
-      - uses: actions/checkout@v4
-      - name: Uploading to Azure Storage
+      - name: Checkout code
+        uses: actions/checkout@v4 # Checkout the repository code
+
+      # Upload the 'out' folder as an artifact so other jobs can access the PDFs
+      - name: Upload output artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output # Artifact Name
+          path: out/ # Path to the folder containing PDFs
+          # retention-days: 7
+  upload_azure:
+    runs-on: ubuntu-latest
+    needs: checkout
+    steps:
+      # Download artifact containing PDFs
+      - name: Download build output artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: out/
+
+      # Step to upload the first PDF to Azure Storage
+      - name: Uploading Original CV to Azure Storage
         uses: LanceMcCarthy/Action-AzureBlobUpload@v2
         with:
-          connection_string: ${{ secrets.AZURE_TOKEN }}
-          container_name: portfolio
+          connection_string: ${{ secrets.AZURE_TOKEN }} # Use the Azure connection string secret
+          container_name: portfolio # Target Blob Storage container name
+          # Source path is relative to the job's working directory after downloading the artifact
           source_folder: 'out/Seno Pamungkas Rahman - CV.pdf'
-          destination_folder: cv/
-          is_recursive: false
+          destination_folder: cv/ # Destination folder within the container
+          is_recursive: false # Upload a single file
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        if: always()
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      # Step to upload the second PDF to Azure Storage
+      - name: Uploading BW CV to Azure Storage
+        uses: LanceMcCarthy/Action-AzureBlobUpload@v2
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }}
+          connection_string: ${{ secrets.AZURE_TOKEN }} # Use the Azure connection string secret
+          container_name: portfolio # Target Blob Storage container name
+          # Source path is relative to the job's working directory after downloading the artifact
+          source_folder: 'out/Seno Pamungkas Rahman - CV (BW).pdf'
+          destination_folder: cv/ # Destination folder within the container
+          is_recursive: false # Upload a single file
+
+  release:
+    runs-on: ubuntu-latest
+    needs: checkout 
+    permissions:
+      contents: write # Grant write access for creating releases and uploading assets
+    steps:
+      # Download the artifact containing the PDFs
+      - name: Download build output artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: out/ 
+      
+      - name: Create Release
+        id: create_release 
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}} 
+        with:
+          tag_name: ${{ github.ref_name }} 
+          release_name: ${{ github.ref_name }}
           draft: false
           prerelease: false
 
-      - name: Upload Release Asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        if: steps.create_release.outcome  == 'success'
+      - name: Remove Source Code Archives
+        if: steps.create_release.outcome == 'success' 
+        run: |
+          # Use GitHub CLI to list assets for the created release
+          # Filter for .zip and .tar.gz files and extract their IDs
+          asset_ids=$(gh api \
+            /repos/${{ github.repository }}/releases/${{ steps.create_release.outputs.id }}/assets \
+            --jq '.[] | select(.name | test("\\.zip$|\\.tar\\.gz$")) | .id')
+
+          # Loop through the asset IDs and delete each one
+          for asset_id in $asset_ids; do
+            echo "Deleting asset with ID: $asset_id"
+            gh release delete-asset ${{ github.ref_name }} $asset_id --yes
+          done
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+
+      # Step to upload the first PDF as a release asset
+      - name: Upload Original CV Release Asset
+        id: upload-original-asset 
+        uses: actions/upload-release-asset@v1
+        if: steps.create_release.outcome == 'success' 
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}} 
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
           asset_path: './out/Seno Pamungkas Rahman - CV.pdf'
-          asset_name: 'Seno Pamungkas Rahman - CV.pdf'
-          asset_content_type: application/pdf
+          asset_name: 'Seno Pamungkas Rahman - CV.pdf' 
+          asset_content_type: application/pdf 
+
+      # Step to upload the second PDF as a release asset
+      - name: Upload BW CV Release Asset
+        id: upload-bw-asset 
+        uses: actions/upload-release-asset@v1
+        if: steps.create_release.outcome == 'success' 
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}} 
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: './out/Seno Pamungkas Rahman - CV (BW).pdf'
+          asset_name: 'Seno Pamungkas Rahman - CV (BW).pdf' 
+          asset_content_type: application/pdf 
+
