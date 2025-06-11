@@ -2,7 +2,7 @@
   "personal_info": {
     "name": "Seno Pamungkas Rahman",
     "location": "Tangerang Selatan",
-    "email": "senopamungkasraehman@gmail.com",
+    "email": "senop.rahman@gmail.com",
     "phone": "+62-812-9357-8560",
     "website": "https://senop.dev",
     "linkedin": "https://www.linkedin.com/in/seno-pamungkas-rahman-714341192/",
@@ -16,7 +16,7 @@
       "company": "Superbank",
       "location": "Jakarta Selatan",
       "role": "Technical Support",
-      "dates": "December 2024 - Present",
+      "dates": "December 2024 - June 2025",
       "type": "Internship",
       "points": [
         "**Managed end-to-end deployment** of vendor-provided scripts across AWS EC2 (Dev/Staging) via **S3 bucket integration**, **WinSCP file transfers**, and **XML configuration adjustments**.",
@@ -78,9 +78,9 @@
       "dates": "July 2021 – Present",
       "gpa": "3.74/4.0",
       "details": [
-         "GPA: 3.74/4.0",
-         "**Coursework:** Computer Architecture, Operating System, IoT, Computer Networks, Data Structure and Algorithms"
-       ]
+        "GPA: 3.74/4.0",
+        "**Coursework:** Computer Architecture, Operating System, IoT, Computer Networks, Data Structure and Algorithms"
+      ]
     }
   ],
   "awards": [
@@ -127,16 +127,58 @@
     }
   ],
   "skills_achievements": {
-    "Hard Skills": ["Web Development", "Android Development", "Fullstack Engineer", "Networking", "Internet of Things", "Machine Learning"],
-    "Soft Skills": ["Teamwork", "Communication", "Adaptability", "Responsibility", "Creativity", "Discipline", "Honesty"],
-    "Programming Languages": ["C", "C#", "C++", "HTML", "CSS", "Javascript", "Python", "Typescript", "Java", "Go", "Dart"],
+    "Hard Skills": [
+      "Web Development",
+      "Android Development",
+      "Fullstack Engineer",
+      "Networking",
+      "Internet of Things",
+      "Machine Learning"
+    ],
+    "Soft Skills": [
+      "Teamwork",
+      "Communication",
+      "Adaptability",
+      "Responsibility",
+      "Creativity",
+      "Discipline",
+      "Honesty"
+    ],
+    "Programming Languages": [
+      "C",
+      "C#",
+      "C++",
+      "HTML",
+      "CSS",
+      "Javascript",
+      "Python",
+      "Typescript",
+      "Java",
+      "Go",
+      "Dart"
+    ],
     "Database Languages": ["SQL", "NoSQL"],
-    "Misc": ["React", "NestJS", "ExpressJs", "Docker", "Tailwind CSS", "Git", "Docker", "Linux"],
+    "Misc": [
+      "React",
+      "NestJS",
+      "ExpressJs",
+      "Docker",
+      "Tailwind CSS",
+      "Git",
+      "Docker",
+      "Linux"
+    ],
     "Certificates": [
-      {"year": 2024, "name": "AWS Knowledge: Cloud Essentials"},
-      {"year": 2023, "name": "CCNA: Enterprise Networking, Security, and Automation"},
-      {"year": 2023, "name": "CCNA: Switching, Routing, and Wireless Essentials"},
-      {"year": 2023, "name": "CCNA: Introduction to Networks"}
+      { "year": 2024, "name": "AWS Knowledge: Cloud Essentials" },
+      {
+        "year": 2023,
+        "name": "CCNA: Enterprise Networking, Security, and Automation"
+      },
+      {
+        "year": 2023,
+        "name": "CCNA: Switching, Routing, and Wireless Essentials"
+      },
+      { "year": 2023, "name": "CCNA: Introduction to Networks" }
     ]
   }
 }
