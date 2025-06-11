@@ -169,6 +169,14 @@
       "Linux"
     ],
     "Certificates": [
+      {
+        "year": 2025,
+        "name": "Red Hat System Administration II (RH134 - RHA) - Ver. 9.3"
+      },
+      {
+        "year": 2025,
+        "name": "Red Hat System Administration I (RH134 - RHA) - Ver. 9.3"
+      },
       { "year": 2024, "name": "AWS Knowledge: Cloud Essentials" },
       {
         "year": 2023,
