@@ -110,19 +110,19 @@
       "github": "https://github.com/cattyman919/AbsenceSystem/tree/main",
       "github_handle": "github.com/AbsenceSystem",
       "points": [
-        "**Led the fullstack development** of the AbsenceSystem (DanceRTOS) project, creating both the frontend and backend infrastructure.",
+        "**Led the fullstack development** of the AbsenceSystem (DanceRTOS) project, creating both the frontend (**Flutter**) and backend (**NestJS**) infrastructure.",
         "**Developed a unique student login system using MQTT protocol with Flutter** to connect to ESP32 using RFID, providing a seamless and secure login experience for students.",
         "**Created a system to** collect data from the backend to **track student absences**, enabling lecturers to see which students are not in class."
       ]
     },
     {
-      "name": "Jaga",
-      "github": "https://github.com/cattyman919/Jaga",
-      "github_handle": "github.com/Jaga",
+      "name": "Personal Home Lab",
+      "github": "https://github.com/cattyman919/",
+      "github_handle": "github.com/cattyman919",
       "points": [
-        "**Led the fullstack development of the Jaga project using Flutter and NestJS**, creating both the frontend and backend infrastructure.",
-        "**Created a system to** collect data from the backend to **get car model and car maintenance information**, providing users with the necessary details for their vehicles.",
-        "**Developed the main function of the app to keep the car/motorcycle data for maintenance reminder**, helping users to stay on top of their vehicle maintenance schedules."
+        "Orchestrated a personal home lab on a Dell OptiPlex 7050 running Debian, deploying and managing a suite of services including **Jellyfin for media streaming**, **Portainer for Docker container management**, and an **Asterisk SIP server for home VoIP**.",
+        "Configured core network services, including **Samba for local file sharing**, **nginx as a reverse proxy** for simplified service access, and implemented **fail2ban and firewalld** for enhanced security.",
+        "Established a robust data management and remote access strategy using **rsync for automated backups** and **Tailscale** for secure, seamless access to the entire home network from any location."
       ]
     }
   ],
@@ -171,11 +171,7 @@
     "Certificates": [
       {
         "year": 2025,
-        "name": "Red Hat System Administration II (RH134 - RHA) - Ver. 9.3"
-      },
-      {
-        "year": 2025,
-        "name": "Red Hat System Administration I (RH134 - RHA) - Ver. 9.3"
+        "name": "Red Hat System Administration I & II (RH134 - RHA) - Ver. 9.3"
       },
       { "year": 2024, "name": "AWS Knowledge: Cloud Essentials" },
       {
