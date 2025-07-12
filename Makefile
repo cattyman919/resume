@@ -13,8 +13,8 @@ capitalize = $(shell echo $(1) | sed 's/./\u&/')
 
 # Compile Command
 define COMPILE_LATEX
-	$(ENGINE) -output-directory=out -output-format=pdf -jobname "Seno - CV ($(call capitalize, $(1)))" main_cv/main.tex
-	$(ENGINE) -output-directory=out -output-format=pdf -jobname "Seno - CV ($(call capitalize, $(1))) (BW)" bw_cv/main.tex
+	$(ENGINE) -output-directory=out -output-format=pdf -jobname "Seno Pamungkas Rahman - CV ($(call capitalize, $(1)))" main_cv/main.tex
+	$(ENGINE) -output-directory=out -output-format=pdf -jobname "Seno Pamungkas Rahman - CV ($(call capitalize, $(1))) (BW)" bw_cv/main.tex
 endef
 
 .PHONY: all clean $(CV_TARGETS)

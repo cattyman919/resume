@@ -2,7 +2,7 @@ name: Deploy Resume
 
 on:
   push:
-    tags: ['v*']
+    tags: ["v*"]
 
 jobs:
   checkout:
@@ -36,7 +36,7 @@ jobs:
           connection_string: ${{ secrets.AZURE_TOKEN }} # Use the Azure connection string secret
           container_name: portfolio # Target Blob Storage container name
           # Source path is relative to the job's working directory after downloading the artifact
-          source_folder: 'out/Seno - CV (Main).pdf'
+          source_folder: "out/Seno Pamungkas Rahman - CV (Main).pdf"
           destination_folder: cv/ # Destination folder within the container
           is_recursive: false # Upload a single file
 
@@ -47,13 +47,13 @@ jobs:
           connection_string: ${{ secrets.AZURE_TOKEN }} # Use the Azure connection string secret
           container_name: portfolio # Target Blob Storage container name
           # Source path is relative to the job's working directory after downloading the artifact
-          source_folder: 'out/Seno - CV (Main) (BW).pdf'
+          source_folder: "out/Seno Pamungkas Rahman - CV (Main) (BW).pdf"
           destination_folder: cv/ # Destination folder within the container
           is_recursive: false # Upload a single file
 
   release:
     runs-on: ubuntu-latest
-    needs: checkout 
+    needs: checkout
     permissions:
       contents: write # Grant write access for creating releases and uploading assets
     steps:
@@ -62,21 +62,21 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-output
-          path: out/ 
-      
+          path: out/
+
       - name: Create Release
-        id: create_release 
+        id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}} 
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
-          tag_name: ${{ github.ref_name }} 
+          tag_name: ${{ github.ref_name }}
           release_name: ${{ github.ref_name }}
           draft: false
           prerelease: false
 
       - name: Remove Source Code Archives
-        if: steps.create_release.outcome == 'success' 
+        if: steps.create_release.outcome == 'success'
         run: |
           # Use GitHub CLI to list assets for the created release
           # Filter for .zip and .tar.gz files and extract their IDs
@@ -90,31 +90,30 @@ jobs:
             gh release delete-asset ${{ github.ref_name }} $asset_id --yes
           done
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Step to upload the first PDF as a release asset
       - name: Upload Original CV Release Asset
-        id: upload-original-asset 
+        id: upload-original-asset
         uses: actions/upload-release-asset@v1
-        if: steps.create_release.outcome == 'success' 
+        if: steps.create_release.outcome == 'success'
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}} 
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: './out/Seno - CV (Main).pdf'
-          asset_name: 'Seno - CV (Main).pdf' 
-          asset_content_type: application/pdf 
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "./out/Seno Pamungkas Rahman - CV (Main).pdf"
+          asset_name: "Seno Pamungkas Rahman - CV (Main).pdf"
+          asset_content_type: application/pdf
 
       # Step to upload the second PDF as a release asset
       - name: Upload BW CV Release Asset
-        id: upload-bw-asset 
+        id: upload-bw-asset
         uses: actions/upload-release-asset@v1
-        if: steps.create_release.outcome == 'success' 
+        if: steps.create_release.outcome == 'success'
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}} 
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: './out/Seno - CV (Main) (BW).pdf'
-          asset_name: 'Seno - CV (Main) (BW).pdf' 
-          asset_content_type: application/pdf 
-
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "./out/Seno Pamungkas Rahman - CV (Main) (BW).pdf"
+          asset_name: "Seno Pamungkas Rahman - CV (Main) (BW).pdf"
+          asset_content_type: application/pdf
