@@ -1,7 +1,6 @@
 # Tools
 ENGINE = pdflatex
 RM = rm -fr
-PYTHON = python3
 
 # Output file names (variables for easier changes)
 MAIN_CV_OUT = "Seno Pamungkas Rahman - CV"
@@ -11,7 +10,7 @@ all: generate main_cv bw_cv
 
 generate:
 	@echo "Generating LaTeX sections from data file..."
-	$(PYTHON) generate_sections.py
+	go run generate_sections.go
 
 main_cv: folders
 	@echo "Compiling Main CV"
