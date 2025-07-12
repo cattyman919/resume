@@ -2,28 +2,29 @@
 ENGINE = pdflatex
 RM = rm -fr
 
-# Output file names (variables for easier changes)
-MAIN_CV_OUT = "Seno Pamungkas Rahman - CV"
-BW_CV_OUT = "Seno Pamungkas Rahman - CV (BW)"
+# List of CV types. This is the only line you need to edit to add a new CV!
+TYPES := main fullstack devops
 
-all: generate main_cv bw_cv
+# Generate the target names from the TYPES list (e.g., main-cv, fullstack-cv)
+CV_TARGETS := $(TYPES:%=%-cv)
 
-generate:
-	@echo "Generating LaTeX sections from data file..."
-	go run generate_sections.go
+# A helper function to capitalize the first letter of a word
+capitalize = $(shell echo $(1) | sed 's/./\u&/')
 
-main_cv: folders
-	@echo "Compiling Main CV"
-	$(ENGINE) -output-directory=out -output-format=pdf -jobname $(MAIN_CV_OUT) main_cv/main.tex
+# Compile Command
+define COMPILE_LATEX
+	$(ENGINE) -output-directory=out -output-format=pdf -jobname "Seno - CV ($(call capitalize, $(1)))" main_cv/main.tex
+	$(ENGINE) -output-directory=out -output-format=pdf -jobname "Seno - CV ($(call capitalize, $(1))) (BW)" bw_cv/main.tex
+endef
 
-bw_cv: folders
-	@echo "Compiling Black and White CV"
-	$(ENGINE) -output-directory=out -output-format=pdf -jobname $(BW_CV_OUT) bw_cv/main.tex
+.PHONY: all clean $(CV_TARGETS)
 
-folders:
-	@mkdir -p out
+all: $(CV_TARGETS)
+
+$(CV_TARGETS): %-cv:
+	@echo "Generating and compiling $(call capitalize, $*) CV..."
+	go run generate_sections.go --type=$*
+	$(call COMPILE_LATEX, $*)
 
 clean:
-	$(RM) -rf out
-
-.PHONY: all generate main_cv bw_cv folders clean
+	$(RM) -rf out/*

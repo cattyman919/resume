@@ -36,7 +36,7 @@ jobs:
           connection_string: ${{ secrets.AZURE_TOKEN }} # Use the Azure connection string secret
           container_name: portfolio # Target Blob Storage container name
           # Source path is relative to the job's working directory after downloading the artifact
-          source_folder: 'out/Seno Pamungkas Rahman - CV.pdf'
+          source_folder: 'out/Seno - CV (Main).pdf'
           destination_folder: cv/ # Destination folder within the container
           is_recursive: false # Upload a single file
 
@@ -47,7 +47,7 @@ jobs:
           connection_string: ${{ secrets.AZURE_TOKEN }} # Use the Azure connection string secret
           container_name: portfolio # Target Blob Storage container name
           # Source path is relative to the job's working directory after downloading the artifact
-          source_folder: 'out/Seno Pamungkas Rahman - CV (BW).pdf'
+          source_folder: 'out/Seno - CV (Main) (BW).pdf'
           destination_folder: cv/ # Destination folder within the container
           is_recursive: false # Upload a single file
 
@@ -101,8 +101,8 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}} 
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: './out/Seno Pamungkas Rahman - CV.pdf'
-          asset_name: 'Seno Pamungkas Rahman - CV.pdf' 
+          asset_path: './out/Seno - CV (Main).pdf'
+          asset_name: 'Seno - CV (Main).pdf' 
           asset_content_type: application/pdf 
 
       # Step to upload the second PDF as a release asset
@@ -114,7 +114,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}} 
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: './out/Seno Pamungkas Rahman - CV (BW).pdf'
-          asset_name: 'Seno Pamungkas Rahman - CV (BW).pdf' 
+          asset_path: './out/Seno - CV (Main) (BW).pdf'
+          asset_name: 'Seno - CV (Main) (BW).pdf' 
           asset_content_type: application/pdf 
 

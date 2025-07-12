@@ -2,11 +2,14 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
+	"strconv"
 	"strings"
 )
 
@@ -39,6 +42,7 @@ type Experience struct {
 	Location string   `json:"location"`
 	Dates    string   `json:"dates"`
 	Points   []string `json:"points"`
+	Types    []string `json:"types"`
 }
 
 type Education struct {
@@ -61,18 +65,21 @@ type Project struct {
 	Github       string   `json:"github"`
 	GithubHandle string   `json:"github_handle"`
 	Points       []string `json:"points"`
+	Types        []string `json:"types"`
+}
+
+type Certificate struct {
+	Name string `json:"name"`
+	Year int    `json:"year"`
 }
 
 type SkillsAchievements struct {
-	HardSkills           []string `json:"Hard Skills"`
-	SoftSkills           []string `json:"Soft Skills"`
-	ProgrammingLanguages []string `json:"Programming Languages"`
-	DatabaseLanguages    []string `json:"Database Languages"`
-	Misc                 []string `json:"Misc"`
-	Certificates         []struct {
-		Name string `json:"name"`
-		Year uint16 `json:"year"`
-	} `json:"Certificates"`
+	HardSkills           []string      `json:"Hard Skills"`
+	SoftSkills           []string      `json:"Soft Skills"`
+	ProgrammingLanguages []string      `json:"Programming Languages"`
+	DatabaseLanguages    []string      `json:"Database Languages"`
+	Misc                 []string      `json:"Misc"`
+	Certificates         []Certificate `json:"Certificates"`
 }
 
 type CVData struct {
@@ -110,7 +117,7 @@ func formatLatexBold(text string) string {
 	return boldRegex.ReplaceAllString(escapedText, `\textbf{$1}`)
 }
 
-func writeTexFile(path, content string) {
+func writeTexFile(path string, content string) {
 	dir := filepath.Dir(path)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		log.Fatalf("Error creating directory %s: %v", dir, err)
@@ -431,7 +438,10 @@ func generateSkillsBwCV(data CVData) string {
 
 // --- Main Script Logic ---
 func main() {
-	fmt.Println("Starting LaTeX section generation...")
+	cvType := flag.String("type", "fullstack", "Type of CV to generate (e.g., fullstack, devops)")
+	flag.Parse()
+
+	fmt.Printf("Starting LaTeX section generation for %s CV...\n", *cvType)
 
 	// Load data from JSON file
 	byteValue, err := os.ReadFile(dataFile)
@@ -443,6 +453,31 @@ func main() {
 	if err := json.Unmarshal(byteValue, &cvData); err != nil {
 		log.Fatalf("Error decoding JSON from %s: %v", dataFile, err)
 	}
+
+	// Filter experiences and projects based on cvType
+	var filteredExperiences []Experience
+	for _, exp := range cvData.Experiences {
+		if len(exp.Types) == 0 {
+			filteredExperiences = append(filteredExperiences, exp)
+			continue
+		}
+		if slices.Contains(exp.Types, *cvType) {
+			filteredExperiences = append(filteredExperiences, exp)
+		}
+	}
+	cvData.Experiences = filteredExperiences
+
+	var filteredProjects []Project
+	for _, proj := range cvData.Projects {
+		if len(proj.Types) == 0 {
+			filteredProjects = append(filteredProjects, proj)
+			continue
+		}
+		if slices.Contains(proj.Types, *cvType) {
+			filteredProjects = append(filteredProjects, proj)
+		}
+	}
+	cvData.Projects = filteredProjects
 
 	// Generate and write files for main_cv
 	fmt.Println("Generating sections for main_cv...")
@@ -463,4 +498,35 @@ func main() {
 	writeTexFile(filepath.Join(bwCVSectionsDir, "Achivements_Skills.tex"), generateSkillsBwCV(cvData))
 
 	fmt.Println("LaTeX section generation complete.")
+}
+
+func (c *Certificate) UnmarshalJSON(data []byte) error {
+	type Alias Certificate
+	aux := &struct {
+		Year json.RawMessage `json:"year"`
+		*Alias
+	}{
+		Alias: (*Alias)(c),
+	}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	var yearInt int
+	if err := json.Unmarshal(aux.Year, &yearInt); err == nil {
+		c.Year = yearInt
+		return nil
+	}
+
+	var yearStr string
+	if err := json.Unmarshal(aux.Year, &yearStr); err == nil {
+		year, err := strconv.Atoi(yearStr)
+		if err != nil {
+			return fmt.Errorf("could not convert year string to int: %v", err)
+		}
+		c.Year = year
+		return nil
+	}
+
+	return fmt.Errorf("year field is not a number or a string")
 }
