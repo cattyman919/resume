@@ -1,0 +1,182 @@
+personal_info:
+  name: Seno Pamungkas Rahman
+  location: Tangerang Selatan
+  email: senop.rahman@gmail.com
+  phone: "+62-812-9357-8560"
+  website: https://senop.dev
+  linkedin: https://www.linkedin.com/in/seno-pamungkas-rahman-714341192/
+  linkedin_handle: Seno
+  github: https://github.com/cattyman919
+  github_handle: cattyman919
+  profile_pic: profile.jpg
+
+experiences:
+  - company: Superbank
+    location: Jakarta Selatan
+    role: Technical Support
+    dates: December 2024 - June 2025
+    type: Internship
+    types:
+      - main
+      - devops
+    points:
+      - "**Managed end-to-end deployment** of vendor-provided scripts across AWS EC2 (Dev/Staging) via **S3 bucket integration**, **WinSCP file transfers**, and **XML configuration adjustments**."
+      - "**Automated deployment workflows** by developing a PowerShell script to extract ZIP files and **configuration for deployment processes**, **reducing manual effort by 40%** and accelerating deployment cycles."
+      - "**Resolved production incidents** (e.g., CPU spikes, SQL query bottlenecks) by acting as a technical liaison, **analyzing root causes**, and **escalating issues** via Jira tickets to cross-functional teams."
+
+  - company: PT XL Axiata Tbk
+    location: Jakarta Selatan
+    role: "Fixed Connectivity, ICT & Cloud"
+    dates: February 2024 - June 2024
+    type: Internship
+    types:
+      - main
+      - fullstack
+    points:
+      - "Conducted **comprehensive market research** and **data scraping** using **Python**, **BeautifulSoup**, and **Pandas** to identify **growth opportunities** and assess the competitive landscape for satellite products."
+      - "Presented data-driven findings and **strategic recommendations** to mentors and senior management to support **informed business strategy** and **product development**."
+      - "Collaborated closely with **cross-functional teams** to ensure timely completion of tasks and seamless **integration of research insights** into project outcomes."
+
+  - company: PT Bank Victoria International
+    location: Jakarta Selatan
+    role: Fullstack Web Developer
+    dates: September 2023 - November 2023
+    type: Internship
+    types:
+      - main
+      - fullstack
+    points:
+      - "Developed **dynamic journal booking tables** on the frontend with **Flutter**, integrating advanced **filtering** (by date and booking type), **pagination**, and **soft deletion** functionalities."
+      - "**Integrated the Flutter frontend with backend APIs built in NestJS** and maintained data consistency with MySQL, ensuring accurate real-time accounting records."
+      - "Executed **targeted database queries to correct and optimize data integrity**, working in close collaboration with teams to align front-end displays with updated backend data."
+
+  - company: MileApp
+    location: Jakarta Barat
+    role: Frontend Web Developer
+    dates: September 2022 - October 2022
+    type: Internship
+    types:
+      - main
+      - fullstack
+    points:
+      - "**Rebuilt and redesigned** critical web pages (**landing, login, and registration**) from scratch using **React** and **styled-components**, contributing to a major UI overhaul aimed at **improving user experience and performance** for field agents and administrators."
+      - "Collaborated remotely with supervisors to integrate the new React-based frontend with the platform’s evolving product direction, **replacing legacy code with scalable, maintainable components**."
+
+  - company: Furaha System
+    location: Tangerang Selatan
+    role: Frontend Web Developer
+    dates: February 2021 - October 2022
+    type: Part-time
+    types:
+      - main
+      - fullstack
+    points:
+      - "Engineered **complex exam pages** for a comprehensive E-Learning platform using Next.js, incorporating **navigation bars**, **dynamic question-sidebars**, and **real-time answer tracking**."
+      - "Collaborated with cross-functional teams and **maintained regular progress updates**, ensuring alignment with project milestones and timely delivery of platform enhancements."
+
+education:
+  - institution: Universitas Indonesia
+    degree: Bachelor of Computer Engineering
+    dates: July 2021 – Present
+    gpa: 3.74/4.0
+    details:
+      - "GPA: 3.74/4.0"
+      - "**Coursework:** Computer Architecture, Operating System, IoT, Computer Networks, Data Structure and Algorithms"
+
+awards:
+  - title: Top 10 Finalist Hackathon BI 2024
+    organization: Bank Indonesia
+    date: August 2024
+    points:
+      - "Top 10 Finalist in Bank Indonesia Hackathon 2024 **out of 2,200 participants and 450+ proposals**"
+      - "**Spearheaded the development of BitTrack's Frontend and UI/UX**, ensuring a seamless user experience and visually appealing design, while also **driving the business strategy and direction of the product**."
+
+projects:
+  - name: Restomatic
+    github: https://github.com/SistemBasisData2023/RestoMatic
+    github_handle: github.com/RestoMatic
+    types:
+      - main
+      - fullstack
+    points:
+      - "**Led the frontend development** of the RestoMatic project creating an intuitive and user-friendly interface."
+      - "**Developed the list of restaurants feature**, allowing users to effortlessly browse through a wide range of restaurant options."
+      - "Built the **Order Carts functionality**, providing a clear and concise overview of selected items, their quantities, and total prices."
+
+  - name: DanceRTOS
+    github: https://github.com/cattyman919/AbsenceSystem/tree/main
+    github_handle: github.com/AbsenceSystem
+    types:
+      - main
+      - fullstack
+      - devops
+    points:
+      - "**Led the fullstack development** of the AbsenceSystem (DanceRTOS) project, creating both the frontend (**Flutter**) and backend (**NestJS**) infrastructure."
+      - "**Developed a unique student login system using MQTT protocol with Flutter** to connect to ESP32 using RFID, providing a seamless and secure login experience for students."
+      - "**Created a system to** collect data from the backend to **track student absences**, enabling lecturers to see which students are not in class."
+
+  - name: Personal Home Lab
+    github: https://github.com/cattyman919/
+    github_handle: github.com/cattyman919
+    types:
+      - main
+      - devops
+    points:
+      - "Orchestrated a personal home lab on a Dell OptiPlex 7050 running Debian, deploying and managing a suite of services including **Jellyfin for media streaming**, **Portainer for Docker container management**, and an **Asterisk SIP server for home VoIP**."
+      - "Configured core network services, including **Samba for local file sharing**, **nginx as a reverse proxy** for simplified service access, and implemented **fail2ban and firewalld** for enhanced security."
+      - "Established a robust data management and remote access strategy using **rsync for automated backups** and **Tailscale** for secure, seamless access to the entire home network from any location."
+
+skills_achievements:
+  "Hard Skills":
+    - Web Development
+    - Android Development
+    - Fullstack Engineer
+    - Networking
+    - Internet of Things
+    - Machine Learning
+  "Soft Skills":
+    - Teamwork
+    - Communication
+    - Adaptability
+    - Responsibility
+    - Creativity
+    - Discipline
+    - Honesty
+  "Programming Languages":
+    - C
+    - "C#"
+    - C++
+    - HTML
+    - CSS
+    - Javascript
+    - Python
+    - Typescript
+    - Java
+    - Go
+    - PHP
+    - Dart
+  "Database Languages":
+    - PostgreSQL
+    - MySQL
+    - NoSQL
+  Misc:
+    - React
+    - NestJS
+    - NextJS
+    - Flutter
+    - ExpressJs
+    - Docker
+    - Tailwind CSS
+    - Git
+    - Linux
+  Certificates:
+    - year: 2025
+      name: "Red Hat System Administration I & II (RH134 - RHA) - Ver. 9.3"
+    - year: 2024
+      name: "AWS Knowledge: Cloud Essentials"
+    - year: 2023
+      name: "CCNA: Enterprise Networking, Security, and Automation"
+    - year: 2023
+      name: "CCNA: Switching, Routing, and Wireless Essentials"
+    - year: 2023
+      name: "CCNA: Introduction to Networks"

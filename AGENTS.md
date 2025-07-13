@@ -8,17 +8,21 @@ This document provides instructions for AI agents working in this repository.
   ```bash
   make all
   ```
-- To generate only the LaTeX sections from `cv_data.json`:
+- To generate only the LaTeX sections from `cv_data.yaml`:
   ```bash
-  make generate
+  go run convert_latex.go generate_sections.go
   ```
 - To build only the main CV:
   ```bash
-  make main_cv
+  make main-cv
   ```
-- To build only the black-and-white CV:
+- To build only the devops CV:
   ```bash
-  make bw_cv
+  make devops-cv
+  ```
+- To build only the fullstack CV:
+  ```bash
+  make fullstack-cv
   ```
 - To clean the output directory:
   ```bash
@@ -27,10 +31,10 @@ This document provides instructions for AI agents working in this repository.
 
 ### Code Style
 
-- **Python**: The `generate_sections.py` script is used to generate LaTeX files from `cv_data.json`. It uses standard Python libraries and f-strings for templating. Ensure any changes are compatible with Python 3.
+- **Go**: The `convert_latex.go` and `generate_sections.go` scripts are used to generate LaTeX files from `cv_data.yaml`. Ensure any changes are compatible with Go.
 - **LaTeX**: The main documents are `main_cv/main.tex` and `bw_cv/main.tex`. They use `subfile` to include sections from the `sections` directory. Custom commands and environments are defined in `packages/preamble.sty`.
-- **Data**: All CV data is stored in `cv_data.json`. To update the CV, edit this file and then run `make`.
+- **Data**: All CV data is stored in `cv_data.yaml`. To update the CV, edit this file and then run `make`.
 
 ### Linting and Testing
 
-There are no specific linting or testing frameworks configured in this repository. Ensure that the `generate_sections.py` script runs without errors and that the LaTeX files compile successfully using `pdflatex`.
+There are no specific linting or testing frameworks configured in this repository. Ensure that the Go scripts run without errors and that the LaTeX files compile successfully using `pdflatex`.

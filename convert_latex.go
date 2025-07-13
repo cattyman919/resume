@@ -1,9 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
+	"gopkg.in/yaml.v3"
 	"log"
 	"os"
 	"path/filepath"
@@ -13,79 +13,79 @@ import (
 
 // --- Configuration ---
 const (
-	dataFile          = "cv_data.json"
+	dataFile          = "cv_data.yaml"
 	mainCVSectionsDir = "main_cv/sections"
 	bwCVSectionsDir   = "bw_cv/sections"
 )
 
-// --- Data Structures for JSON Unmarshaling ---
+// --- Data Structures for YAML Unmarshaling ---
 type PersonalInfo struct {
-	Name           string `json:"name"`
-	Email          string `json:"email"`
-	Phone          string `json:"phone"`
-	Website        string `json:"website"`
-	Linkedin       string `json:"linkedin"`
-	LinkedinHandle string `json:"linkedin_handle"`
-	Github         string `json:"github"`
-	GithubHandle   string `json:"github_handle"`
-	ProfilePic     string `json:"profile_pic"`
-	Location       string `json:"location"`
+	Name           string `yaml:"name"`
+	Email          string `yaml:"email"`
+	Phone          string `yaml:"phone"`
+	Website        string `yaml:"website"`
+	Linkedin       string `yaml:"linkedin"`
+	LinkedinHandle string `yaml:"linkedin_handle"`
+	Github         string `yaml:"github"`
+	GithubHandle   string `yaml:"github_handle"`
+	ProfilePic     string `yaml:"profile_pic"`
+	Location       string `yaml:"location"`
 }
 
 type Experience struct {
-	Role     string   `json:"role"`
-	Type     string   `json:"type"`
-	Company  string   `json:"company"`
-	Location string   `json:"location"`
-	Dates    string   `json:"dates"`
-	Points   []string `json:"points"`
-	Types    []string `json:"types"`
+	Role     string   `yaml:"role"`
+	Type     string   `yaml:"type"`
+	Company  string   `yaml:"company"`
+	Location string   `yaml:"location"`
+	Dates    string   `yaml:"dates"`
+	Points   []string `yaml:"points"`
+	Types    []string `yaml:"types"`
 }
 
 type Education struct {
-	Institution string   `json:"institution"`
-	Degree      string   `json:"degree"`
-	Dates       string   `json:"dates"`
-	Gpa         string   `json:"gpa"`
-	Details     []string `json:"details"`
+	Institution string   `yaml:"institution"`
+	Degree      string   `yaml:"degree"`
+	Dates       string   `yaml:"dates"`
+	Gpa         string   `yaml:"gpa"`
+	Details     []string `yaml:"details"`
 }
 
 type Award struct {
-	Title        string   `json:"title"`
-	Organization string   `json:"organization"`
-	Date         string   `json:"date"`
-	Points       []string `json:"points"`
+	Title        string   `yaml:"title"`
+	Organization string   `yaml:"organization"`
+	Date         string   `yaml:"date"`
+	Points       []string `yaml:"points"`
 }
 
 type Project struct {
-	Name         string   `json:"name"`
-	Github       string   `json:"github"`
-	GithubHandle string   `json:"github_handle"`
-	Points       []string `json:"points"`
-	Types        []string `json:"types"`
+	Name         string   `yaml:"name"`
+	Github       string   `yaml:"github"`
+	GithubHandle string   `yaml:"github_handle"`
+	Points       []string `yaml:"points"`
+	Types        []string `yaml:"types"`
 }
 
 type Certificate struct {
-	Name string `json:"name"`
-	Year int    `json:"year"`
+	Name string `yaml:"name"`
+	Year int    `yaml:"year"`
 }
 
 type SkillsAchievements struct {
-	HardSkills           []string      `json:"Hard Skills"`
-	SoftSkills           []string      `json:"Soft Skills"`
-	ProgrammingLanguages []string      `json:"Programming Languages"`
-	DatabaseLanguages    []string      `json:"Database Languages"`
-	Misc                 []string      `json:"Misc"`
-	Certificates         []Certificate `json:"Certificates"`
+	HardSkills           []string      `yaml:"Hard Skills"`
+	SoftSkills           []string      `yaml:"Soft Skills"`
+	ProgrammingLanguages []string      `yaml:"Programming Languages"`
+	DatabaseLanguages    []string      `yaml:"Database Languages"`
+	Misc                 []string      `yaml:"Misc"`
+	Certificates         []Certificate `yaml:"Certificates"`
 }
 
 type CVData struct {
-	PersonalInfo       PersonalInfo       `json:"personal_info"`
-	Experiences        []Experience       `json:"experiences"`
-	Education          []Education        `json:"education"`
-	Awards             []Award            `json:"awards"`
-	Projects           []Project          `json:"projects"`
-	SkillsAchievements SkillsAchievements `json:"skills_achievements"`
+	PersonalInfo       PersonalInfo       `yaml:"personal_info"`
+	Experiences        []Experience       `yaml:"experiences"`
+	Education          []Education        `yaml:"education"`
+	Awards             []Award            `yaml:"awards"`
+	Projects           []Project          `yaml:"projects"`
+	SkillsAchievements SkillsAchievements `yaml:"skills_achievements"`
 }
 
 func writeTexFile(path string, content string, wg *sync.WaitGroup) {
@@ -104,8 +104,8 @@ func main() {
 	cvType := flag.String("type", "main", "Type of CV to generate (e.g., main, fullstack, devops)")
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Converts Json to Latex Documents\n")
-		fmt.Fprintf(os.Stderr, "This is a CLI tool for converting the cv_data.json to the approriate LaTex document based on each sections\n")
+		fmt.Fprintf(os.Stderr, "Converts YAML to Latex Documents\n")
+		fmt.Fprintf(os.Stderr, "This is a CLI tool for converting the cv_data.yaml to the approriate LaTex document based on each sections\n")
 		fmt.Fprintf(os.Stderr, "it can convert to different types of CV: main, devops, fullstack\n\n")
 		fmt.Fprintf(os.Stderr, "Usage:\n")
 		flag.PrintDefaults()
@@ -116,16 +116,17 @@ func main() {
 	flag.Parse()
 
 	fmt.Printf("==== Generating %s CV ====\n", *cvType)
-	fmt.Printf("Loading JSON CV...\n")
-	// Load data from JSON file
+
+	fmt.Printf("Loading YAML Data...\n")
+	// Load data from YAML file
 	byteValue, err := os.ReadFile(dataFile)
 	if err != nil {
 		log.Fatalf("Error: Data file not found at %s: %v", dataFile, err)
 	}
 
 	var cvData CVData
-	if err := json.Unmarshal(byteValue, &cvData); err != nil {
-		log.Fatalf("Error decoding JSON from %s: %v", dataFile, err)
+	if err := yaml.Unmarshal(byteValue, &cvData); err != nil {
+		log.Fatalf("Error decoding YAML from %s: %v", dataFile, err)
 	}
 
 	// Filter experiences and projects based on cvType
