@@ -1,98 +1,12 @@
 package main
 
 import (
-	"encoding/json"
-	"flag"
 	"fmt"
-	"log"
-	"os"
-	"path/filepath"
 	"regexp"
-	"slices"
-	"strconv"
 	"strings"
 )
 
-// --- Configuration ---
-const (
-	dataFile          = "cv_data.json"
-	mainCVSectionsDir = "main_cv/sections"
-	bwCVSectionsDir   = "bw_cv/sections"
-)
-
-// --- Data Structures for JSON Unmarshaling ---
-
-type PersonalInfo struct {
-	Name           string `json:"name"`
-	Email          string `json:"email"`
-	Phone          string `json:"phone"`
-	Website        string `json:"website"`
-	Linkedin       string `json:"linkedin"`
-	LinkedinHandle string `json:"linkedin_handle"`
-	Github         string `json:"github"`
-	GithubHandle   string `json:"github_handle"`
-	ProfilePic     string `json:"profile_pic"`
-	Location       string `json:"location"`
-}
-
-type Experience struct {
-	Role     string   `json:"role"`
-	Type     string   `json:"type"`
-	Company  string   `json:"company"`
-	Location string   `json:"location"`
-	Dates    string   `json:"dates"`
-	Points   []string `json:"points"`
-	Types    []string `json:"types"`
-}
-
-type Education struct {
-	Institution string   `json:"institution"`
-	Degree      string   `json:"degree"`
-	Dates       string   `json:"dates"`
-	Gpa         string   `json:"gpa"`
-	Details     []string `json:"details"`
-}
-
-type Award struct {
-	Title        string   `json:"title"`
-	Organization string   `json:"organization"`
-	Date         string   `json:"date"`
-	Points       []string `json:"points"`
-}
-
-type Project struct {
-	Name         string   `json:"name"`
-	Github       string   `json:"github"`
-	GithubHandle string   `json:"github_handle"`
-	Points       []string `json:"points"`
-	Types        []string `json:"types"`
-}
-
-type Certificate struct {
-	Name string `json:"name"`
-	Year int    `json:"year"`
-}
-
-type SkillsAchievements struct {
-	HardSkills           []string      `json:"Hard Skills"`
-	SoftSkills           []string      `json:"Soft Skills"`
-	ProgrammingLanguages []string      `json:"Programming Languages"`
-	DatabaseLanguages    []string      `json:"Database Languages"`
-	Misc                 []string      `json:"Misc"`
-	Certificates         []Certificate `json:"Certificates"`
-}
-
-type CVData struct {
-	PersonalInfo       PersonalInfo       `json:"personal_info"`
-	Experiences        []Experience       `json:"experiences"`
-	Education          []Education        `json:"education"`
-	Awards             []Award            `json:"awards"`
-	Projects           []Project          `json:"projects"`
-	SkillsAchievements SkillsAchievements `json:"skills_achievements"`
-}
-
 // --- Helper Functions ---
-
 var latexEscaper = strings.NewReplacer(
 	`&`, `\&`,
 	`%`, `\%`,
@@ -115,16 +29,6 @@ var boldRegex = regexp.MustCompile(`\*\*(.*?)\*\*`)
 func formatLatexBold(text string) string {
 	escapedText := escapeLatex(text)
 	return boldRegex.ReplaceAllString(escapedText, `\textbf{$1}`)
-}
-
-func writeTexFile(path string, content string) {
-	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0755); err != nil {
-		log.Fatalf("Error creating directory %s: %v", dir, err)
-	}
-	if err := os.WriteFile(path, []byte(content), 0644); err != nil {
-		log.Fatalf("Error writing %s: %v", path, err)
-	}
 }
 
 func generateHighlights(points []string) string {
@@ -184,6 +88,7 @@ func generateHeaderMainCV(data CVData) string {
 }
 
 func generateHeaderBwCV(data CVData) string {
+
 	info := data.PersonalInfo
 	return fmt.Sprintf(`\documentclass[../main.tex]{subfiles}
 \begin{document}
@@ -221,6 +126,7 @@ func generateHeaderBwCV(data CVData) string {
 
 // == Experience ==
 func generateExperienceMainCV(data CVData) string {
+
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Experience}\n")
 	for i, exp := range data.Experiences {
@@ -245,6 +151,7 @@ func generateExperienceMainCV(data CVData) string {
 }
 
 func generateExperienceBwCV(data CVData) string {
+
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Experience}}\n")
 	for i, exp := range data.Experiences {
@@ -270,6 +177,7 @@ func generateExperienceBwCV(data CVData) string {
 
 // == Education ==
 func generateEducationMainCV(data CVData) string {
+
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Education}\n")
 	for _, edu := range data.Education {
@@ -288,6 +196,7 @@ func generateEducationMainCV(data CVData) string {
 }
 
 func generateEducationBwCV(data CVData) string {
+
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Education}}\n")
 	for _, edu := range data.Education {
@@ -309,6 +218,7 @@ func generateEducationBwCV(data CVData) string {
 
 // == Awards ==
 func generateAwardsMainCV(data CVData) string {
+
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Awards}\n")
 	for i, award := range data.Awards {
@@ -333,6 +243,7 @@ func generateAwardsMainCV(data CVData) string {
 }
 
 func generateAwardsBwCV(data CVData) string {
+
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Awards}}\n")
 	for i, award := range data.Awards {
@@ -358,6 +269,7 @@ func generateAwardsBwCV(data CVData) string {
 
 // == Projects ==
 func generateProjectsMainCV(data CVData) string {
+
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Projects}\n")
 	for i, proj := range data.Projects {
@@ -384,6 +296,7 @@ func generateProjectsMainCV(data CVData) string {
 }
 
 func generateProjectsBwCV(data CVData) string {
+
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Projects}}\n")
 	for i, proj := range data.Projects {
@@ -427,106 +340,13 @@ func generateSkillsAchievements(data CVData) string {
 }
 
 func generateSkillsMainCV(data CVData) string {
+
 	sectionContent := generateSkillsAchievements(data)
 	return fmt.Sprintf("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Achievement and Skills}\n%s\\end{document}", sectionContent)
 }
 
 func generateSkillsBwCV(data CVData) string {
+
 	sectionContent := generateSkillsAchievements(data)
 	return fmt.Sprintf("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{{Achievement and Skills}}}\n%s\\end{document}", sectionContent)
-}
-
-// --- Main Script Logic ---
-func main() {
-	cvType := flag.String("type", "fullstack", "Type of CV to generate (e.g., fullstack, devops)")
-	flag.Parse()
-
-	fmt.Printf("Starting LaTeX section generation for %s CV...\n", *cvType)
-
-	// Load data from JSON file
-	byteValue, err := os.ReadFile(dataFile)
-	if err != nil {
-		log.Fatalf("Error: Data file not found at %s: %v", dataFile, err)
-	}
-
-	var cvData CVData
-	if err := json.Unmarshal(byteValue, &cvData); err != nil {
-		log.Fatalf("Error decoding JSON from %s: %v", dataFile, err)
-	}
-
-	// Filter experiences and projects based on cvType
-	var filteredExperiences []Experience
-	for _, exp := range cvData.Experiences {
-		if len(exp.Types) == 0 {
-			filteredExperiences = append(filteredExperiences, exp)
-			continue
-		}
-		if slices.Contains(exp.Types, *cvType) {
-			filteredExperiences = append(filteredExperiences, exp)
-		}
-	}
-	cvData.Experiences = filteredExperiences
-
-	var filteredProjects []Project
-	for _, proj := range cvData.Projects {
-		if len(proj.Types) == 0 {
-			filteredProjects = append(filteredProjects, proj)
-			continue
-		}
-		if slices.Contains(proj.Types, *cvType) {
-			filteredProjects = append(filteredProjects, proj)
-		}
-	}
-	cvData.Projects = filteredProjects
-
-	// Generate and write files for main_cv
-	fmt.Println("Generating sections for main_cv...")
-	writeTexFile(filepath.Join(mainCVSectionsDir, "Header.tex"), generateHeaderMainCV(cvData))
-	writeTexFile(filepath.Join(mainCVSectionsDir, "Experience.tex"), generateExperienceMainCV(cvData))
-	writeTexFile(filepath.Join(mainCVSectionsDir, "Education.tex"), generateEducationMainCV(cvData))
-	writeTexFile(filepath.Join(mainCVSectionsDir, "Awards.tex"), generateAwardsMainCV(cvData))
-	writeTexFile(filepath.Join(mainCVSectionsDir, "Projects.tex"), generateProjectsMainCV(cvData))
-	writeTexFile(filepath.Join(mainCVSectionsDir, "Achivements_Skills.tex"), generateSkillsMainCV(cvData))
-
-	// Generate and write files for bw_cv
-	fmt.Println("Generating sections for bw_cv...")
-	writeTexFile(filepath.Join(bwCVSectionsDir, "Header.tex"), generateHeaderBwCV(cvData))
-	writeTexFile(filepath.Join(bwCVSectionsDir, "Experience.tex"), generateExperienceBwCV(cvData))
-	writeTexFile(filepath.Join(bwCVSectionsDir, "Education.tex"), generateEducationBwCV(cvData))
-	writeTexFile(filepath.Join(bwCVSectionsDir, "Awards.tex"), generateAwardsBwCV(cvData))
-	writeTexFile(filepath.Join(bwCVSectionsDir, "Projects.tex"), generateProjectsBwCV(cvData))
-	writeTexFile(filepath.Join(bwCVSectionsDir, "Achivements_Skills.tex"), generateSkillsBwCV(cvData))
-
-	fmt.Println("LaTeX section generation complete.")
-}
-
-func (c *Certificate) UnmarshalJSON(data []byte) error {
-	type Alias Certificate
-	aux := &struct {
-		Year json.RawMessage `json:"year"`
-		*Alias
-	}{
-		Alias: (*Alias)(c),
-	}
-	if err := json.Unmarshal(data, &aux); err != nil {
-		return err
-	}
-
-	var yearInt int
-	if err := json.Unmarshal(aux.Year, &yearInt); err == nil {
-		c.Year = yearInt
-		return nil
-	}
-
-	var yearStr string
-	if err := json.Unmarshal(aux.Year, &yearStr); err == nil {
-		year, err := strconv.Atoi(yearStr)
-		if err != nil {
-			return fmt.Errorf("could not convert year string to int: %v", err)
-		}
-		c.Year = year
-		return nil
-	}
-
-	return fmt.Errorf("year field is not a number or a string")
 }

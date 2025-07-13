@@ -23,7 +23,7 @@ all: $(CV_TARGETS)
 
 $(CV_TARGETS): %-cv:
 	@echo "Generating and compiling $(call capitalize, $*) CV..."
-	go run generate_sections.go --type=$*
+	go run convert_latex.go generate_sections.go --type=$*
 	$(call COMPILE_LATEX, $*)
 
 clean:

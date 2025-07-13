@@ -31,6 +31,7 @@
       "role": "Fixed Connectivity, ICT & Cloud",
       "dates": "February 2024 - June 2024",
       "type": "Internship",
+      "types": ["main", "fullstack"],
       "points": [
         "Conducted **comprehensive market research** and **data scraping** using **Python**, **BeautifulSoup**, and **Pandas** to identify **growth opportunities** and assess the competitive landscape for satellite products.",
         "Presented data-driven findings and **strategic recommendations** to mentors and senior management to support **informed business strategy** and **product development**.",
