@@ -10,6 +10,12 @@ This repository contains a LaTeX-based resume generator that automatically build
 - **Customizable Sections**: The CV is structured into sections that can be easily modified or extended in the `generate_sections.go` file.
 - **Modern LaTeX Template**: The resume template is clean, modern, and easy to read, with both a main version and a black-and-white version.
 
+## Requirements
+
+- [Go](https://golang.org/dl/) (1.18 or higher)
+- [TeX Live](https://www.tug.org/texlive/) (or another LaTeX distribution)
+- [Make](https://www.gnu.org/software/make/)
+
 ## Usage
 
 To get started, you'll need to have Go and a LaTeX distribution (like TeX Live) installed on your system.
