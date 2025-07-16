@@ -1,4 +1,4 @@
-package main
+package internals
 
 import (
 	"fmt"
@@ -31,7 +31,7 @@ func formatLatexBold(text string) string {
 	return boldRegex.ReplaceAllString(escapedText, `\textbf{$1}`)
 }
 
-func generateHighlights(points []string) string {
+func GenerateHighlights(points []string) string {
 	var builder strings.Builder
 	builder.WriteString("\\begin{highlights}\n")
 	for _, point := range points {
@@ -44,7 +44,7 @@ func generateHighlights(points []string) string {
 // --- Section Generators ---
 
 // == Header ==
-func generateHeaderMainCV(data CVData) string {
+func GenerateHeaderMainCV(data CVData) string {
 	info := data.PersonalInfo
 	return fmt.Sprintf(`\documentclass[../main.tex]{subfiles}
 \begin{document}
@@ -87,7 +87,7 @@ func generateHeaderMainCV(data CVData) string {
 `, escapeLatex(info.ProfilePic), escapeLatex(info.Name), escapeLatex(info.Email), escapeLatex(info.Email), escapeLatex(info.Phone), escapeLatex(info.Phone), escapeLatex(info.Website), escapeLatex(strings.Replace(info.Website, "https://", "", 1)), escapeLatex(info.Linkedin), escapeLatex(info.LinkedinHandle), escapeLatex(info.Github), escapeLatex(info.GithubHandle))
 }
 
-func generateHeaderBwCV(data CVData) string {
+func GenerateHeaderBwCV(data CVData) string {
 
 	info := data.PersonalInfo
 	return fmt.Sprintf(`\documentclass[../main.tex]{subfiles}
@@ -125,7 +125,7 @@ func generateHeaderBwCV(data CVData) string {
 }
 
 // == Experience ==
-func generateExperienceMainCV(data CVData) string {
+func GenerateExperienceMainCV(data CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Experience}\n")
@@ -141,7 +141,7 @@ func generateExperienceMainCV(data CVData) string {
 \begin{onecolentry}
 %s
 \end{onecolentry}
-`, escapeLatex(exp.Dates), escapeLatex(exp.Company), escapeLatex(exp.Location), roleType, generateHighlights(exp.Points)))
+`, escapeLatex(exp.Dates), escapeLatex(exp.Company), escapeLatex(exp.Location), roleType, GenerateHighlights(exp.Points)))
 		if i < len(data.Experiences)-1 {
 			builder.WriteString("\n\\vspace{0.40 cm}\n")
 		}
@@ -150,7 +150,7 @@ func generateExperienceMainCV(data CVData) string {
 	return builder.String()
 }
 
-func generateExperienceBwCV(data CVData) string {
+func GenerateExperienceBwCV(data CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Experience}}\n")
@@ -166,7 +166,7 @@ func generateExperienceBwCV(data CVData) string {
 \begin{onecolentry}
 %s
 \end{onecolentry}
-`, escapeLatex(exp.Dates), escapeLatex(exp.Company), escapeLatex(exp.Location), escapeLatex(exp.Role), generateHighlights(exp.Points)))
+`, escapeLatex(exp.Dates), escapeLatex(exp.Company), escapeLatex(exp.Location), escapeLatex(exp.Role), GenerateHighlights(exp.Points)))
 		if i < len(data.Experiences)-1 {
 			builder.WriteString("\n\\vspace{0.4 cm}\n")
 		}
@@ -176,7 +176,7 @@ func generateExperienceBwCV(data CVData) string {
 }
 
 // == Education ==
-func generateEducationMainCV(data CVData) string {
+func GenerateEducationMainCV(data CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Education}\n")
@@ -195,7 +195,7 @@ func generateEducationMainCV(data CVData) string {
 	return builder.String()
 }
 
-func generateEducationBwCV(data CVData) string {
+func GenerateEducationBwCV(data CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Education}}\n")
@@ -209,7 +209,7 @@ func generateEducationBwCV(data CVData) string {
 \end{twocolentry}
 `, escapeLatex(edu.Dates), boldEduText))
 		if len(edu.Details) > 0 {
-			builder.WriteString(fmt.Sprintf("\n\\vspace{0.10 cm}\n\\begin{onecolentry}\n%s\n\\end{onecolentry}\n", generateHighlights(edu.Details)))
+			builder.WriteString(fmt.Sprintf("\n\\vspace{0.10 cm}\n\\begin{onecolentry}\n%s\n\\end{onecolentry}\n", GenerateHighlights(edu.Details)))
 		}
 	}
 	builder.WriteString("\n\\end{document}")
@@ -217,7 +217,7 @@ func generateEducationBwCV(data CVData) string {
 }
 
 // == Awards ==
-func generateAwardsMainCV(data CVData) string {
+func GenerateAwardsMainCV(data CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Awards}\n")
@@ -233,7 +233,7 @@ func generateAwardsMainCV(data CVData) string {
 \begin{onecolentry}
 %s
 \end{onecolentry}
-`, escapeLatex(award.Date), escapeLatex(award.Title), escapeLatex(award.Organization), generateHighlights(award.Points)))
+`, escapeLatex(award.Date), escapeLatex(award.Title), escapeLatex(award.Organization), GenerateHighlights(award.Points)))
 		if i < len(data.Awards)-1 {
 			builder.WriteString("\n\\vspace{0.40 cm}\n")
 		}
@@ -242,7 +242,7 @@ func generateAwardsMainCV(data CVData) string {
 	return builder.String()
 }
 
-func generateAwardsBwCV(data CVData) string {
+func GenerateAwardsBwCV(data CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Awards}}\n")
@@ -258,7 +258,7 @@ func generateAwardsBwCV(data CVData) string {
 \begin{onecolentry}
 %s
 \end{onecolentry}
-`, escapeLatex(award.Date), escapeLatex(award.Title), escapeLatex(award.Organization), generateHighlights(award.Points)))
+`, escapeLatex(award.Date), escapeLatex(award.Title), escapeLatex(award.Organization), GenerateHighlights(award.Points)))
 		if i < len(data.Awards)-1 {
 			builder.WriteString("\n\\vspace{0.10 cm}\n")
 		}
@@ -268,7 +268,7 @@ func generateAwardsBwCV(data CVData) string {
 }
 
 // == Projects ==
-func generateProjectsMainCV(data CVData) string {
+func GenerateProjectsMainCV(data CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Projects}\n")
@@ -286,7 +286,7 @@ func generateProjectsMainCV(data CVData) string {
 \begin{onecolentry}
 %s
 \end{onecolentry}
-`, githubLink, escapeLatex(proj.Name), generateHighlights(proj.Points)))
+`, githubLink, escapeLatex(proj.Name), GenerateHighlights(proj.Points)))
 		if i < len(data.Projects)-1 {
 			builder.WriteString("\n\\vspace{0.2 cm}\n")
 		}
@@ -295,7 +295,7 @@ func generateProjectsMainCV(data CVData) string {
 	return builder.String()
 }
 
-func generateProjectsBwCV(data CVData) string {
+func GenerateProjectsBwCV(data CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Projects}}\n")
@@ -313,7 +313,7 @@ func generateProjectsBwCV(data CVData) string {
 \begin{onecolentry}
 %s
 \end{onecolentry}
-`, githubLink, escapeLatex(proj.Name), generateHighlights(proj.Points)))
+`, githubLink, escapeLatex(proj.Name), GenerateHighlights(proj.Points)))
 		if i < len(data.Projects)-1 {
 			builder.WriteString("\n\\vspace{0.2 cm}\n")
 		}
@@ -323,7 +323,7 @@ func generateProjectsBwCV(data CVData) string {
 }
 
 // == Achievements & Skills ==
-func generateSkillsAchievements(data CVData) string {
+func GenerateSkillsAchievements(data CVData) string {
 	skills := data.SkillsAchievements
 	var builder strings.Builder
 	builder.WriteString("\\begin{highlights}\n")
@@ -339,14 +339,14 @@ func generateSkillsAchievements(data CVData) string {
 	return builder.String()
 }
 
-func generateSkillsMainCV(data CVData) string {
+func GenerateSkillsMainCV(data CVData) string {
 
-	sectionContent := generateSkillsAchievements(data)
+	sectionContent := GenerateSkillsAchievements(data)
 	return fmt.Sprintf("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Achievement and Skills}\n%s\\end{document}", sectionContent)
 }
 
-func generateSkillsBwCV(data CVData) string {
+func GenerateSkillsBwCV(data CVData) string {
 
-	sectionContent := generateSkillsAchievements(data)
+	sectionContent := GenerateSkillsAchievements(data)
 	return fmt.Sprintf("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{{Achievement and Skills}}}\n%s\\end{document}", sectionContent)
 }
