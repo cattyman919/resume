@@ -88,7 +88,7 @@ type CVData struct {
 	SkillsAchievements SkillsAchievements `yaml:"skills_achievements"`
 }
 
-func writeTexFile(path string, content string, wg *sync.WaitGroup) {
+func writeTexFile(path string, content string, wg *sync.WaitGroup, outputChan chan string) {
 	defer wg.Done()
 
 	dir := filepath.Dir(path)
@@ -98,6 +98,8 @@ func writeTexFile(path string, content string, wg *sync.WaitGroup) {
 	if err := os.WriteFile(path, []byte(content), 0644); err != nil {
 		log.Fatalf("Error writing %s: %v", path, err)
 	}
+
+	outputChan <- fmt.Sprintf("Written %s", path)
 }
 
 func main() {
@@ -156,6 +158,7 @@ func main() {
 	cvData.Projects = filteredProjects
 
 	type generate_section func(CVData) string
+
 	// maps section to main and bw functions
 	sections := map[string][2]generate_section{
 		"Header.tex":             {generateHeaderMainCV, generateHeaderBwCV},
@@ -166,25 +169,31 @@ func main() {
 		"Achivements_Skills.tex": {generateSkillsMainCV, generateSkillsBwCV},
 	}
 
-	var wg sync.WaitGroup
-
 	// 6 sections * 2 (main + bw)
-	wg.Add(len(sections) * 2) // There are total of 12 coroutine function
+	total_io_ops := len(sections) * 2 // There are total of 12 coroutine function
+
+	var wg sync.WaitGroup
+	wg.Add(total_io_ops)
+
+	outputChan := make(chan string, total_io_ops)
 
 	fmt.Println("Generating LaTeX sections...")
 	for section, function := range sections {
-		path := struct {
-			main string
-			bw   string
-		}{
-			filepath.Join(mainCVSectionsDir, section),
-			filepath.Join(bwCVSectionsDir, section),
-		}
-		go writeTexFile(path.main, function[0](cvData), &wg)
-		go writeTexFile(path.bw, function[1](cvData), &wg)
+		mainPath := filepath.Join(mainCVSectionsDir, section)
+		bwPath := filepath.Join(bwCVSectionsDir, section)
+
+		go writeTexFile(mainPath, function[0](cvData), &wg, outputChan)
+		go writeTexFile(bwPath, function[1](cvData), &wg, outputChan)
 	}
 
-	wg.Wait()
+	go func() {
+		wg.Wait()
+		close(outputChan)
+	}()
+
+	for s := range outputChan {
+		fmt.Println(s)
+	}
 
 	fmt.Println("==== LaTeX Section Generation Complete ====")
 }
