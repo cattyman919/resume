@@ -10,7 +10,7 @@ This document provides instructions for AI agents working in this repository.
   ```
 - To generate only the LaTeX sections from `cv_data.yaml`:
   ```bash
-  go run convert_latex.go generate_sections.go
+  go run main.go generate_sections.go
   ```
 - To build only the main CV:
   ```bash
@@ -31,7 +31,7 @@ This document provides instructions for AI agents working in this repository.
 
 ### Code Style
 
-- **Go**: The `convert_latex.go` and `generate_sections.go` scripts are used to generate LaTeX files from `cv_data.yaml`. Ensure any changes are compatible with Go.
+- **Go**: The `main.go` and `generate_sections.go` scripts are used to generate LaTeX files from `cv_data.yaml`. Ensure any changes are compatible with Go.
 - **LaTeX**: The main documents are `main_cv/main.tex` and `bw_cv/main.tex`. They use `subfile` to include sections from the `sections` directory. Custom commands and environments are defined in `packages/preamble.sty`.
 - **Data**: All CV data is stored in `cv_data.yaml`. To update the CV, edit this file and then run `make`.
 
