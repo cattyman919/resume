@@ -15,6 +15,39 @@ const (
 	dataFile = "cv_data.yaml"
 )
 
+func getTotalTypes[T internals.Experience | internals.Project](total_types map[string]struct{}, items []T, wg *sync.WaitGroup, mu *sync.RWMutex) {
+	defer wg.Done()
+	for _, item := range items {
+		var types []string
+
+		switch v := any(item).(type) {
+		case internals.Experience:
+			types = v.Types
+		case internals.Project:
+			types = v.Types
+		}
+
+		if len(types) == 0 {
+			continue
+		}
+
+		for _, cvType := range types {
+			// Only reading map
+			mu.RLock()
+			_, exist := total_types[cvType]
+			mu.RUnlock()
+
+			// Writing has to Write Lock
+			if !exist {
+				mu.Lock()
+				total_types[cvType] = struct{}{}
+				mu.Unlock()
+			}
+		}
+	}
+
+}
+
 func main() {
 
 	fmt.Printf("\n==== Generating All LaTeX CV ====\n")
@@ -35,37 +68,16 @@ func main() {
 	// Hash Set to get total types in the YAML config
 	total_types := make(map[string]struct{})
 
-	// O(N^2) searches each experience and iterate through the type
-	for _, exp := range cvData.Experiences {
-		if len(exp.Types) == 0 {
-			continue
-		}
-
-		for _, cvType := range exp.Types {
-			_, exist := total_types[cvType]
-			if !exist {
-				total_types[cvType] = struct{}{}
-			}
-
-		}
-	}
-
-	// O(N^2) searches each projects and iterate through the type
-	// TODO : use concurrency
-	for _, proj := range cvData.Projects {
-		if len(proj.Types) == 0 {
-			continue
-		}
-
-		for _, cvType := range proj.Types {
-			_, exist := total_types[cvType]
-			if !exist {
-				total_types[cvType] = struct{}{}
-			}
-
-		}
-	}
 	var wg sync.WaitGroup
+	var mu sync.RWMutex
+
+	wg.Add(2)
+	go getTotalTypes(total_types, cvData.Experiences, &wg, &mu)
+	go getTotalTypes(total_types, cvData.Projects, &wg, &mu)
+	wg.Wait()
+
+	fmt.Printf("Total Types: %+v\n", total_types)
+
 	wg.Add(len(total_types))
 
 	for cvType := range total_types {
@@ -73,6 +85,8 @@ func main() {
 	}
 
 	wg.Wait()
+
+	internals.MoveAuxFiles()
 
 	fmt.Printf("==== All LaTeX CV Generation Complete ====\n")
 }

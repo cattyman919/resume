@@ -210,3 +210,27 @@ func Write_PDF(cvType *string, type_bw_main string, wg *sync.WaitGroup) {
 
 	fmt.Printf("Generated %s.pdf\n", target_pdf)
 }
+
+func MoveAuxFiles() {
+	auxDir := filepath.Join("out", "aux")
+
+	if err := os.MkdirAll(auxDir, folderPermission); err != nil {
+		log.Fatalf("Error creating aux directory: %v", err)
+	}
+
+	files, err := os.ReadDir("out")
+	if err != nil {
+		log.Fatalf("Error reading output directory: %v", err)
+	}
+
+	for _, file := range files {
+		fileName := file.Name()
+		if strings.HasSuffix(fileName, ".log") || strings.HasSuffix(fileName, ".aux") {
+			oldPath := filepath.Join("out", fileName)
+			newPath := filepath.Join("out", "aux", fileName)
+			if err := os.Rename(oldPath, newPath); err != nil {
+				log.Printf("Error moving file %s: %v", fileName, err)
+			}
+		}
+	}
+}
