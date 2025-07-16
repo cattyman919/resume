@@ -15,7 +15,7 @@ const (
 	dataFile = "cv_data.yaml"
 )
 
-func getTotalTypes[T internals.Experience | internals.Project](total_types map[string]struct{}, items []T, wg *sync.WaitGroup, mu *sync.RWMutex) {
+func getTotalTypes[T internals.Experience | internals.Project](total_types map[string]struct{}, items []T, wg *sync.WaitGroup, mu *sync.Mutex) {
 	defer wg.Done()
 	for _, item := range items {
 		var types []string
@@ -32,17 +32,11 @@ func getTotalTypes[T internals.Experience | internals.Project](total_types map[s
 		}
 
 		for _, cvType := range types {
-			// Only reading map
-			mu.RLock()
-			_, exist := total_types[cvType]
-			mu.RUnlock()
-
-			// Writing has to Write Lock
-			if !exist {
-				mu.Lock()
+			mu.Lock()
+			if _, exist := total_types[cvType]; !exist {
 				total_types[cvType] = struct{}{}
-				mu.Unlock()
 			}
+			mu.Unlock()
 		}
 	}
 
@@ -69,14 +63,12 @@ func main() {
 	total_types := make(map[string]struct{})
 
 	var wg sync.WaitGroup
-	var mu sync.RWMutex
+	var mu sync.Mutex
 
 	wg.Add(2)
 	go getTotalTypes(total_types, cvData.Experiences, &wg, &mu)
 	go getTotalTypes(total_types, cvData.Projects, &wg, &mu)
 	wg.Wait()
-
-	fmt.Printf("Total Types: %+v\n", total_types)
 
 	wg.Add(len(total_types))
 
