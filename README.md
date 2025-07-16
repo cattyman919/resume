@@ -23,7 +23,7 @@ To get started, you'll need to have Go and a LaTeX distribution (like TeX Live) 
 1.  **Clone the repository**:
 
     ```bash
-    git clone https://github.com/cattyman919/resume.git
+    git clone https://github.com/senohebat/resume.git
     cd resume
     ```
 
@@ -47,11 +47,11 @@ To get started, you'll need to have Go and a LaTeX distribution (like TeX Live) 
 
 You can customize the CV template and generation process in the following ways:
 
-- **Add a new CV type**: To add a new CV type (e.g., `data-science`), add it to the `TYPES` list in the `Makefile`. You can then tag experiences and projects in `cv_data.yaml` with the new type.
-- **Modify the LaTeX template**: The LaTeX template is located in the `main_cv` and `bw_cv` directories. You can modify the `main.tex` files and the `preamble.sty` package to change the layout, fonts, and colors.
+- **Add a new CV type**: To add a new CV type (e.g., `data-science`), add it to the types property in experiences and projects on `cv_data.yaml` with the new type.
+- **Modify the LaTeX template**: The LaTeX template is located in the `template_cv/main_cv` and `template_cv/bw_cv` directories. You can modify the `main.tex` files and the `preamble.sty` package to change the layout, fonts, and colors.
 - **Add new sections**: To add a new section to the CV, you'll need to:
-  1.  Add the corresponding data structure to `convert_latex.go`.
-  2.  Create a new generator function in `generate_sections.go`.
+  1.  Add the corresponding data structure to `internals/types.go`.
+  2.  Create a new generator function in `internals/generate_sections.go`.
   3.  Add the new section to the `main.tex` files.
 
 ## Contributing

@@ -4,25 +4,9 @@ This document provides instructions for AI agents working in this repository.
 
 ### Build Commands
 
-- To build both the main and black-and-white CVs:
+- To build all CVs:
   ```bash
   make all
-  ```
-- To generate only the LaTeX sections from `cv_data.yaml`:
-  ```bash
-  go run main.go generate_sections.go
-  ```
-- To build only the main CV:
-  ```bash
-  make main-cv
-  ```
-- To build only the devops CV:
-  ```bash
-  make devops-cv
-  ```
-- To build only the fullstack CV:
-  ```bash
-  make fullstack-cv
   ```
 - To clean the output directory:
   ```bash
@@ -31,8 +15,8 @@ This document provides instructions for AI agents working in this repository.
 
 ### Code Style
 
-- **Go**: The `main.go` and `generate_sections.go` scripts are used to generate LaTeX files from `cv_data.yaml`. Ensure any changes are compatible with Go.
-- **LaTeX**: The main documents are `main_cv/main.tex` and `bw_cv/main.tex`. They use `subfile` to include sections from the `sections` directory. Custom commands and environments are defined in `packages/preamble.sty`.
+- **Go**: The `cmd/resume/main.go` script is used to generate and compile LaTeX files from `cv_data.yaml`. Ensure any changes are compatible with Go.
+- **LaTeX**: The main documents are `template_cv/main_cv/main.tex` and `template_cv/bw_cv/main.tex`. They use `subfile` to include sections from the `cv` directory. Custom commands and environments are defined in `packages/preamble.sty`.
 - **Data**: All CV data is stored in `cv_data.yaml`. To update the CV, edit this file and then run `make`.
 
 ### Linting and Testing

@@ -10,7 +10,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// --- Configuration ---
 const (
 	dataFile = "cv_data.yaml"
 )
