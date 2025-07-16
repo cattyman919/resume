@@ -1,30 +1,11 @@
-# Tools
-ENGINE = pdflatex
+# Utils
 RM = rm -fr
 
-# List of CV types. This is the only line you need to edit to add a new CV!
-TYPES := main fullstack devops
+.PHONY: all clean
 
-# Generate the target names from the TYPES list (e.g., main-cv, fullstack-cv)
-CV_TARGETS := $(TYPES:%=%-cv)
-
-# A helper function to capitalize the first letter of a word
-capitalize = $(shell echo $(1) | sed 's/./\u&/')
-
-# Compile Command
-define COMPILE_LATEX
-	$(ENGINE) -output-directory=out -output-format=pdf -jobname "Seno Pamungkas Rahman - CV ($(call capitalize, $(1)))" main_cv/main.tex
-	$(ENGINE) -output-directory=out -output-format=pdf -jobname "Seno Pamungkas Rahman - CV ($(call capitalize, $(1))) (BW)" bw_cv/main.tex
-endef
-
-.PHONY: all clean $(CV_TARGETS)
-
-all: $(CV_TARGETS)
-
-$(CV_TARGETS): %-cv:
-	@echo "Generating and compiling $(call capitalize, $*) CV..."
-	go run cmd/resume/main.go  --type=$*
-	$(call COMPILE_LATEX, $*)
+all:
+	go run cmd/resume/main.go
 
 clean:
 	$(RM) -rf out/*
+	$(RM) -rf cv/*
