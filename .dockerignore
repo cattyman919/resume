@@ -1,0 +1,22 @@
+# Ignore git history
+.git
+.github
+
+# Ignore build output
+out/
+/out
+
+# Ignore docker stuff
+Dockerfile
+.dockerignore
+
+# Ignore local development files
+.idea/
+.vscode/
+
+# Ignore binary and archive files
+*.so
+*.a
+*.o
+*.zip
+*.tar.gz

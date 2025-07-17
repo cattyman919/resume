@@ -207,8 +207,8 @@ func Write_PDF(cvType *string, type_bw_main string, wg *sync.WaitGroup) {
 	// Uncomment statements below to see more details if there are
 	// any errors while compiling to PDF
 
-	// cmd.Stdout = os.Stdout
-	// cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 
 	// Blocking function
 	err := cmd.Run()

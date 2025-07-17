@@ -2,16 +2,25 @@ OS = linux
 RM = rm -rf
 TARGET := bin/cv_builder
 
-.PHONY: all run clean
+.PHONY: all run docker clean
 
 all: $(TARGET)
 	@echo "Running application..."
 	./$(TARGET)
 
-$(TARGET): bin
+$(TARGET):
 	mkdir -p bin
 	@echo "Building $(TARGET)..."
 	CGO_ENABLED=0 GOOS=$(OS) go build -a -installsuffix cgo -o ./$(TARGET) ./cmd/resume/main.go
+
+docker: $(TARGET)
+	@echo "Building Docker image..."
+	docker build -t resume-generator .
+	@echo "Running Docker container..."
+	docker run --rm \
+		-v "./out:/app/out" \
+		-v "./cv_data.yaml:/app/cv_data.yaml" \
+		resume-generator
 
 run:
 	go run cmd/resume/main.go
