@@ -15,10 +15,15 @@ This repository contains a LaTeX-based resume generator that automatically build
 - [Go](https://golang.org/dl/) (1.18 or higher)
 - [TeX Live](https://www.tug.org/texlive/) (or another LaTeX distribution)
 - [Make](https://www.gnu.org/software/make/)
+- [Docker](https://www.docker.com/get-started) (Optional)
 
 ## Usage
 
-To get started, you'll need to have Go and a LaTeX distribution (like TeX Live) installed on your system.
+To get started, you can either install the dependencies locally or use Docker for a containerized build.
+
+### Local Build
+
+If you have Go and a LaTeX distribution installed:
 
 1.  **Clone the repository**:
 
@@ -42,6 +47,27 @@ To get started, you'll need to have Go and a LaTeX distribution (like TeX Live) 
     make all
     ```
     This will generate the PDFs in the `out` directory.
+
+### Docker Build
+
+If you prefer to use Docker, you can build the CVs without installing Go or LaTeX on your local machine.
+
+1.  **Clone the repository**:
+
+    ```bash
+    git clone https://github.com/senohebat/resume.git
+    cd resume
+    ```
+
+2.  **Update your CV data**:
+    Edit the `cv_data.yaml` file to include your personal information, experience, education, and other relevant details.
+
+3.  **Build with Docker**:
+    Run the following command to build the Docker image and generate the CVs:
+    ```bash
+    make docker
+    ```
+    The generated PDFs will be in the `out` directory
 
 ## Customization
 
