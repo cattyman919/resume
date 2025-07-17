@@ -85,10 +85,10 @@ experiences:
 education:
   - institution: Universitas Indonesia
     degree: Bachelor of Computer Engineering
-    dates: July 2021 – Present
+    dates: September 2021 – September 2025
     gpa: 3.78/4.0
     details:
-      - "GPA: 3.78/4.0"
+      - "**GPA:** 3.78/4.0"
       - "**Coursework:** Computer Architecture, Operating System, Real Time System and IoT, Computer Networks, Software Engineering, Cloud Computing"
 
 awards:
@@ -140,18 +140,17 @@ projects:
     github: https://github.com/rroiii/Electronic-Vault-Lock
     github_handle: rroiii/Electronic-Vault-Lock
     types:
-      - main
       - iot
     description: "A secure 4-digit combination lock for protecting items, offering a simple and reliable locking mechanism."
     points:
       - "Authored and optimized the **VHDL code** for the electronic vault lock, ensuring robust and reliable security."
       - "Conducted extensive simulations in **ModelSim** to validate the system's performance and identify potential vulnerabilities."
       - "Led the synthesis of the design in **Quartus**, optimizing for area and power to create an efficient and compact solution."
+
   - name: VAIO (Vacuum All in One)
     github: https://github.com/VAIO-CE/VAIO-Code
     github_handle: VAIO-CE/VAIO-Code
     types:
-      - main
       - iot
     description: "VAIO is an ESP32-based robot featuring autonomous navigation, a vacuum system, and multiple intuitive control methods including a sensor-equipped glove, voice commands via speech recognition, and a standard PS4 controller."
     points:
@@ -162,7 +161,6 @@ projects:
     github: https://github.com/cattyman919/http
     github_handle: cattyman919/http
     types:
-      - main
       - devops
     description: "A custom HTTP server written in C that leverages low-level socket programming and polling to handle multiple client connections. It features dynamic routing via a binary search tree and simple HTTP parsing for flexible response handling."
     points:
@@ -173,7 +171,6 @@ projects:
     github: null
     github_handle: null
     types:
-      - main
       - devops
     description: "Dell OptiPlex 7050 running Debian as the Operating System used for my personal custom server. It currently provides services such as Portainer, Jellyfin, CasaOS, Samba Server, SIP Server, and also used as a backup for my files. Connected remotely using Tailscale."
     points:

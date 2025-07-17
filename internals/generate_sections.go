@@ -330,8 +330,8 @@ func GenerateSkillsAchievements(data CVData) string {
 	builder.WriteString(fmt.Sprintf("    \\item \\textbf{Hard Skill:} %s\n", escapeLatex(strings.Join(skills.HardSkills, ", "))))
 	builder.WriteString(fmt.Sprintf("    \\item \\textbf{Soft Skill:} %s\n", escapeLatex(strings.Join(skills.SoftSkills, ", "))))
 	builder.WriteString(fmt.Sprintf("    \\item \\textbf{Programming Languages:} %s\n", escapeLatex(strings.Join(skills.ProgrammingLanguages, ", "))))
-	builder.WriteString(fmt.Sprintf("    \\item \\textbf{Database Languages:} %s\n", escapeLatex(strings.Join(skills.DatabaseLanguages, ", "))))
-	builder.WriteString(fmt.Sprintf("    \\item \\textbf{Misc:} %s\n", escapeLatex(strings.Join(skills.Misc, ", "))))
+	builder.WriteString(fmt.Sprintf("    \\item \\textbf{Database:} %s\n", escapeLatex(strings.Join(skills.DatabaseLanguages, ", "))))
+	builder.WriteString(fmt.Sprintf("    \\item \\textbf{Frameworks \\& Misc:} %s\n", escapeLatex(strings.Join(skills.Misc, ", "))))
 	for _, cert := range skills.Certificates {
 		builder.WriteString(fmt.Sprintf("    \\item \\textbf{Certificate} (%d): %s\n", cert.Year, escapeLatex(cert.Name)))
 	}
@@ -342,11 +342,11 @@ func GenerateSkillsAchievements(data CVData) string {
 func GenerateSkillsMainCV(data CVData) string {
 
 	sectionContent := GenerateSkillsAchievements(data)
-	return fmt.Sprintf("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Achievement and Skills}\n%s\\end{document}", sectionContent)
+	return fmt.Sprintf("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Skills}\n%s\\end{document}", sectionContent)
 }
 
 func GenerateSkillsBwCV(data CVData) string {
 
 	sectionContent := GenerateSkillsAchievements(data)
-	return fmt.Sprintf("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{{Achievement and Skills}}}\n%s\\end{document}", sectionContent)
+	return fmt.Sprintf("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{{Skills}}}\n%s\\end{document}", sectionContent)
 }
