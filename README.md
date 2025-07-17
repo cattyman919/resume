@@ -50,7 +50,7 @@ If you have Go and a LaTeX distribution installed:
 
 ### Docker Build
 
-If you prefer to use Docker, you can build the CVs without installing Go or LaTeX on your local machine.
+If you prefer to use Docker, you can build the CVs without LaTeX on your local machine. (Still needs Go)
 
 1.  **Clone the repository**:
 
@@ -59,10 +59,16 @@ If you prefer to use Docker, you can build the CVs without installing Go or LaTe
     cd resume
     ```
 
-2.  **Update your CV data**:
+2.  **Install Go dependencies**:
+
+    ```bash
+    go mod tidy
+    ```
+
+3.  **Update your CV data**:
     Edit the `cv_data.yaml` file to include your personal information, experience, education, and other relevant details.
 
-3.  **Build with Docker**:
+4.  **Build with Docker**:
     Run the following command to build the Docker image and generate the CVs:
     ```bash
     make docker
