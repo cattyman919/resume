@@ -21,6 +21,7 @@ experiences:
       - fullstack
       - devops
       - iot
+      - go
     points:
       - "**Managed end-to-end deployment** of vendor-provided scripts across **AWS EC2** (Dev/Staging) via **S3 bucket integration**, **WinSCP** file transfers, and **XML configuration adjustments**."
       - "**Automated deployment workflows** by developing a **PowerShell script** to extract ZIP files and **configuration for deployment processes**, **reducing manual effort by 40%** and accelerating deployment cycles."
@@ -36,6 +37,7 @@ experiences:
       - fullstack
       - devops
       - iot
+      - go
     points:
       - "Conducted **comprehensive market research** and **data scraping** using **Python**, **BeautifulSoup**, and **Pandas** to identify **growth opportunities** and assess the competitive landscape for satellite products."
       - "Presented **data-driven findings** and **strategic recommendations** to mentors and senior management to support **informed business strategy** and **product development**."
@@ -51,6 +53,7 @@ experiences:
       - main
       - fullstack
       - iot
+      - go
     points:
       - "Developed **dynamic journal booking tables** on the frontend with **Flutter**, integrating advanced **filtering** (by date and booking type), **pagination**, and **soft deletion** functionalities."
       - "**Integrated the Flutter frontend with backend APIs built in NestJS** and maintained data consistency with **MySQL**, ensuring accurate real-time accounting records."
@@ -66,6 +69,7 @@ experiences:
       - iot
       - main
       - fullstack
+      - go
     points:
       - "**Rebuilt and redesigned** critical web pages (**landing, login, and registration**) from scratch using **React** and **styled-components**, contributing to a major UI overhaul aimed at **improving user experience and performance** for field agents and administrators."
       - "Collaborated remotely with supervisors to integrate the new **React-based frontend** with the platform’s evolving product direction, **replacing legacy code with scalable, maintainable components**."
@@ -78,6 +82,7 @@ experiences:
     types:
       - main
       - fullstack
+      - go
     points:
       - "Engineered **complex exam pages** for a comprehensive E-Learning platform using **Next.js**, incorporating **navigation bars**, **dynamic question-sidebars**, and **real-time answer tracking**."
       - "Collaborated with **cross-functional teams** and **maintained regular progress updates**, ensuring alignment with project milestones and timely delivery of platform enhancements."
@@ -100,6 +105,28 @@ awards:
       - "**Spearheaded the development of BitTrack's Frontend and UI/UX**, ensuring a seamless user experience and visually appealing design, while also **driving the business strategy and direction of the product**."
 
 projects:
+  - name: MovieDB Showcase
+    github: https://github.com/cattyman919/movies
+    github_handle: cattyman919/movies
+    types:
+      - go
+    description: "A full-stack movie browsing application featuring a **Go** backend API that serves data from the TMDB API, and a modern **React** frontend."
+    points:
+      - "Architected a backend API using **Go** and the **Gin framework** to serve as a proxy for the TMDB API, handling requests for popular, top-rated, and upcoming movies."
+      - "Developed a responsive frontend with **React**, **TypeScript**, and **Tailwind CSS** to display movie data fetched from the backend, creating an interactive user experience."
+      - "Containerized the entire application (**Go backend, React frontend, MongoDB**) using **Docker** and **Docker Compose**, and wrote integration tests with **Testcontainers** for the database layer."
+
+  - name: Slash
+    github: https://github.com/cattyman919/slash
+    github_handle: cattyman919/slash
+    types:
+      - main
+      - go
+    description: "A 2D platformer game built from the ground up in **Go** using the **Ebitengine** game engine, featuring custom tilemap rendering, player/enemy mechanics, and a dynamic camera system."
+    points:
+      - "Developed a complete 2D game engine loop using **Go** and **Ebitengine**, managing game state, entity updates, and rendering."
+      - "Integrated **Tiled** for level design by creating a custom parser to load and render tilemaps from JSON data, including collision detection logic."
+      - "Implemented core gameplay mechanics including player movement (WASD), enemy AI that follows the player, and a dynamic camera that smoothly tracks the player's position."
   - name: Restomatic
     github: https://github.com/SistemBasisData2023/RestoMatic
     github_handle: SistemBasisData2023/RestoMatic
@@ -128,14 +155,22 @@ projects:
     github: https://github.com/cattyman919/Jaga
     github_handle: cattyman919/Jaga
     types:
-      - main
-      - fullstack
     description: "A vehicle maintenance app with GPS tracking to monitor kilometers and notify users of service needs based on distance and time."
     points:
       - "Led the full-stack development of the Jaga vehicle maintenance app, creating a seamless user experience with **Flutter** and **NestJS**."
       - "Developed a **GPS-based tracking system** to monitor vehicle mileage and trigger timely service reminders."
       - "Implemented a **multi-vehicle management system**, allowing users to track and manage maintenance for their entire fleet."
-
+  - name: JSleep
+    github: https://github.com/cattyman919/JSleep
+    github_handle: cattyman919/JSleep
+    types:
+      - main
+      - fullstack
+    description: "A full-stack room reservation backend built with Java and Spring Boot, featuring a custom JSON-based database engine for managing users, rooms, and bookings."
+    points:
+      - "Developed a complete RESTful API using **Java** and **Spring Boot** to manage the entire hotel booking lifecycle, from user authentication to room reservations."
+      - "Engineered a custom, lightweight database solution using a **JSON-based file system (`JsonDBEngine`)**, enabling persistent data storage and retrieval without a traditional database server."
+      - "Implemented core business logic for dynamic room filtering, availability checking based on booking dates, and a complete payment processing system including balance management and voucher application."
   - name: Electronic Vault Lock
     github: https://github.com/rroiii/Electronic-Vault-Lock
     github_handle: rroiii/Electronic-Vault-Lock
@@ -178,6 +213,18 @@ projects:
       - "Configured core network services, including **Samba for local file sharing**, **nginx as a reverse proxy** for simplified service access, and implemented **fail2ban and firewalld** for enhanced security."
       - "Established a robust data management and remote access strategy using **rsync for automated backups** and **Tailscale** for secure, seamless access to the entire home network from any location."
 
+  - name: AutoCV
+    github: https://github.com/cattyman919/resume
+    github_handle: cattyman919/resume
+    types:
+      - devops
+      - go
+    description: "A dynamic CV generator that builds multiple tailored PDF resumes from a single YAML data source using Go and LaTeX."
+    points:
+      - "**Automated the generation of multiple CV versions** (e.g., DevOps, Full-Stack, IoT) from a single **`cv_data.yaml`** source, ensuring consistency and eliminating manual edits."
+      - "Developed a **Go-based data processor** to parse **YAML** and dynamically generate **LaTeX** files, leveraging templates for different CV styles (e.g., main, black-and-white)."
+      - "Streamlined the build process with a **Makefile**, enabling one-command compilation of all CVs into PDF format via **`pdflatex`**."
+
 skills_achievements:
   "Hard Skills":
     - Web Development
@@ -216,6 +263,7 @@ skills_achievements:
     - NestJS
     - NextJS
     - Flutter
+    - Spring Boot
     - ExpressJs
     - Docker
     - Tailwind CSS
