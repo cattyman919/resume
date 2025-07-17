@@ -22,6 +22,7 @@ experiences:
       - devops
       - iot
       - go
+      - custom
     points:
       - "**Managed end-to-end deployment** of vendor-provided scripts across **AWS EC2** (Dev/Staging) via **S3 bucket integration**, **WinSCP** file transfers, and **XML configuration adjustments**."
       - "**Automated deployment workflows** by developing a **PowerShell script** to extract ZIP files and **configuration for deployment processes**, **reducing manual effort by 40%** and accelerating deployment cycles."
@@ -38,6 +39,7 @@ experiences:
       - devops
       - iot
       - go
+      - custom
     points:
       - "Conducted **comprehensive market research** and **data scraping** using **Python**, **BeautifulSoup**, and **Pandas** to identify **growth opportunities** and assess the competitive landscape for satellite products."
       - "Presented **data-driven findings** and **strategic recommendations** to mentors and senior management to support **informed business strategy** and **product development**."
@@ -54,6 +56,7 @@ experiences:
       - fullstack
       - iot
       - go
+      - custom
     points:
       - "Developed **dynamic journal booking tables** on the frontend with **Flutter**, integrating advanced **filtering** (by date and booking type), **pagination**, and **soft deletion** functionalities."
       - "**Integrated the Flutter frontend with backend APIs built in NestJS** and maintained data consistency with **MySQL**, ensuring accurate real-time accounting records."
@@ -70,6 +73,7 @@ experiences:
       - main
       - fullstack
       - go
+      - custom
     points:
       - "**Rebuilt and redesigned** critical web pages (**landing, login, and registration**) from scratch using **React** and **styled-components**, contributing to a major UI overhaul aimed at **improving user experience and performance** for field agents and administrators."
       - "Collaborated remotely with supervisors to integrate the new **React-based frontend** with the platform’s evolving product direction, **replacing legacy code with scalable, maintainable components**."
@@ -83,6 +87,7 @@ experiences:
       - main
       - fullstack
       - go
+      - custom
     points:
       - "Engineered **complex exam pages** for a comprehensive E-Learning platform using **Next.js**, incorporating **navigation bars**, **dynamic question-sidebars**, and **real-time answer tracking**."
       - "Collaborated with **cross-functional teams** and **maintained regular progress updates**, ensuring alignment with project milestones and timely delivery of platform enhancements."
@@ -110,6 +115,7 @@ projects:
     github_handle: cattyman919/movies
     types:
       - go
+      - custom
     description: "A full-stack movie browsing application featuring a **Go** backend API that serves data from the TMDB API, and a modern **React** frontend."
     points:
       - "Architected a backend API using **Go** and the **Gin framework** to serve as a proxy for the TMDB API, handling requests for popular, top-rated, and upcoming movies."
@@ -127,12 +133,14 @@ projects:
       - "Developed a complete 2D game engine loop using **Go** and **Ebitengine**, managing game state, entity updates, and rendering."
       - "Integrated **Tiled** for level design by creating a custom parser to load and render tilemaps from JSON data, including collision detection logic."
       - "Implemented core gameplay mechanics including player movement (WASD), enemy AI that follows the player, and a dynamic camera that smoothly tracks the player's position."
+
   - name: Restomatic
     github: https://github.com/SistemBasisData2023/RestoMatic
     github_handle: SistemBasisData2023/RestoMatic
     types:
       - main
       - fullstack
+      - custom
     description: "A web platform for easy food and drink ordering. Users can browse restaurant menus, add funds, and leave ratings."
     points:
       - "Engineered a responsive and intuitive user interface with **React** and **Tailwind CSS**, leading the frontend development to enhance user engagement."
@@ -146,11 +154,13 @@ projects:
       - main
       - fullstack
       - devops
+      - custom
     description: "An attendance system using FreeRTOS ESP32 and RFID, with a web server and Blynk integration for class and schedule management."
     points:
       - "Led the end-to-end development of the DanceRTOS attendance system, building both the **Flutter frontend** and **NestJS backend**."
       - "Engineered a real-time student login system using **MQTT** and **RFID** on an **ESP32**, enabling secure and instantaneous attendance tracking."
       - "Designed and implemented a dynamic class schedule and attendance table, providing lecturers with an organized and **real-time view of student presence**."
+
   - name: Jaga
     github: https://github.com/cattyman919/Jaga
     github_handle: cattyman919/Jaga
