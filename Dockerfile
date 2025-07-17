@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Copy the pre-compiled Go binary
-COPY bin/cv_builder /app/bin/cv_builder
+# COPY bin/cv_builder /app/bin/cv_builder
 
 # Copy the project files needed to generate the CVs
 COPY Makefile /app/

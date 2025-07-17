@@ -21,9 +21,11 @@ docker: $(TARGET)
 	docker run --rm \
 		-u "$(shell id -u):$(shell id -g)" \
 		-v "./out:/app/out" \
+		-v "./$(TARGET):/app/$(TARGET)" \
 		-v "./cv_data.yaml:/app/cv_data.yaml" \
 		resume-generator
 
+# Better for development (Local Build)
 run:
 	go run cmd/resume/main.go
 

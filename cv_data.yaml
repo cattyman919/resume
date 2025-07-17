@@ -126,7 +126,6 @@ projects:
     github: https://github.com/cattyman919/slash
     github_handle: cattyman919/slash
     types:
-      - main
       - go
     description: "A 2D platformer game built from the ground up in **Go** using the **Ebitengine** game engine, featuring custom tilemap rendering, player/enemy mechanics, and a dynamic camera system."
     points:
@@ -154,7 +153,6 @@ projects:
       - main
       - fullstack
       - devops
-      - custom
     description: "An attendance system using FreeRTOS ESP32 and RFID, with a web server and Blynk integration for class and schedule management."
     points:
       - "Led the end-to-end development of the DanceRTOS attendance system, building both the **Flutter frontend** and **NestJS backend**."
@@ -176,6 +174,7 @@ projects:
     types:
       - main
       - fullstack
+      - custom
     description: "A full-stack room reservation backend built with Java and Spring Boot, featuring a custom JSON-based database engine for managing users, rooms, and bookings."
     points:
       - "Developed a complete RESTful API using **Java** and **Spring Boot** to manage the entire hotel booking lifecycle, from user authentication to room reservations."
