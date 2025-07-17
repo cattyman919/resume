@@ -24,5 +24,8 @@ COPY Makefile /app/
 COPY template_cv/ /app/template_cv/
 COPY images/ /app/images/
 
+# Create the cv directory and give it world-writable permissions
+RUN mkdir -p /app/cv && chmod 777 /app/cv
+
 # Set the default command to run the resume generation
 CMD ["make", "all"]

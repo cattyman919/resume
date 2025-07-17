@@ -5,6 +5,7 @@ TARGET := bin/cv_builder
 .PHONY: all run docker clean
 
 all: $(TARGET)
+	mkdir -p out
 	@echo "Running application..."
 	./$(TARGET)
 
@@ -18,6 +19,7 @@ docker: $(TARGET)
 	docker build -t resume-generator .
 	@echo "Running Docker container..."
 	docker run --rm \
+		-u "$(shell id -u):$(shell id -g)" \
 		-v "./out:/app/out" \
 		-v "./cv_data.yaml:/app/cv_data.yaml" \
 		resume-generator
@@ -27,6 +29,6 @@ run:
 
 clean:
 	@echo "Cleaning up..."
-	$(RM) out/*
-	$(RM) cv/*
-	$(RM) bin/*
+	$(RM) out
+	$(RM) cv
+	$(RM) bin
