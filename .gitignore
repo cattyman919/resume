@@ -4,3 +4,8 @@ repomix*
 cv/*
 bin/*
 .aider*
+
+
+# Added by cargo
+
+/target
