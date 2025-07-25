@@ -28,13 +28,13 @@ func getTypes[T model.Experience | model.Project](total_types map[string]struct{
 			continue
 		}
 
+		mu.Lock()
 		for _, cvType := range types {
-			mu.Lock()
 			if _, exist := total_types[cvType]; !exist {
 				total_types[cvType] = struct{}{}
 			}
-			mu.Unlock()
 		}
+		mu.Unlock()
 	}
 
 }
