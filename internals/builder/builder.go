@@ -1,4 +1,4 @@
-package internals
+package builder
 
 import (
 	"fmt"
@@ -8,10 +8,14 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"resume/internals/latex"
+	model "resume/internals/model"
 	"slices"
 	"strings"
 	"sync"
 )
+
+var DebugMode bool = false
 
 const (
 	name              = "Seno Pamungkas Rahman"
@@ -21,7 +25,7 @@ const (
 	filePermission    = 0644
 )
 
-func WriteTexFile(path string, content string, wg *sync.WaitGroup, outputChan chan string) {
+func writeTexFile(path string, content string, wg *sync.WaitGroup, outputChan chan string) {
 	defer wg.Done()
 
 	dir := filepath.Dir(path)
@@ -35,7 +39,7 @@ func WriteTexFile(path string, content string, wg *sync.WaitGroup, outputChan ch
 	outputChan <- fmt.Sprintf("Written %s", path)
 }
 
-func CopyFile(src, dst string) error {
+func copyFile(src, dst string) error {
 	sourceFile, err := os.Open(src)
 	if err != nil {
 		return err
@@ -50,8 +54,8 @@ func CopyFile(src, dst string) error {
 	return err
 }
 
-// CopyDir recursively copies a directory from src to dst
-func CopyDir(src, dst string, wg *sync.WaitGroup) error {
+// copyDir recursively copies a directory from src to dst
+func copyDir(src, dst string, wg *sync.WaitGroup) error {
 	defer wg.Done()
 
 	// Create the destination directory with the same permissions
@@ -79,12 +83,12 @@ func CopyDir(src, dst string, wg *sync.WaitGroup) error {
 			return os.MkdirAll(destPath, folderPermission)
 		} else {
 			// Copy file
-			return CopyFile(path, destPath)
+			return copyFile(path, destPath)
 		}
 	})
 }
 
-func Write_CV(cvType string, cvData CVData, wgParent *sync.WaitGroup) {
+func Write_CV(cvType string, cvData model.CVData, wgParent *sync.WaitGroup) {
 	defer wgParent.Done()
 
 	fmt.Printf("Generating CV (%s)\n", cvType)
@@ -95,16 +99,15 @@ func Write_CV(cvType string, cvData CVData, wgParent *sync.WaitGroup) {
 	var wg sync.WaitGroup
 	wg.Add(2)
 
-	go CopyDir("template_cv/main_cv", mainPath, &wg)
-	go CopyDir("template_cv/bw_cv", bwPath, &wg)
+	go copyDir("template_cv/main_cv", mainPath, &wg)
+	go copyDir("template_cv/bw_cv", bwPath, &wg)
 
 	// Filter experiences and projects based on cvType
-	var filteredExperiences []Experience
+	var filteredExperiences []model.Experience
 	for _, exp := range cvData.Experiences {
 
 		// if types is empty, dont add it at all to the CV
 		if len(exp.Types) == 0 {
-			// filteredExperiences = append(filteredExperiences, exp)
 			continue
 		}
 
@@ -114,14 +117,12 @@ func Write_CV(cvType string, cvData CVData, wgParent *sync.WaitGroup) {
 	}
 
 	cvData.Experiences = filteredExperiences
-	// fmt.Printf("%s: %v\n\n\n", cvType, cvData.Experiences)
 
-	var filteredProjects []Project
+	var filteredProjects []model.Project
 	for _, proj := range cvData.Projects {
 
 		// if types is empty, dont add it at all to the CV
 		if len(proj.Types) == 0 {
-			// filteredProjects = append(filteredProjects, proj)
 			continue
 		}
 
@@ -131,16 +132,16 @@ func Write_CV(cvType string, cvData CVData, wgParent *sync.WaitGroup) {
 	}
 	cvData.Projects = filteredProjects
 
-	type generate_section func(CVData) string
+	type generate_section func(model.CVData) string
 
 	// maps section to main and bw functions
 	sections := map[string][2]generate_section{
-		"Header.tex":             {GenerateHeaderMainCV, GenerateHeaderBwCV},
-		"Experience.tex":         {GenerateExperienceMainCV, GenerateExperienceBwCV},
-		"Education.tex":          {GenerateEducationMainCV, GenerateEducationBwCV},
-		"Awards.tex":             {GenerateAwardsMainCV, GenerateAwardsBwCV},
-		"Projects.tex":           {GenerateProjectsMainCV, GenerateProjectsBwCV},
-		"Achivements_Skills.tex": {GenerateSkillsMainCV, GenerateSkillsBwCV},
+		"Header.tex":             {latex.GenerateHeaderMainCV, latex.GenerateHeaderBwCV},
+		"Experience.tex":         {latex.GenerateExperienceMainCV, latex.GenerateExperienceBwCV},
+		"Education.tex":          {latex.GenerateEducationMainCV, latex.GenerateEducationBwCV},
+		"Awards.tex":             {latex.GenerateAwardsMainCV, latex.GenerateAwardsBwCV},
+		"Projects.tex":           {latex.GenerateProjectsMainCV, latex.GenerateProjectsBwCV},
+		"Achivements_Skills.tex": {latex.GenerateSkillsMainCV, latex.GenerateSkillsBwCV},
 	}
 
 	// Waits for the copying files from template_cv to the specific cv type directory
@@ -158,8 +159,8 @@ func Write_CV(cvType string, cvData CVData, wgParent *sync.WaitGroup) {
 		mainPath := filepath.Join("cv", cvType, mainCVSectionsDir, section)
 		bwPath := filepath.Join("cv", cvType, bwCVSectionsDir, section)
 
-		go WriteTexFile(mainPath, function[0](cvData), &wg, outputChan)
-		go WriteTexFile(bwPath, function[1](cvData), &wg, outputChan)
+		go writeTexFile(mainPath, function[0](cvData), &wg, outputChan)
+		go writeTexFile(bwPath, function[1](cvData), &wg, outputChan)
 	}
 
 	go func() {
@@ -173,12 +174,12 @@ func Write_CV(cvType string, cvData CVData, wgParent *sync.WaitGroup) {
 	}
 
 	wg.Add(2)
-	go Write_PDF(&cvType, "main", &wg)
-	go Write_PDF(&cvType, "bw", &wg)
+	go write_PDF(&cvType, "main", &wg)
+	go write_PDF(&cvType, "bw", &wg)
 	wg.Wait()
 }
 
-func Write_PDF(cvType *string, type_bw_main string, wg *sync.WaitGroup) {
+func write_PDF(cvType *string, type_bw_main string, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	target_pdf := fmt.Sprintf("Seno Pamungkas Rahman - CV (%s) (%s)", *cvType, strings.ToUpper(type_bw_main))
@@ -204,11 +205,10 @@ func Write_PDF(cvType *string, type_bw_main string, wg *sync.WaitGroup) {
 		log.Fatalf("Error Handling Writing PDF for type %s", type_bw_main)
 	}
 
-	// Uncomment statements below to see more details if there are
-	// any errors while compiling to PDF
-
-	// cmd.Stdout = os.Stdout
-	// cmd.Stderr = os.Stderr
+	if DebugMode {
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+	}
 
 	// Blocking function
 	err := cmd.Run()

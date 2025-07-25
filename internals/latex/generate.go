@@ -1,8 +1,9 @@
-package internals
+package latex
 
 import (
 	"fmt"
 	"regexp"
+	model "resume/internals/model"
 	"strings"
 )
 
@@ -44,7 +45,7 @@ func GenerateHighlights(points []string) string {
 // --- Section Generators ---
 
 // == Header ==
-func GenerateHeaderMainCV(data CVData) string {
+func GenerateHeaderMainCV(data model.CVData) string {
 	info := data.PersonalInfo
 	return fmt.Sprintf(`\documentclass[../main.tex]{subfiles}
 \begin{document}
@@ -87,7 +88,7 @@ func GenerateHeaderMainCV(data CVData) string {
 `, escapeLatex(info.ProfilePic), escapeLatex(info.Name), escapeLatex(info.Email), escapeLatex(info.Email), escapeLatex(info.Phone), escapeLatex(info.Phone), escapeLatex(info.Website), escapeLatex(strings.Replace(info.Website, "https://", "", 1)), escapeLatex(info.Linkedin), escapeLatex(info.LinkedinHandle), escapeLatex(info.Github), escapeLatex(info.GithubHandle))
 }
 
-func GenerateHeaderBwCV(data CVData) string {
+func GenerateHeaderBwCV(data model.CVData) string {
 
 	info := data.PersonalInfo
 	return fmt.Sprintf(`\documentclass[../main.tex]{subfiles}
@@ -125,7 +126,7 @@ func GenerateHeaderBwCV(data CVData) string {
 }
 
 // == Experience ==
-func GenerateExperienceMainCV(data CVData) string {
+func GenerateExperienceMainCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Experience}\n")
@@ -150,7 +151,7 @@ func GenerateExperienceMainCV(data CVData) string {
 	return builder.String()
 }
 
-func GenerateExperienceBwCV(data CVData) string {
+func GenerateExperienceBwCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Experience}}\n")
@@ -176,7 +177,7 @@ func GenerateExperienceBwCV(data CVData) string {
 }
 
 // == Education ==
-func GenerateEducationMainCV(data CVData) string {
+func GenerateEducationMainCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Education}\n")
@@ -195,7 +196,7 @@ func GenerateEducationMainCV(data CVData) string {
 	return builder.String()
 }
 
-func GenerateEducationBwCV(data CVData) string {
+func GenerateEducationBwCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Education}}\n")
@@ -217,7 +218,7 @@ func GenerateEducationBwCV(data CVData) string {
 }
 
 // == Awards ==
-func GenerateAwardsMainCV(data CVData) string {
+func GenerateAwardsMainCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Awards}\n")
@@ -242,7 +243,7 @@ func GenerateAwardsMainCV(data CVData) string {
 	return builder.String()
 }
 
-func GenerateAwardsBwCV(data CVData) string {
+func GenerateAwardsBwCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Awards}}\n")
@@ -268,7 +269,7 @@ func GenerateAwardsBwCV(data CVData) string {
 }
 
 // == Projects ==
-func GenerateProjectsMainCV(data CVData) string {
+func GenerateProjectsMainCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Projects}\n")
@@ -295,7 +296,7 @@ func GenerateProjectsMainCV(data CVData) string {
 	return builder.String()
 }
 
-func GenerateProjectsBwCV(data CVData) string {
+func GenerateProjectsBwCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Projects}}\n")
@@ -323,7 +324,7 @@ func GenerateProjectsBwCV(data CVData) string {
 }
 
 // == Achievements & Skills ==
-func GenerateSkillsAchievements(data CVData) string {
+func GenerateSkillsAchievements(data model.CVData) string {
 	skills := data.SkillsAchievements
 	var builder strings.Builder
 	builder.WriteString("\\begin{highlights}\n")
@@ -339,13 +340,13 @@ func GenerateSkillsAchievements(data CVData) string {
 	return builder.String()
 }
 
-func GenerateSkillsMainCV(data CVData) string {
+func GenerateSkillsMainCV(data model.CVData) string {
 
 	sectionContent := GenerateSkillsAchievements(data)
 	return fmt.Sprintf("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Skills}\n%s\\end{document}", sectionContent)
 }
 
-func GenerateSkillsBwCV(data CVData) string {
+func GenerateSkillsBwCV(data model.CVData) string {
 
 	sectionContent := GenerateSkillsAchievements(data)
 	return fmt.Sprintf("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{{Skills}}}\n%s\\end{document}", sectionContent)

@@ -139,7 +139,6 @@ projects:
     types:
       - main
       - fullstack
-      - custom
     description: "A web platform for easy food and drink ordering. Users can browse restaurant menus, add funds, and leave ratings."
     points:
       - "Engineered a responsive and intuitive user interface with **React** and **Tailwind CSS**, leading the frontend development to enhance user engagement."
@@ -174,7 +173,6 @@ projects:
     types:
       - main
       - fullstack
-      - custom
     description: "A full-stack room reservation backend built with Java and Spring Boot, featuring a custom JSON-based database engine for managing users, rooms, and bookings."
     points:
       - "Developed a complete RESTful API using **Java** and **Spring Boot** to manage the entire hotel booking lifecycle, from user authentication to room reservations."
@@ -216,6 +214,7 @@ projects:
     github_handle: null
     types:
       - devops
+      - custom
     description: "Dell OptiPlex 7050 running Debian as the Operating System used for my personal custom server. It currently provides services such as Portainer, Jellyfin, CasaOS, Samba Server, SIP Server, and also used as a backup for my files. Connected remotely using Tailscale."
     points:
       - "Deployed and manage a suite of services including **Jellyfin for media streaming**, **Portainer for Docker container management**, and an **Asterisk SIP server for home VoIP**."
@@ -228,6 +227,7 @@ projects:
     types:
       - devops
       - go
+      - custom
     description: "A dynamic CV generator that builds multiple tailored PDF resumes from a single YAML data source using Go and LaTeX."
     points:
       - "**Automated the generation of multiple CV versions** (e.g., DevOps, Full-Stack, IoT) from a single **`cv_data.yaml`** source, ensuring consistency and eliminating manual edits."

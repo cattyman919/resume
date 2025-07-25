@@ -1,10 +1,13 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
-	"resume/internals"
+	"resume/internals/builder"
+	model "resume/internals/model"
+	"resume/internals/parse"
 	"sync"
 
 	"gopkg.in/yaml.v3"
@@ -14,34 +17,11 @@ const (
 	dataFile = "cv_data.yaml"
 )
 
-func getTotalTypes[T internals.Experience | internals.Project](total_types map[string]struct{}, items []T, wg *sync.WaitGroup, mu *sync.Mutex) {
-	defer wg.Done()
-	for _, item := range items {
-		var types []string
-
-		switch v := any(item).(type) {
-		case internals.Experience:
-			types = v.Types
-		case internals.Project:
-			types = v.Types
-		}
-
-		if len(types) == 0 {
-			continue
-		}
-
-		for _, cvType := range types {
-			mu.Lock()
-			if _, exist := total_types[cvType]; !exist {
-				total_types[cvType] = struct{}{}
-			}
-			mu.Unlock()
-		}
-	}
-
-}
-
 func main() {
+	debug := flag.Bool("debug", false, "Enable debug output for pdflatex")
+	flag.Parse()
+
+	builder.DebugMode = *debug
 
 	fmt.Printf("\n==== Generating All LaTeX CV ====\n")
 
@@ -53,7 +33,7 @@ func main() {
 		log.Fatalf("Error: Data file not found at %s: %v", dataFile, err)
 	}
 
-	var cvData internals.CVData
+	var cvData model.CVData
 	if err := yaml.Unmarshal(byteValue, &cvData); err != nil {
 		log.Fatalf("Error decoding YAML from %s: %v", dataFile, err)
 	}
@@ -64,20 +44,17 @@ func main() {
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 
-	wg.Add(2)
-	go getTotalTypes(total_types, cvData.Experiences, &wg, &mu)
-	go getTotalTypes(total_types, cvData.Projects, &wg, &mu)
-	wg.Wait()
+	parse.GetTotalTypes(total_types, cvData, &wg, &mu)
 
 	wg.Add(len(total_types))
 
 	for cvType := range total_types {
-		go internals.Write_CV(cvType, cvData, &wg)
+		go builder.Write_CV(cvType, cvData, &wg)
 	}
 
 	wg.Wait()
 
-	internals.MoveAuxFiles()
+	builder.MoveAuxFiles()
 
 	fmt.Printf("==== All LaTeX CV Generation Complete ====\n")
 }

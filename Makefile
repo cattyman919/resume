@@ -2,7 +2,7 @@ OS = linux
 RM = rm -rf
 TARGET := bin/cv_builder
 
-.PHONY: all run docker clean
+.PHONY: all run run_debug docker clean
 
 all: $(TARGET)
 	mkdir -p out
@@ -28,6 +28,9 @@ docker: $(TARGET)
 # Better for development (Local Build)
 run:
 	go run cmd/resume/main.go
+
+run_debug:
+	go run cmd/resume/main.go --debug
 
 clean:
 	@echo "Cleaning up..."
