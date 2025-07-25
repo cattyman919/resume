@@ -110,6 +110,18 @@ awards:
       - "**Spearheaded the development of BitTrack's Frontend and UI/UX**, ensuring a seamless user experience and visually appealing design, while also **driving the business strategy and direction of the product**."
 
 projects:
+  - name: AutoCV
+    github: https://github.com/cattyman919/resume
+    github_handle: cattyman919/resume
+    types:
+      - devops
+      - go
+    description: "A dynamic CV generator that builds multiple tailored PDF resumes from a single YAML data source using Go and LaTeX."
+    points:
+      - "**Automated the generation of multiple CV versions** (e.g., DevOps, Full-Stack, IoT) from a single **`cv_data.yaml`** source, ensuring consistency and eliminating manual edits."
+      - "**Implemented concurrent processing using Go's goroutines and `sync.WaitGroup`** to parallelize the generation of multiple CV versions and formats, **significantly reducing build time**."
+      - "**Ensured thread-safe data aggregation** by using **`sync.Mutex`** to protect shared data structures from race conditions during concurrent YAML parsing operations."
+
   - name: MovieDB Showcase
     github: https://github.com/cattyman919/movies
     github_handle: cattyman919/movies
@@ -126,7 +138,6 @@ projects:
     github: https://github.com/cattyman919/slash
     github_handle: cattyman919/slash
     types:
-      - go
     description: "A 2D platformer game built from the ground up in **Go** using the **Ebitengine** game engine, featuring custom tilemap rendering, player/enemy mechanics, and a dynamic camera system."
     points:
       - "Developed a complete 2D game engine loop using **Go** and **Ebitengine**, managing game state, entity updates, and rendering."
@@ -139,6 +150,8 @@ projects:
     types:
       - main
       - fullstack
+      - go
+      - custom
     description: "A web platform for easy food and drink ordering. Users can browse restaurant menus, add funds, and leave ratings."
     points:
       - "Engineered a responsive and intuitive user interface with **React** and **Tailwind CSS**, leading the frontend development to enhance user engagement."
@@ -150,6 +163,7 @@ projects:
     types:
       - iot
       - main
+      - custom
       - fullstack
       - devops
     description: "An attendance system using FreeRTOS ESP32 and RFID, with a web server and Blynk integration for class and schedule management."
@@ -214,25 +228,11 @@ projects:
     github_handle: null
     types:
       - devops
-      - custom
     description: "Dell OptiPlex 7050 running Debian as the Operating System used for my personal custom server. It currently provides services such as Portainer, Jellyfin, CasaOS, Samba Server, SIP Server, and also used as a backup for my files. Connected remotely using Tailscale."
     points:
       - "Deployed and manage a suite of services including **Jellyfin for media streaming**, **Portainer for Docker container management**, and an **Asterisk SIP server for home VoIP**."
       - "Configured core network services, including **Samba for local file sharing**, **nginx as a reverse proxy** for simplified service access, and implemented **fail2ban and firewalld** for enhanced security."
       - "Established a robust data management and remote access strategy using **rsync for automated backups** and **Tailscale** for secure, seamless access to the entire home network from any location."
-
-  - name: AutoCV
-    github: https://github.com/cattyman919/resume
-    github_handle: cattyman919/resume
-    types:
-      - devops
-      - go
-      - custom
-    description: "A dynamic CV generator that builds multiple tailored PDF resumes from a single YAML data source using Go and LaTeX."
-    points:
-      - "**Automated the generation of multiple CV versions** (e.g., DevOps, Full-Stack, IoT) from a single **`cv_data.yaml`** source, ensuring consistency and eliminating manual edits."
-      - "Developed a **Go-based data processor** to parse **YAML** and dynamically generate **LaTeX** files, leveraging templates for different CV styles (e.g., main, black-and-white)."
-      - "Streamlined the build process with a **Makefile**, enabling one-command compilation of all CVs into PDF format via **`pdflatex`**."
 
 skills_achievements:
   "Hard Skills":
