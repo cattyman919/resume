@@ -1,11 +1,11 @@
-use std::io;
+use std::{fs, io};
 
 use crate::types;
 
 const CONFIG_CV_FILE_PATH: &str = "cv_data.yaml";
 
-pub async fn parse_get_cv() -> Result<types::CVData, String> {
-    let config_cv_str = match tokio::fs::read_to_string(CONFIG_CV_FILE_PATH).await {
+pub fn parse_get_cv() -> Result<types::CVData, String> {
+    let config_cv_str = match fs::read_to_string(CONFIG_CV_FILE_PATH) {
         Ok(content) => content,
         Err(e) => {
             let error_message = match e.kind() {

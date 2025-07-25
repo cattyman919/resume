@@ -10,7 +10,7 @@ async fn main() {
     println!("\n==== Generating All LaTeX CV ====\n");
 
     println!("Loading YAML Data...\n");
-    let cv_data: CVData = match config::parse_get_cv().await {
+    let cv_data: CVData = match config::parse_get_cv() {
         Ok(data) => data,
         Err(e) => {
             eprintln!("{e}");
