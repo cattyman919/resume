@@ -1,4 +1,4 @@
-use crate::types::{CVData, Skills};
+use crate::types::{Award, Education, Experience, PersonalInfo, Project, Skills};
 use lazy_static::lazy_static;
 use regex::Regex;
 
@@ -43,8 +43,8 @@ fn generate_highlights(points: &[String]) -> String {
 // --- Section Generators ---
 
 // == Header ==
-pub fn generate_header_main_cv(data: &CVData) -> String {
-    let info = &data.personal_info;
+pub fn generate_header_main_cv(data: &PersonalInfo) -> String {
+    let info = data;
     let website_handle = info.website.replace("https://", "");
     format!(
         r#"\documentclass[../main.tex]{{subfiles}}
@@ -101,8 +101,8 @@ pub fn generate_header_main_cv(data: &CVData) -> String {
     )
 }
 
-pub fn generate_header_bw_cv(data: &CVData) -> String {
-    let info = &data.personal_info;
+pub fn generate_header_bw_cv(data: &PersonalInfo) -> String {
+    let info = data;
     let phone_handle = info.phone.replacen("+62-", "0", 1);
     let website_handle = info.website.replace("https://", "");
     format!(
@@ -156,11 +156,11 @@ pub fn generate_header_bw_cv(data: &CVData) -> String {
 }
 
 // == Experience ==
-pub fn generate_experience_main_cv(data: &CVData) -> String {
+pub fn generate_experience_main_cv(data: &Vec<&Experience>) -> String {
     let mut builder = String::from(
         "\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Experience}\n",
     );
-    for (i, exp) in data.experiences.iter().enumerate() {
+    for (i, exp) in data.iter().enumerate() {
         let role_type = format!(
             "{} ({})",
             escape_latex(&exp.role),
@@ -184,7 +184,7 @@ pub fn generate_experience_main_cv(data: &CVData) -> String {
             role_type,
             generate_highlights(&exp.points)
         ));
-        if i < data.experiences.len() - 1 {
+        if i < data.len() - 1 {
             builder.push_str("\n\\vspace{0.40 cm}\n");
         }
     }
@@ -192,11 +192,11 @@ pub fn generate_experience_main_cv(data: &CVData) -> String {
     builder
 }
 
-pub fn generate_experience_bw_cv(data: &CVData) -> String {
+pub fn generate_experience_bw_cv(data: &Vec<&Experience>) -> String {
     let mut builder = String::from(
         "\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Experience}}\n",
     );
-    for (i, exp) in data.experiences.iter().enumerate() {
+    for (i, exp) in data.iter().enumerate() {
         builder.push_str(&format!(
             r#"
 \begin{{twocolentry}}{{{}}}
@@ -216,7 +216,7 @@ pub fn generate_experience_bw_cv(data: &CVData) -> String {
             escape_latex(&exp.role),
             generate_highlights(&exp.points)
         ));
-        if i < data.experiences.len() - 1 {
+        if i < data.len() - 1 {
             builder.push_str("\n\\vspace{0.4 cm}\n");
         }
     }
@@ -225,11 +225,11 @@ pub fn generate_experience_bw_cv(data: &CVData) -> String {
 }
 
 // == Education ==
-pub fn generate_education_main_cv(data: &CVData) -> String {
+pub fn generate_education_main_cv(data: &Vec<&Education>) -> String {
     let mut builder = String::from(
         "\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Education}\n",
     );
-    for edu in &data.education {
+    for edu in data {
         builder.push_str(&format!(
             r#"
 \begin{{twocolentry}}{{
@@ -250,11 +250,11 @@ pub fn generate_education_main_cv(data: &CVData) -> String {
     builder
 }
 
-pub fn generate_education_bw_cv(data: &CVData) -> String {
+pub fn generate_education_bw_cv(data: &Vec<&Education>) -> String {
     let mut builder = String::from(
         "\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Education}}\n",
     );
-    for edu in &data.education {
+    for edu in data {
         let bold_edu_text = format!(
             r#"\textbf{{{}, {}}}"#,
             escape_latex(&edu.institution),
@@ -283,11 +283,11 @@ pub fn generate_education_bw_cv(data: &CVData) -> String {
 }
 
 // == Awards ==
-pub fn generate_awards_main_cv(data: &CVData) -> String {
+pub fn generate_awards_main_cv(data: &Vec<&Award>) -> String {
     let mut builder = String::from(
         "\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Awards}\n",
     );
-    for (i, award) in data.awards.iter().enumerate() {
+    for (i, award) in data.iter().enumerate() {
         builder.push_str(&format!(
             r#"
 \begin{{twocolentry}}{{
@@ -306,7 +306,7 @@ pub fn generate_awards_main_cv(data: &CVData) -> String {
             escape_latex(&award.organization),
             generate_highlights(&award.points)
         ));
-        if i < data.awards.len() - 1 {
+        if i < data.len() - 1 {
             builder.push_str("\n\\vspace{0.40 cm}\n");
         }
     }
@@ -314,11 +314,11 @@ pub fn generate_awards_main_cv(data: &CVData) -> String {
     builder
 }
 
-pub fn generate_awards_bw_cv(data: &CVData) -> String {
+pub fn generate_awards_bw_cv(data: &Vec<&Award>) -> String {
     let mut builder = String::from(
         "\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Awards}}\n",
     );
-    for (i, award) in data.awards.iter().enumerate() {
+    for (i, award) in data.iter().enumerate() {
         builder.push_str(&format!(
             r#"
 \begin{{twocolentry}}{{
@@ -337,7 +337,7 @@ pub fn generate_awards_bw_cv(data: &CVData) -> String {
             escape_latex(&award.organization),
             generate_highlights(&award.points)
         ));
-        if i < data.awards.len() - 1 {
+        if i < data.len() - 1 {
             builder.push_str("\n\\vspace{0.10 cm}\n");
         }
     }
@@ -346,11 +346,11 @@ pub fn generate_awards_bw_cv(data: &CVData) -> String {
 }
 
 // == Projects ==
-pub fn generate_projects_main_cv(data: &CVData) -> String {
+pub fn generate_projects_main_cv(data: &Vec<&Project>) -> String {
     let mut builder = String::from(
         "\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Projects}\n",
     );
-    for (i, proj) in data.projects.iter().enumerate() {
+    for (i, proj) in data.iter().enumerate() {
         let github_link = format!(
             r#"\href{{{}}}{{{}}}"#,
             escape_latex(&proj.github),
@@ -374,7 +374,7 @@ pub fn generate_projects_main_cv(data: &CVData) -> String {
             escape_latex(&proj.name),
             generate_highlights(&proj.points)
         ));
-        if i < data.projects.len() - 1 {
+        if i < data.len() - 1 {
             builder.push_str("\n\\vspace{0.2 cm}\n");
         }
     }
@@ -382,11 +382,11 @@ pub fn generate_projects_main_cv(data: &CVData) -> String {
     builder
 }
 
-pub fn generate_projects_bw_cv(data: &CVData) -> String {
+pub fn generate_projects_bw_cv(data: &Vec<&Project>) -> String {
     let mut builder = String::from(
         "\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Projects}}\n",
     );
-    for (i, proj) in data.projects.iter().enumerate() {
+    for (i, proj) in data.iter().enumerate() {
         let github_link = format!(
             r#"\href{{{}}}{{{}}}"#,
             escape_latex(&proj.github),
@@ -410,7 +410,7 @@ pub fn generate_projects_bw_cv(data: &CVData) -> String {
             escape_latex(&proj.name),
             generate_highlights(&proj.points)
         ));
-        if i < data.projects.len() - 1 {
+        if i < data.len() - 1 {
             builder.push_str("\n\\vspace{0.2 cm}\n");
         }
     }
@@ -462,16 +462,16 @@ fn generate_skills_achievements(skills: &Skills) -> String {
     builder
 }
 
-pub fn generate_skills_main_cv(data: &CVData) -> String {
-    let section_content = generate_skills_achievements(&data.skills);
+pub fn generate_skills_main_cv(data: &Skills) -> String {
+    let section_content = generate_skills_achievements(data);
     format!(
         "\\documentclass[../main.tex]{{subfiles}}\n\\begin{{document}}\n\\section{{Skills}}\n{}\\end{{document}}",
         section_content
     )
 }
 
-pub fn generate_skills_bw_cv(data: &CVData) -> String {
-    let section_content = generate_skills_achievements(&data.skills);
+pub fn generate_skills_bw_cv(data: &Skills) -> String {
+    let section_content = generate_skills_achievements(data);
     format!(
         "\\documentclass[../main.tex]{{subfiles}}\n\\begin{{document}}\n\\section{{\\sectiontitle[\\Large]{{Skills}}}}\n{}\\end{{document}}",
         section_content

@@ -1,5 +1,6 @@
 mod config;
 mod cv_processor;
+mod latex;
 mod types;
 
 use futures::future::join_all;
@@ -59,7 +60,7 @@ async fn main() {
             let cv_data_clone = Arc::clone(&cv_data);
             tokio::spawn(async move {
                 println!("Processing CV type: {cv_type}");
-                match cv_processor::write_cv(&cv_data_clone, cv_type).await {
+                match cv_processor::write_cv(cv_data_clone, cv_type).await {
                     Ok(_res) => (),
                     Err(e) => {
                         eprintln!("{e}");
@@ -69,7 +70,7 @@ async fn main() {
             })
         })
         .collect::<Vec<_>>();
-    let results = join_all(handles).await;
+    let _results = join_all(handles).await;
 
     println!("==== All LaTeX CV Generation Complete ====\n")
 }
