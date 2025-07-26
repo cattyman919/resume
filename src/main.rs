@@ -4,12 +4,19 @@ mod latex;
 mod types;
 
 use futures::future::join_all;
-use std::{env, io::ErrorKind, process, sync::Arc};
+use std::{env, io::ErrorKind, process, sync::Arc, time::Instant};
 use tokio::fs;
 use types::CVData;
 
 #[tokio::main]
 async fn main() {
+    let benchmark_mode = env::args().any(|arg| arg == "--benchmark");
+    let start_time = if benchmark_mode {
+        Some(Instant::now())
+    } else {
+        None
+    };
+
     println!("\n==== Generating All LaTeX CV ====\n");
 
     let debug_mode = env::args().any(|arg| arg == "--debug");
@@ -76,5 +83,9 @@ async fn main() {
 
     let _ = cv_processor::move_aux_files().await;
 
-    println!("\n==== All LaTeX CV Generation Complete ====\n")
+    println!("\n==== All LaTeX CV Generation Complete ====\n");
+
+    if let Some(start) = start_time {
+        println!("Total time taken: {:?}", start.elapsed());
+    }
 }
