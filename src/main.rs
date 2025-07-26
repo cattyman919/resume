@@ -2,9 +2,10 @@ mod config;
 mod cv_processor;
 mod types;
 
-use crate::types::CVData;
-use std::{io::ErrorKind, process};
+use futures::future::join_all;
+use std::{io::ErrorKind, process, sync::Arc};
 use tokio::fs;
+use types::CVData;
 
 #[tokio::main]
 async fn main() {
@@ -40,6 +41,8 @@ async fn main() {
         }
     };
 
+    let cv_data = Arc::new(cv_data);
+
     println!("Getting Total CV Types...");
     let all_cv_types = match cv_processor::get_all_cv_types(&cv_data).await {
         Ok(data) => data,
@@ -50,15 +53,23 @@ async fn main() {
     };
 
     println!("All CV Types: {:?}", all_cv_types);
+    let handles = all_cv_types
+        .into_iter()
+        .map(|cv_type| {
+            let cv_data_clone = Arc::clone(&cv_data);
+            tokio::spawn(async move {
+                println!("Processing CV type: {cv_type}");
+                match cv_processor::write_cv(&cv_data_clone, cv_type).await {
+                    Ok(_res) => (),
+                    Err(e) => {
+                        eprintln!("{e}");
+                        process::exit(1)
+                    }
+                };
+            })
+        })
+        .collect::<Vec<_>>();
+    let results = join_all(handles).await;
 
-    for cv_type in all_cv_types.iter() {
-        println!("Processing CV type: {cv_type}");
-        match cv_processor::write_cv(cv_type).await {
-            Ok(_res) => (),
-            Err(e) => {
-                eprintln!("{e}");
-                process::exit(1)
-            }
-        };
-    }
+    println!("==== All LaTeX CV Generation Complete ====\n")
 }

@@ -31,31 +31,40 @@ where
     total_types.lock().await.extend(local_types);
 }
 
-pub async fn write_cv(cv_type: &str) -> io::Result<()> {
+pub async fn write_cv(cv_data: &CVData, cv_type: String) -> io::Result<()> {
     let main_path = format!("cv/{cv_type}/main_cv");
     let bw_path = format!("cv/{cv_type}/bw_cv");
 
-    copy_dir_recursively("template_cv/main_cv", main_path).await?;
-    copy_dir_recursively("template_cv/bw_cv", bw_path).await?;
+    copy_dir_recursively(Path::new("template_cv/main_cv"), Path::new(&main_path)).await?;
+    copy_dir_recursively(Path::new("template_cv/bw_cv"), Path::new(&bw_path)).await?;
+
+    let filtered_experiences: Vec<_> = cv_data
+        .experiences
+        .iter()
+        .filter(|e| e.cv_types.contains(&cv_type))
+        .collect();
+
+    let filtered_projects: Vec<_> = cv_data
+        .projects
+        .iter()
+        .filter(|e| e.cv_types.contains(&cv_type))
+        .collect();
 
     Ok(())
 }
 
-async fn copy_dir_recursively<P: AsRef<Path>, Q: AsRef<Path>>(from: P, to: Q) -> io::Result<()> {
-    let from_path = from.as_ref();
-    let to_path = to.as_ref();
+async fn copy_dir_recursively(from: &Path, to: &Path) -> io::Result<()> {
+    fs::create_dir_all(to).await?;
 
-    fs::create_dir_all(&to_path).await?;
-
-    let mut reader = fs::read_dir(from_path).await?;
+    let mut reader = fs::read_dir(from).await?;
 
     while let Some(entry) = reader.next_entry().await? {
         let file_type = entry.file_type().await?;
 
-        let to_path_entry = to_path.join(entry.file_name());
+        let to_path_entry = to.join(entry.file_name());
 
         if file_type.is_dir() {
-            Box::pin(copy_dir_recursively(entry.path(), &to_path_entry)).await?;
+            Box::pin(copy_dir_recursively(&entry.path(), &to_path_entry)).await?;
         } else {
             fs::copy(entry.path(), &to_path_entry).await?;
         }
