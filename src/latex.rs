@@ -8,19 +8,24 @@ lazy_static! {
     static ref BOLD_REGEX: Regex = Regex::new(r"\*\*(.*?)\*\*").unwrap();
 }
 
+/// Escapes special LaTeX characters in a string.
+/// The order of replacement is crucial, especially for the backslash.
 fn escape_latex(text: &str) -> String {
-    text.replace('&', "\\&")
-        .replace('%', "\\%")
-        .replace('$', "\\$")
-        .replace('#', "\\#")
-        .replace('_', "\\_")
-        .replace('{', "\\{")
-        .replace('}', "\\}")
-        .replace('~', "\\textasciitilde{}")
-        .replace('^', "\\textasciicircum{}")
-        .replace('\\', "\\textbackslash{}")
+    text
+        // FIX: Backslash must be escaped FIRST.
+        .replace('\\', r"\textbackslash{}")
+        .replace('&', r"\&")
+        .replace('%', r"\%")
+        .replace('$', r"\$")
+        .replace('#', r"\#")
+        .replace('_', r"\_")
+        .replace('{', r"\{")
+        .replace('}', r"\}")
+        .replace('~', r"\textasciitilde{}")
+        .replace('^', r"\textasciicircum{}")
 }
 
+/// Finds markdown-style bold text (**text**) and converts it to LaTeX \textbf{text}.
 fn format_latex_bold(text: &str) -> String {
     let escaped_text = escape_latex(text);
     BOLD_REGEX
@@ -28,6 +33,7 @@ fn format_latex_bold(text: &str) -> String {
         .to_string()
 }
 
+/// Generates a \begin{highlights} ... \end{highlights} block.
 fn generate_highlights(points: &[String]) -> String {
     if points.is_empty() {
         return String::new();

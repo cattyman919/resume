@@ -4,13 +4,15 @@ mod latex;
 mod types;
 
 use futures::future::join_all;
-use std::{io::ErrorKind, process, sync::Arc};
+use std::{env, io::ErrorKind, process, sync::Arc};
 use tokio::fs;
 use types::CVData;
 
 #[tokio::main]
 async fn main() {
     println!("\n==== Generating All LaTeX CV ====\n");
+
+    let debug_mode = env::args().any(|arg| arg == "--debug");
 
     println!("Creating out & cv directory...");
 
@@ -60,7 +62,7 @@ async fn main() {
             let cv_data_clone = Arc::clone(&cv_data);
             tokio::spawn(async move {
                 println!("Processing CV type: {cv_type}");
-                match cv_processor::write_cv(cv_data_clone, cv_type).await {
+                match cv_processor::write_cv(cv_data_clone, cv_type, debug_mode).await {
                     Ok(_res) => (),
                     Err(e) => {
                         eprintln!("{e}");
@@ -72,5 +74,7 @@ async fn main() {
         .collect::<Vec<_>>();
     let _results = join_all(handles).await;
 
-    println!("==== All LaTeX CV Generation Complete ====\n")
+    let _ = cv_processor::move_aux_files().await;
+
+    println!("\n==== All LaTeX CV Generation Complete ====\n")
 }
