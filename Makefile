@@ -32,6 +32,9 @@ run:
 run_debug:
 	go run cmd/resume/main.go --debug
 
+run_benchmark:
+	go run cmd/resume/main.go --benchmark
+
 clean:
 	@echo "Cleaning up..."
 	$(RM) out

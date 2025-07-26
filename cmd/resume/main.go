@@ -9,6 +9,7 @@ import (
 	model "resume/internals/model"
 	"resume/internals/parse"
 	"sync"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -19,7 +20,13 @@ const (
 
 func main() {
 	debug := flag.Bool("debug", false, "Enable debug output for pdflatex")
+	benchmark := flag.Bool("benchmark", false, "Run benchmark for the main process")
 	flag.Parse()
+
+	var startTime time.Time
+	if *benchmark {
+		startTime = time.Now()
+	}
 
 	builder.DebugMode = *debug
 
@@ -57,4 +64,10 @@ func main() {
 	builder.MoveAuxFiles()
 
 	fmt.Printf("==== All LaTeX CV Generation Complete ====\n")
+
+	if *benchmark {
+		elapsed := time.Since(startTime)
+		fmt.Printf("\n==== Benchmark Result ====\n")
+		fmt.Printf("Total execution time: %s\n", elapsed)
+	}
 }
