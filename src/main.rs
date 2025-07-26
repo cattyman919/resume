@@ -83,7 +83,7 @@ async fn main() {
 
     let _ = cv_processor::move_aux_files().await;
 
-    println!("\n==== All LaTeX CV Generation Complete ====\n");
+    println!("\n==== All LaTeX CV Generation Complete ====");
 
     if let Some(start) = start_time {
         println!("Total time taken: {:?}", start.elapsed());

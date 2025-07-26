@@ -27,10 +27,13 @@ docker: $(TARGET)
 
 # Better for development (Local Build)
 run:
-	go run cmd/resume/main.go
+	cargo run
 
 run_debug:
-	go run cmd/resume/main.go --debug
+	cargo run -- --debug
+
+run_benchmark:
+	cargo run -- --benchmark
 
 clean:
 	@echo "Cleaning up..."
