@@ -91,13 +91,13 @@ pub trait HasCvTypes {
     fn cv_types(&self) -> &Vec<String>;
 }
 
-impl HasCvTypes for &Experience {
+impl HasCvTypes for Experience {
     fn cv_types(&self) -> &Vec<String> {
         &self.cv_types
     }
 }
 
-impl HasCvTypes for &Project {
+impl HasCvTypes for Project {
     fn cv_types(&self) -> &Vec<String> {
         &self.cv_types
     }
