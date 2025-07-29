@@ -1,4 +1,4 @@
-package builder
+package generator
 
 import (
 	"fmt"
@@ -8,8 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"resume/internals/latex"
-	model "resume/internals/model"
+	"resume/internals/resume"
 	"slices"
 	"strings"
 	"sync"
@@ -88,7 +87,7 @@ func copyDir(src, dst string, wg *sync.WaitGroup) error {
 	})
 }
 
-func Write_CV(cvType string, cvData model.CVData, wgParent *sync.WaitGroup) {
+func Write_CV(cvType string, cvData resume.CVData, wgParent *sync.WaitGroup) {
 	defer wgParent.Done()
 
 	fmt.Printf("Generating CV (%s)\n", cvType)
@@ -103,7 +102,7 @@ func Write_CV(cvType string, cvData model.CVData, wgParent *sync.WaitGroup) {
 	go copyDir("template_cv/bw_cv", bwPath, &wg)
 
 	// Filter experiences and projects based on cvType
-	var filteredExperiences []model.Experience
+	var filteredExperiences []resume.Experience
 	for _, exp := range cvData.Experiences {
 
 		// if types is empty, dont add it at all to the CV
@@ -118,7 +117,7 @@ func Write_CV(cvType string, cvData model.CVData, wgParent *sync.WaitGroup) {
 
 	cvData.Experiences = filteredExperiences
 
-	var filteredProjects []model.Project
+	var filteredProjects []resume.Project
 	for _, proj := range cvData.Projects {
 
 		// if types is empty, dont add it at all to the CV
@@ -132,16 +131,16 @@ func Write_CV(cvType string, cvData model.CVData, wgParent *sync.WaitGroup) {
 	}
 	cvData.Projects = filteredProjects
 
-	type generate_section func(model.CVData) string
+	type generate_section func(resume.CVData) string
 
 	// maps section to main and bw functions
 	sections := map[string][2]generate_section{
-		"Header.tex":             {latex.GenerateHeaderMainCV, latex.GenerateHeaderBwCV},
-		"Experience.tex":         {latex.GenerateExperienceMainCV, latex.GenerateExperienceBwCV},
-		"Education.tex":          {latex.GenerateEducationMainCV, latex.GenerateEducationBwCV},
-		"Awards.tex":             {latex.GenerateAwardsMainCV, latex.GenerateAwardsBwCV},
-		"Projects.tex":           {latex.GenerateProjectsMainCV, latex.GenerateProjectsBwCV},
-		"Achivements_Skills.tex": {latex.GenerateSkillsMainCV, latex.GenerateSkillsBwCV},
+		"Header.tex":             {GenerateHeaderMainCV, GenerateHeaderBwCV},
+		"Experience.tex":         {GenerateExperienceMainCV, GenerateExperienceBwCV},
+		"Education.tex":          {GenerateEducationMainCV, GenerateEducationBwCV},
+		"Awards.tex":             {GenerateAwardsMainCV, GenerateAwardsBwCV},
+		"Projects.tex":           {GenerateProjectsMainCV, GenerateProjectsBwCV},
+		"Achivements_Skills.tex": {GenerateSkillsMainCV, GenerateSkillsBwCV},
 	}
 
 	// Waits for the copying files from template_cv to the specific cv type directory

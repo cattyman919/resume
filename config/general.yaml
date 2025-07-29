@@ -30,15 +30,16 @@ skills_achievements:
     - C
     - "C#"
     - C++
+    - Go
+    - Javascript
     - HTML
     - CSS
-    - Javascript
     - Python
     - Typescript
     - Java
-    - Go
     - PHP
     - Dart
+    - Rust
   "Database Languages":
     - PostgreSQL
     - MySQL

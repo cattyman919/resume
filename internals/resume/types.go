@@ -1,4 +1,4 @@
-package types
+package resume
 
 // --- Data Structures for YAML Unmarshaling ---
 type PersonalInfo struct {
