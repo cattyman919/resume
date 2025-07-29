@@ -4,11 +4,11 @@
   cv_type:
     - devops
     - go
-  description: "A dynamic CV generator that builds multiple tailored PDF resumes from a single YAML data source using Go and LaTeX."
+  description: "A dynamic CV generator that builds multiple tailored PDF resumes from a modular YAML data source using **Go** and **LaTeX**."
   points:
-    - "**Automated the generation of multiple CV versions** (e.g., DevOps, Full-Stack, IoT) from a single **`cv_data.yaml`** source, ensuring consistency and eliminating manual edits."
-    - "**Implemented concurrent processing using Go's goroutines and `sync.WaitGroup`** to parallelize the generation of multiple CV versions and formats, **significantly reducing build time**."
-    - "**Ensured thread-safe data aggregation** by using **`sync.Mutex`** to protect shared data structures from race conditions during concurrent YAML parsing operations."
+    - "Streamlined CV creation by developing a tool that generates **multiple customized PDF versions** from a modular data source split across three YAML files (`general`, `experiences`, `projects`), eliminating repetitive manual editing."
+    - "Engineered a **concurrent build process** using **Go's goroutines and waitgroups**, significantly cutting down generation time for multiple CVs."
+    - "Containerized the entire build environment with **Docker**, ensuring consistent and reproducible builds across different machines."
 
 - name: MovieDB Showcase
   github: https://github.com/cattyman919/movies
