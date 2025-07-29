@@ -131,7 +131,7 @@ func Write_CV(cvType string, cvData resume.CVData, wgParent *sync.WaitGroup) {
 	}
 	cvData.Projects = filteredProjects
 
-	type generate_section func(resume.CVData) string
+	type generate_section func(*resume.CVData) string
 
 	// maps section to main and bw functions
 	sections := map[string][2]generate_section{
@@ -158,8 +158,8 @@ func Write_CV(cvType string, cvData resume.CVData, wgParent *sync.WaitGroup) {
 		mainPath := filepath.Join("cv", cvType, mainCVSectionsDir, section)
 		bwPath := filepath.Join("cv", cvType, bwCVSectionsDir, section)
 
-		go writeTexFile(mainPath, function[0](cvData), &wg, outputChan)
-		go writeTexFile(bwPath, function[1](cvData), &wg, outputChan)
+		go writeTexFile(mainPath, function[0](&cvData), &wg, outputChan)
+		go writeTexFile(bwPath, function[1](&cvData), &wg, outputChan)
 	}
 
 	go func() {
@@ -173,15 +173,15 @@ func Write_CV(cvType string, cvData resume.CVData, wgParent *sync.WaitGroup) {
 	}
 
 	wg.Add(2)
-	go write_PDF(&cvType, "main", &wg)
-	go write_PDF(&cvType, "bw", &wg)
+	go write_PDF(&cvType, &cvData.General.PersonalInfo.Name, "main", &wg)
+	go write_PDF(&cvType, &cvData.General.PersonalInfo.Name, "bw", &wg)
 	wg.Wait()
 }
 
-func write_PDF(cvType *string, type_bw_main string, wg *sync.WaitGroup) {
+func write_PDF(cvType *string, name *string, type_bw_main string, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	target_pdf := fmt.Sprintf("Seno Pamungkas Rahman - CV (%s) (%s)", *cvType, strings.ToUpper(type_bw_main))
+	target_pdf := fmt.Sprintf("%s - CV (%s) (%s)", *name, *cvType, strings.ToUpper(type_bw_main))
 
 	program := "pdflatex"
 	args := []string{
