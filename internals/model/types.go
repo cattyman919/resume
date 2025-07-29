@@ -61,11 +61,23 @@ type SkillsAchievements struct {
 	Certificates         []Certificate `yaml:"Certificates"`
 }
 
-type CVData struct {
+type CV_General struct {
 	PersonalInfo       PersonalInfo       `yaml:"personal_info"`
-	Experiences        []Experience       `yaml:"experiences"`
+	SkillsAchievements SkillsAchievements `yaml:"skills_achievements"`
 	Education          []Education        `yaml:"education"`
 	Awards             []Award            `yaml:"awards"`
-	Projects           []Project          `yaml:"projects"`
-	SkillsAchievements SkillsAchievements `yaml:"skills_achievements"`
+}
+
+type CV_Projects struct {
+	Projects []Project `yaml:"projects"`
+}
+
+type CV_Experiences struct {
+	Experiences []Experience `yaml:"experiences"`
+}
+
+type CVData struct {
+	General     *CV_General
+	Projects    CV_Projects
+	Experiences CV_Experiences
 }

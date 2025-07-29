@@ -1,0 +1,81 @@
+experiences:
+  - company: Superbank
+    location: Jakarta Selatan
+    role: Technical Support
+    dates: December 2024 - June 2025
+    job_type: Internship
+    cv_type:
+      - main
+      - fullstack
+      - devops
+      - iot
+      - go
+      - custom
+    points:
+      - "**Managed end-to-end deployment** of vendor-provided scripts across **AWS EC2** (Dev/Staging) via **S3 bucket integration**, **WinSCP** file transfers, and **XML configuration adjustments**."
+      - "**Automated deployment workflows** by developing a **PowerShell script** to extract ZIP files and **configuration for deployment processes**, **reducing manual effort by 40%** and accelerating deployment cycles."
+      - "**Resolved production incidents** (e.g., CPU spikes, SQL query bottlenecks) by acting as a technical liaison, **analyzing root causes**, and **escalating issues** via **Jira tickets** to cross-functional teams."
+
+  - company: PT XL Axiata Tbk
+    location: Jakarta Selatan
+    role: "Fixed Connectivity, ICT & Cloud"
+    dates: February 2024 - June 2024
+    job_type: Internship
+    cv_type:
+      - main
+      - fullstack
+      - devops
+      - iot
+      - go
+      - custom
+    points:
+      - "Conducted **comprehensive market research** and **data scraping** using **Python**, **BeautifulSoup**, and **Pandas** to identify **growth opportunities** and assess the competitive landscape for satellite products."
+      - "Presented **data-driven findings** and **strategic recommendations** to mentors and senior management to support **informed business strategy** and **product development**."
+      - "Collaborated closely with **cross-functional teams** to ensure timely completion of tasks and seamless **integration of research insights** into project outcomes."
+
+  - company: PT Bank Victoria International
+    location: Jakarta Selatan
+    role: Fullstack Web Developer
+    dates: September 2023 - November 2023
+    job_type: Internship
+    cv_type:
+      - devops
+      - main
+      - fullstack
+      - iot
+      - go
+      - custom
+    points:
+      - "Developed **dynamic journal booking tables** on the frontend with **Flutter**, integrating advanced **filtering** (by date and booking type), **pagination**, and **soft deletion** functionalities."
+      - "**Integrated the Flutter frontend with backend APIs built in NestJS** and maintained data consistency with **MySQL**, ensuring accurate real-time accounting records."
+      - "Executed **targeted database queries** to correct and optimize data integrity, working in close collaboration with teams to align front-end displays with updated backend data."
+
+  - company: MileApp
+    location: Jakarta Barat
+    role: Frontend Web Developer
+    dates: September 2022 - October 2022
+    job_type: Internship
+    cv_type:
+      - devops
+      - iot
+      - main
+      - fullstack
+      - go
+      - custom
+    points:
+      - "**Rebuilt and redesigned** critical web pages (**landing, login, and registration**) from scratch using **React** and **styled-components**, contributing to a major UI overhaul aimed at **improving user experience and performance** for field agents and administrators."
+      - "Collaborated remotely with supervisors to integrate the new **React-based frontend** with the platform’s evolving product direction, **replacing legacy code with scalable, maintainable components**."
+
+  - company: Furaha System
+    location: Tangerang Selatan
+    role: Frontend Web Developer
+    dates: February 2021 - October 2022
+    job_type: Part-time
+    cv_type:
+      - main
+      - fullstack
+      - go
+      - custom
+    points:
+      - "Engineered **complex exam pages** for a comprehensive E-Learning platform using **Next.js**, incorporating **navigation bars**, **dynamic question-sidebars**, and **real-time answer tracking**."
+      - "Collaborated with **cross-functional teams** and **maintained regular progress updates**, ensuring alignment with project milestones and timely delivery of platform enhancements."

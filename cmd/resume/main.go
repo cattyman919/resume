@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"resume/internals/builder"
 	model "resume/internals/model"
@@ -15,8 +14,73 @@ import (
 )
 
 const (
-	dataFile = "cv_data.yaml"
+	CV_GENERAL_DATA_PATH     = "config/general.yaml"
+	CV_PROJECTS_DATA_PATH    = "config/projects.yaml"
+	CV_EXPERIENCES_DATA_PATH = "config/experiences.yaml"
 )
+
+func loadYAMLData(wg *sync.WaitGroup) (model.CVData, error) {
+	var cvData_general = new(model.CV_General)
+	var cvData_projects = new(model.CV_Projects)
+	var cvData_experiences = new(model.CV_Experiences)
+	var err_channel = make(chan error, 3)
+
+	wg.Add(3)
+	go func() {
+		defer wg.Done()
+		byteValue, err := os.ReadFile(CV_GENERAL_DATA_PATH)
+		if err != nil {
+			err_channel <- err
+			return
+		}
+
+		if err := yaml.Unmarshal(byteValue, cvData_general); err != nil {
+			err_channel <- err
+			return
+		}
+	}()
+	go func() {
+		defer wg.Done()
+		byteValue, err := os.ReadFile(CV_EXPERIENCES_DATA_PATH)
+		if err != nil {
+			err_channel <- err
+			return
+		}
+
+		if err := yaml.Unmarshal(byteValue, cvData_experiences); err != nil {
+			err_channel <- err
+			return
+		}
+	}()
+	go func() {
+		defer wg.Done()
+		byteValue, err := os.ReadFile(CV_PROJECTS_DATA_PATH)
+		if err != nil {
+			err_channel <- err
+			return
+		}
+
+		if err := yaml.Unmarshal(byteValue, cvData_projects); err != nil {
+			err_channel <- err
+			return
+		}
+	}()
+	wg.Wait()
+
+	close(err_channel)
+
+	for err := range err_channel {
+		if err != nil {
+			return model.CVData{}, err
+		}
+	}
+
+	return model.CVData{
+		General:     cvData_general,
+		Projects:    *cvData_projects,
+		Experiences: *cvData_experiences,
+	}, nil
+}
 
 func main() {
 	debug := flag.Bool("debug", false, "Enable debug output for pdflatex")
@@ -33,25 +97,22 @@ func main() {
 	fmt.Printf("\n==== Generating All LaTeX CV ====\n")
 
 	fmt.Printf("Loading YAML Data...\n")
+	var wg sync.WaitGroup
 
-	// Load data from YAML file
-	byteValue, err := os.ReadFile(dataFile)
+	cvData, err := loadYAMLData(&wg)
 	if err != nil {
-		log.Fatalf("Error: Data file not found at %s: %v", dataFile, err)
+		fmt.Printf("Error loading YAML data: %v\n", err)
+		return
 	}
 
-	var cvData model.CVData
-	if err := yaml.Unmarshal(byteValue, &cvData); err != nil {
-		log.Fatalf("Error decoding YAML from %s: %v", dataFile, err)
-	}
+	fmt.Printf("YAML Data Loaded Successfully!\n")
 
 	// Hash Set to get total types in the YAML config
 	total_types := make(map[string]struct{})
 
-	var wg sync.WaitGroup
 	var mu sync.Mutex
 
-	parse.GetTotalTypes(total_types, cvData, &wg, &mu)
+	parse.GetTotalTypes(total_types, cvData.Experiences, cvData.Projects, &wg, &mu)
 
 	wg.Add(len(total_types))
 

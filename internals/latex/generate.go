@@ -46,7 +46,7 @@ func GenerateHighlights(points []string) string {
 
 // == Header ==
 func GenerateHeaderMainCV(data model.CVData) string {
-	info := data.PersonalInfo
+	info := data.General.PersonalInfo
 	return fmt.Sprintf(`\documentclass[../main.tex]{subfiles}
 \begin{document}
 \begin{header}
@@ -90,7 +90,7 @@ func GenerateHeaderMainCV(data model.CVData) string {
 
 func GenerateHeaderBwCV(data model.CVData) string {
 
-	info := data.PersonalInfo
+	info := data.General.PersonalInfo
 	return fmt.Sprintf(`\documentclass[../main.tex]{subfiles}
 \begin{document}
 \begin{header}
@@ -130,7 +130,7 @@ func GenerateExperienceMainCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Experience}\n")
-	for i, exp := range data.Experiences {
+	for i, exp := range data.Experiences.Experiences {
 		roleType := fmt.Sprintf("%s (%s)", escapeLatex(exp.Role), escapeLatex(exp.JobType))
 		builder.WriteString(fmt.Sprintf(`
 \begin{twocolentry}{%s}
@@ -143,7 +143,7 @@ func GenerateExperienceMainCV(data model.CVData) string {
 %s
 \end{onecolentry}
 `, escapeLatex(exp.Dates), escapeLatex(exp.Company), escapeLatex(exp.Location), roleType, GenerateHighlights(exp.Points)))
-		if i < len(data.Experiences)-1 {
+		if i < len(data.Experiences.Experiences)-1 {
 			builder.WriteString("\n\\vspace{0.40 cm}\n")
 		}
 	}
@@ -155,7 +155,7 @@ func GenerateExperienceBwCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Experience}}\n")
-	for i, exp := range data.Experiences {
+	for i, exp := range data.Experiences.Experiences {
 		builder.WriteString(fmt.Sprintf(`
 \begin{twocolentry}{%s}
     \sectiontitle{%s} \location{-- %s}\\
@@ -168,7 +168,7 @@ func GenerateExperienceBwCV(data model.CVData) string {
 %s
 \end{onecolentry}
 `, escapeLatex(exp.Dates), escapeLatex(exp.Company), escapeLatex(exp.Location), escapeLatex(exp.Role), GenerateHighlights(exp.Points)))
-		if i < len(data.Experiences)-1 {
+		if i < len(data.Experiences.Experiences)-1 {
 			builder.WriteString("\n\\vspace{0.4 cm}\n")
 		}
 	}
@@ -181,7 +181,7 @@ func GenerateEducationMainCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Education}\n")
-	for _, edu := range data.Education {
+	for _, edu := range data.General.Education {
 		builder.WriteString(fmt.Sprintf(`
 \begin{twocolentry}{
     \small
@@ -200,7 +200,7 @@ func GenerateEducationBwCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Education}}\n")
-	for _, edu := range data.Education {
+	for _, edu := range data.General.Education {
 		boldEduText := fmt.Sprintf(`\textbf{%s, %s}`, escapeLatex(edu.Institution), escapeLatex(edu.Degree))
 		builder.WriteString(fmt.Sprintf(`
 \begin{twocolentry}{
@@ -222,7 +222,7 @@ func GenerateAwardsMainCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Awards}\n")
-	for i, award := range data.Awards {
+	for i, award := range data.General.Awards {
 		builder.WriteString(fmt.Sprintf(`
 \begin{twocolentry}{
     \textit{%s}
@@ -235,7 +235,7 @@ func GenerateAwardsMainCV(data model.CVData) string {
 %s
 \end{onecolentry}
 `, escapeLatex(award.Date), escapeLatex(award.Title), escapeLatex(award.Organization), GenerateHighlights(award.Points)))
-		if i < len(data.Awards)-1 {
+		if i < len(data.General.Awards)-1 {
 			builder.WriteString("\n\\vspace{0.40 cm}\n")
 		}
 	}
@@ -247,7 +247,7 @@ func GenerateAwardsBwCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Awards}}\n")
-	for i, award := range data.Awards {
+	for i, award := range data.General.Awards {
 		builder.WriteString(fmt.Sprintf(`
 \begin{twocolentry}{
     %s
@@ -260,7 +260,7 @@ func GenerateAwardsBwCV(data model.CVData) string {
 %s
 \end{onecolentry}
 `, escapeLatex(award.Date), escapeLatex(award.Title), escapeLatex(award.Organization), GenerateHighlights(award.Points)))
-		if i < len(data.Awards)-1 {
+		if i < len(data.General.Awards)-1 {
 			builder.WriteString("\n\\vspace{0.10 cm}\n")
 		}
 	}
@@ -273,7 +273,7 @@ func GenerateProjectsMainCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Projects}\n")
-	for i, proj := range data.Projects {
+	for i, proj := range data.Projects.Projects {
 		githubLink := fmt.Sprintf(`\href{%s}{%s}`, escapeLatex(proj.Github), escapeLatex(proj.GithubHandle))
 		builder.WriteString(fmt.Sprintf(`
 \begin{twocolentry}{
@@ -288,7 +288,7 @@ func GenerateProjectsMainCV(data model.CVData) string {
 %s
 \end{onecolentry}
 `, githubLink, escapeLatex(proj.Name), GenerateHighlights(proj.Points)))
-		if i < len(data.Projects)-1 {
+		if i < len(data.Projects.Projects)-1 {
 			builder.WriteString("\n\\vspace{0.2 cm}\n")
 		}
 	}
@@ -300,7 +300,7 @@ func GenerateProjectsBwCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Projects}}\n")
-	for i, proj := range data.Projects {
+	for i, proj := range data.Projects.Projects {
 		githubLink := fmt.Sprintf(`\href{%s}{%s}`, escapeLatex(proj.Github), escapeLatex(proj.GithubHandle))
 		builder.WriteString(fmt.Sprintf(`
 \begin{twocolentry}{
@@ -315,7 +315,7 @@ func GenerateProjectsBwCV(data model.CVData) string {
 %s
 \end{onecolentry}
 `, githubLink, escapeLatex(proj.Name), GenerateHighlights(proj.Points)))
-		if i < len(data.Projects)-1 {
+		if i < len(data.Projects.Projects)-1 {
 			builder.WriteString("\n\\vspace{0.2 cm}\n")
 		}
 	}
@@ -325,7 +325,7 @@ func GenerateProjectsBwCV(data model.CVData) string {
 
 // == Achievements & Skills ==
 func GenerateSkillsAchievements(data model.CVData) string {
-	skills := data.SkillsAchievements
+	skills := data.General.SkillsAchievements
 	var builder strings.Builder
 	builder.WriteString("\\begin{highlights}\n")
 	builder.WriteString(fmt.Sprintf("    \\item \\textbf{Hard Skill:} %s\n", escapeLatex(strings.Join(skills.HardSkills, ", "))))
