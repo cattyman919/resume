@@ -107,11 +107,11 @@ func Write_CV(cvType string, cvData model.CVData, wgParent *sync.WaitGroup) {
 	for _, exp := range cvData.Experiences {
 
 		// if types is empty, dont add it at all to the CV
-		if len(exp.Types) == 0 {
+		if len(exp.JobType) == 0 {
 			continue
 		}
 
-		if slices.Contains(exp.Types, cvType) {
+		if slices.Contains(exp.CVType, cvType) {
 			filteredExperiences = append(filteredExperiences, exp)
 		}
 	}
@@ -122,11 +122,11 @@ func Write_CV(cvType string, cvData model.CVData, wgParent *sync.WaitGroup) {
 	for _, proj := range cvData.Projects {
 
 		// if types is empty, dont add it at all to the CV
-		if len(proj.Types) == 0 {
+		if len(proj.CVType) == 0 {
 			continue
 		}
 
-		if slices.Contains(proj.Types, cvType) {
+		if slices.Contains(proj.CVType, cvType) {
 			filteredProjects = append(filteredProjects, proj)
 		}
 	}

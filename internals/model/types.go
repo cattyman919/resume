@@ -16,12 +16,12 @@ type PersonalInfo struct {
 
 type Experience struct {
 	Role     string   `yaml:"role"`
-	Type     string   `yaml:"type"`
+	JobType  string   `yaml:"job_type"`
 	Company  string   `yaml:"company"`
 	Location string   `yaml:"location"`
 	Dates    string   `yaml:"dates"`
 	Points   []string `yaml:"points"`
-	Types    []string `yaml:"types"`
+	CVType   []string `yaml:"cv_type"`
 }
 
 type Education struct {
@@ -44,7 +44,7 @@ type Project struct {
 	Github       string   `yaml:"github"`
 	GithubHandle string   `yaml:"github_handle"`
 	Points       []string `yaml:"points"`
-	Types        []string `yaml:"types"`
+	CVType       []string `yaml:"cv_type"`
 }
 
 type Certificate struct {

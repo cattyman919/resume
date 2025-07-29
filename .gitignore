@@ -1,6 +1,8 @@
 *.log
 *.aux
 repomix*
-cv/*
+cv
+.git
 bin/*
 .aider*
+target

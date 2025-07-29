@@ -131,7 +131,7 @@ func GenerateExperienceMainCV(data model.CVData) string {
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Experience}\n")
 	for i, exp := range data.Experiences {
-		roleType := fmt.Sprintf("%s (%s)", escapeLatex(exp.Role), escapeLatex(exp.Type))
+		roleType := fmt.Sprintf("%s (%s)", escapeLatex(exp.Role), escapeLatex(exp.JobType))
 		builder.WriteString(fmt.Sprintf(`
 \begin{twocolentry}{%s}
     \textbf{%s \color{Gray}- %s}\\

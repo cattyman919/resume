@@ -19,9 +19,9 @@ func getTypes[T model.Experience | model.Project](total_types map[string]struct{
 
 		switch v := any(item).(type) {
 		case model.Experience:
-			types = v.Types
+			types = v.CVType
 		case model.Project:
-			types = v.Types
+			types = v.CVType
 		}
 
 		if len(types) == 0 {
