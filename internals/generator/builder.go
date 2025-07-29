@@ -115,7 +115,10 @@ func Write_CV(cvType string, cvData resume.CVData, wgParent *sync.WaitGroup) {
 		}
 	}
 
-	cvData.Experiences = filteredExperiences
+	// If type is not empty in expereinces, the use the filtered experiences. else use the original experiences
+	if filteredExperiences != nil {
+		cvData.Experiences = filteredExperiences
+	}
 
 	var filteredProjects []resume.Project
 	for _, proj := range cvData.Projects {
@@ -129,7 +132,11 @@ func Write_CV(cvType string, cvData resume.CVData, wgParent *sync.WaitGroup) {
 			filteredProjects = append(filteredProjects, proj)
 		}
 	}
-	cvData.Projects = filteredProjects
+
+	// If type is not empty in projects, the use the filtered projects. else use the original projects
+	if filteredProjects != nil {
+		cvData.Projects = filteredProjects
+	}
 
 	type generate_section func(*resume.CVData) string
 
