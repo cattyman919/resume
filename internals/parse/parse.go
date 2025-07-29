@@ -5,16 +5,16 @@ import (
 	"sync"
 )
 
-func GetTotalTypes(total_types map[string]struct{}, cvData_experiences model.CV_Experiences, cvData_projects model.CV_Projects, wg *sync.WaitGroup, mu *sync.Mutex) {
+func GetTotalTypes(total_types map[string]struct{}, cvData_experiences *[]model.Experience, cvData_projects *[]model.Project, wg *sync.WaitGroup, mu *sync.Mutex) {
 	wg.Add(2)
-	go getTypes(total_types, cvData_experiences.Experiences, wg, mu)
-	go getTypes(total_types, cvData_projects.Projects, wg, mu)
+	go getTypes(total_types, cvData_experiences, wg, mu)
+	go getTypes(total_types, cvData_projects, wg, mu)
 	wg.Wait()
 }
 
-func getTypes[T model.Experience | model.Project](total_types map[string]struct{}, items []T, wg *sync.WaitGroup, mu *sync.Mutex) {
+func getTypes[T model.Experience | model.Project](total_types map[string]struct{}, items *[]T, wg *sync.WaitGroup, mu *sync.Mutex) {
 	defer wg.Done()
-	for _, item := range items {
+	for _, item := range *items {
 		var types []string
 
 		switch v := any(item).(type) {

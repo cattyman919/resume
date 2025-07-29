@@ -130,7 +130,7 @@ func GenerateExperienceMainCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Experience}\n")
-	for i, exp := range data.Experiences.Experiences {
+	for i, exp := range data.Experiences {
 		roleType := fmt.Sprintf("%s (%s)", escapeLatex(exp.Role), escapeLatex(exp.JobType))
 		builder.WriteString(fmt.Sprintf(`
 \begin{twocolentry}{%s}
@@ -143,7 +143,7 @@ func GenerateExperienceMainCV(data model.CVData) string {
 %s
 \end{onecolentry}
 `, escapeLatex(exp.Dates), escapeLatex(exp.Company), escapeLatex(exp.Location), roleType, GenerateHighlights(exp.Points)))
-		if i < len(data.Experiences.Experiences)-1 {
+		if i < len(data.Experiences)-1 {
 			builder.WriteString("\n\\vspace{0.40 cm}\n")
 		}
 	}
@@ -155,7 +155,7 @@ func GenerateExperienceBwCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Experience}}\n")
-	for i, exp := range data.Experiences.Experiences {
+	for i, exp := range data.Experiences {
 		builder.WriteString(fmt.Sprintf(`
 \begin{twocolentry}{%s}
     \sectiontitle{%s} \location{-- %s}\\
@@ -168,7 +168,7 @@ func GenerateExperienceBwCV(data model.CVData) string {
 %s
 \end{onecolentry}
 `, escapeLatex(exp.Dates), escapeLatex(exp.Company), escapeLatex(exp.Location), escapeLatex(exp.Role), GenerateHighlights(exp.Points)))
-		if i < len(data.Experiences.Experiences)-1 {
+		if i < len(data.Experiences)-1 {
 			builder.WriteString("\n\\vspace{0.4 cm}\n")
 		}
 	}
@@ -273,7 +273,7 @@ func GenerateProjectsMainCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{Projects}\n")
-	for i, proj := range data.Projects.Projects {
+	for i, proj := range data.Projects {
 		githubLink := fmt.Sprintf(`\href{%s}{%s}`, escapeLatex(proj.Github), escapeLatex(proj.GithubHandle))
 		builder.WriteString(fmt.Sprintf(`
 \begin{twocolentry}{
@@ -288,7 +288,7 @@ func GenerateProjectsMainCV(data model.CVData) string {
 %s
 \end{onecolentry}
 `, githubLink, escapeLatex(proj.Name), GenerateHighlights(proj.Points)))
-		if i < len(data.Projects.Projects)-1 {
+		if i < len(data.Projects)-1 {
 			builder.WriteString("\n\\vspace{0.2 cm}\n")
 		}
 	}
@@ -300,7 +300,7 @@ func GenerateProjectsBwCV(data model.CVData) string {
 
 	var builder strings.Builder
 	builder.WriteString("\\documentclass[../main.tex]{subfiles}\n\\begin{document}\n\\section{\\sectiontitle[\\Large]{Projects}}\n")
-	for i, proj := range data.Projects.Projects {
+	for i, proj := range data.Projects {
 		githubLink := fmt.Sprintf(`\href{%s}{%s}`, escapeLatex(proj.Github), escapeLatex(proj.GithubHandle))
 		builder.WriteString(fmt.Sprintf(`
 \begin{twocolentry}{
@@ -315,7 +315,7 @@ func GenerateProjectsBwCV(data model.CVData) string {
 %s
 \end{onecolentry}
 `, githubLink, escapeLatex(proj.Name), GenerateHighlights(proj.Points)))
-		if i < len(data.Projects.Projects)-1 {
+		if i < len(data.Projects)-1 {
 			builder.WriteString("\n\\vspace{0.2 cm}\n")
 		}
 	}

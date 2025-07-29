@@ -104,7 +104,7 @@ func Write_CV(cvType string, cvData model.CVData, wgParent *sync.WaitGroup) {
 
 	// Filter experiences and projects based on cvType
 	var filteredExperiences []model.Experience
-	for _, exp := range cvData.Experiences.Experiences {
+	for _, exp := range cvData.Experiences {
 
 		// if types is empty, dont add it at all to the CV
 		if len(exp.JobType) == 0 {
@@ -116,10 +116,10 @@ func Write_CV(cvType string, cvData model.CVData, wgParent *sync.WaitGroup) {
 		}
 	}
 
-	cvData.Experiences.Experiences = filteredExperiences
+	cvData.Experiences = filteredExperiences
 
 	var filteredProjects []model.Project
-	for _, proj := range cvData.Projects.Projects {
+	for _, proj := range cvData.Projects {
 
 		// if types is empty, dont add it at all to the CV
 		if len(proj.CVType) == 0 {
@@ -130,7 +130,7 @@ func Write_CV(cvType string, cvData model.CVData, wgParent *sync.WaitGroup) {
 			filteredProjects = append(filteredProjects, proj)
 		}
 	}
-	cvData.Projects.Projects = filteredProjects
+	cvData.Projects = filteredProjects
 
 	type generate_section func(model.CVData) string
 

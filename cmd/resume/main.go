@@ -20,51 +20,25 @@ const (
 )
 
 func loadYAMLData(wg *sync.WaitGroup) (model.CVData, error) {
-	var cvData_general = new(model.CV_General)
-	var cvData_projects = new(model.CV_Projects)
-	var cvData_experiences = new(model.CV_Experiences)
+	var cvData = new(model.CVData)
 	var err_channel = make(chan error, 3)
 
+	var read_unmarshal_file = func(filePath string, data interface{}) {
+		defer wg.Done()
+		byteValue, err := os.ReadFile(filePath)
+		if err != nil {
+			err_channel <- err
+		}
+
+		if err := yaml.Unmarshal(byteValue, data); err != nil {
+			err_channel <- err
+		}
+	}
+
 	wg.Add(3)
-	go func() {
-		defer wg.Done()
-		byteValue, err := os.ReadFile(CV_GENERAL_DATA_PATH)
-		if err != nil {
-			err_channel <- err
-			return
-		}
-
-		if err := yaml.Unmarshal(byteValue, cvData_general); err != nil {
-			err_channel <- err
-			return
-		}
-	}()
-	go func() {
-		defer wg.Done()
-		byteValue, err := os.ReadFile(CV_EXPERIENCES_DATA_PATH)
-		if err != nil {
-			err_channel <- err
-			return
-		}
-
-		if err := yaml.Unmarshal(byteValue, cvData_experiences); err != nil {
-			err_channel <- err
-			return
-		}
-	}()
-	go func() {
-		defer wg.Done()
-		byteValue, err := os.ReadFile(CV_PROJECTS_DATA_PATH)
-		if err != nil {
-			err_channel <- err
-			return
-		}
-
-		if err := yaml.Unmarshal(byteValue, cvData_projects); err != nil {
-			err_channel <- err
-			return
-		}
-	}()
+	go read_unmarshal_file(CV_GENERAL_DATA_PATH, &cvData.General)
+	go read_unmarshal_file(CV_PROJECTS_DATA_PATH, &cvData.Projects)
+	go read_unmarshal_file(CV_EXPERIENCES_DATA_PATH, &cvData.Experiences)
 	wg.Wait()
 
 	close(err_channel)
@@ -75,11 +49,7 @@ func loadYAMLData(wg *sync.WaitGroup) (model.CVData, error) {
 		}
 	}
 
-	return model.CVData{
-		General:     cvData_general,
-		Projects:    *cvData_projects,
-		Experiences: *cvData_experiences,
-	}, nil
+	return *cvData, nil
 }
 
 func main() {
@@ -112,7 +82,7 @@ func main() {
 
 	var mu sync.Mutex
 
-	parse.GetTotalTypes(total_types, cvData.Experiences, cvData.Projects, &wg, &mu)
+	parse.GetTotalTypes(total_types, &cvData.Experiences, &cvData.Projects, &wg, &mu)
 
 	wg.Add(len(total_types))
 

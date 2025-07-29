@@ -68,16 +68,8 @@ type CV_General struct {
 	Awards             []Award            `yaml:"awards"`
 }
 
-type CV_Projects struct {
-	Projects []Project `yaml:"projects"`
-}
-
-type CV_Experiences struct {
-	Experiences []Experience `yaml:"experiences"`
-}
-
 type CVData struct {
 	General     *CV_General
-	Projects    CV_Projects
-	Experiences CV_Experiences
+	Projects    []Project
+	Experiences []Experience
 }
