@@ -1,31 +1,24 @@
-# Stage 1: Final image with a stable and reliable TeX Live distribution
-FROM debian:bullseye-slim
+FROM texlive/texlive:latest
 
-# Avoid interactive prompts during installation
-ENV DEBIAN_FRONTEND=noninteractive
+ARG GO_VERSION=1.24.6
+
+ENV GOROOT=/usr/local/go
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
 # Install make and the necessary TeX Live packages.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    make \
+    wget \
     texlive-latex-extra \
     texlive-fonts-recommended \
     texlive-pictures \
     texlive-fonts-extra \
     lmodern \
+    && wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz \
+    && rm go${GO_VERSION}.linux-amd64.tar.gz \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy the pre-compiled Go binary
-# COPY bin/cv_builder /app/bin/cv_builder
-
-# Copy the project files needed to generate the CVs
-COPY Makefile /app/
-COPY template_cv/ /app/template_cv/
-COPY images/ /app/images/
-
-# Create the cv directory and give it world-writable permissions
-RUN mkdir -p /app/cv && chmod 777 /app/cv
-
-# Set the default command to run the resume generation
-CMD ["make", "all"]
+CMD ["go", "run", "cmd/resume/main.go"]
