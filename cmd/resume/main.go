@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"resume/internals/config"
 	"resume/internals/generator"
 	"sync"
@@ -44,6 +45,12 @@ func main() {
 
 	wg.Add(len(total_types))
 
+	err = os.MkdirAll("out", generator.FolderPermission)
+	if err != nil {
+		fmt.Printf("Error creating output directory: %v\n", err)
+	}
+
+	// Generate each CV type concurrently
 	for cvType := range total_types {
 		go generator.Write_CV(cvType, cvData, &wg)
 	}

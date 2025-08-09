@@ -20,7 +20,7 @@ const (
 	name              = "Seno Pamungkas Rahman"
 	mainCVSectionsDir = "main_cv/sections"
 	bwCVSectionsDir   = "bw_cv/sections"
-	folderPermission  = 0755
+	FolderPermission  = 0755
 	filePermission    = 0644
 )
 
@@ -28,7 +28,7 @@ func writeTexFile(path string, content string, wg *sync.WaitGroup, outputChan ch
 	defer wg.Done()
 
 	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, folderPermission); err != nil {
+	if err := os.MkdirAll(dir, FolderPermission); err != nil {
 		log.Fatalf("Error creating directory %s: %v", dir, err)
 	}
 	if err := os.WriteFile(path, []byte(content), filePermission); err != nil {
@@ -58,7 +58,7 @@ func copyDir(src, dst string, wg *sync.WaitGroup) error {
 	defer wg.Done()
 
 	// Create the destination directory with the same permissions
-	err := os.MkdirAll(dst, folderPermission)
+	err := os.MkdirAll(dst, FolderPermission)
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func copyDir(src, dst string, wg *sync.WaitGroup) error {
 
 		if d.IsDir() {
 			// Create directory at destination
-			return os.MkdirAll(destPath, folderPermission)
+			return os.MkdirAll(destPath, FolderPermission)
 		} else {
 			// Copy file
 			return copyFile(path, destPath)
@@ -229,7 +229,7 @@ func write_PDF(cvType *string, name *string, type_bw_main string, wg *sync.WaitG
 func MoveAuxFiles() {
 	auxDir := filepath.Join("out", "aux")
 
-	if err := os.MkdirAll(auxDir, folderPermission); err != nil {
+	if err := os.MkdirAll(auxDir, FolderPermission); err != nil {
 		log.Fatalf("Error creating aux directory: %v", err)
 	}
 

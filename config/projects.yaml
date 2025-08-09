@@ -4,6 +4,7 @@
   cv_type:
     - devops
     - go
+    - custom
   description: "A dynamic CV generator that builds multiple tailored PDF resumes from a modular YAML data source using **Go** and **LaTeX**."
   points:
     - "Streamlined CV creation by developing a tool that generates **multiple customized PDF versions** from a modular data source split across three YAML files (`general`, `experiences`, `projects`), eliminating repetitive manual editing."
@@ -39,19 +40,18 @@
     - main
     - fullstack
     - go
-    - custom
   description: "A web platform for easy food and drink ordering. Users can browse restaurant menus, add funds, and leave ratings."
   points:
     - "Engineered a responsive and intuitive user interface with **React** and **Tailwind CSS**, leading the frontend development to enhance user engagement."
     - "Developed a dynamic order cart using **React hooks**, providing users with a clear and real-time overview of their selections."
     - "Implemented a secure payment system with **frontend validation**, ensuring sufficient balance before processing transactions."
+
 - name: DanceRTOS
   github: https://github.com/cattyman919/AbsenceSystem
   github_handle: cattyman919/AbsenceSystem
   cv_type:
     - iot
     - main
-    - custom
     - fullstack
     - devops
   description: "An attendance system using FreeRTOS ESP32 and RFID, with a web server and Blynk integration for class and schedule management."
@@ -69,17 +69,20 @@
     - "Led the full-stack development of the Jaga vehicle maintenance app, creating a seamless user experience with **Flutter** and **NestJS**."
     - "Developed a **GPS-based tracking system** to monitor vehicle mileage and trigger timely service reminders."
     - "Implemented a **multi-vehicle management system**, allowing users to track and manage maintenance for their entire fleet."
+
 - name: JSleep
   github: https://github.com/cattyman919/JSleep
   github_handle: cattyman919/JSleep
   cv_type:
     - main
     - fullstack
+    - custom
   description: "A full-stack room reservation backend built with Java and Spring Boot, featuring a custom JSON-based database engine for managing users, rooms, and bookings."
   points:
     - "Developed a complete RESTful API using **Java** and **Spring Boot** to manage the entire hotel booking lifecycle, from user authentication to room reservations."
     - "Engineered a custom, lightweight database solution using a **JSON-based file system (`JsonDBEngine`)**, enabling persistent data storage and retrieval without a traditional database server."
     - "Implemented core business logic for dynamic room filtering, availability checking based on booking dates, and a complete payment processing system including balance management and voucher application."
+
 - name: Electronic Vault Lock
   github: https://github.com/rroiii/Electronic-Vault-Lock
   github_handle: rroiii/Electronic-Vault-Lock
@@ -101,6 +104,7 @@
     - "Architected a modular and scalable codebase in **C++** on the **PlatformIO IDE**, enabling efficient team collaboration and future development."
     - "Engineered a real-time gyroscope-based control system with **ESP-NOW**, allowing for intuitive and responsive robot control via a wearable glove."
     - "Implemented a multi-threaded **FreeRTOS** environment to manage concurrent tasks, ensuring seamless switching between autonomous, gesture, and PS4 control modes."
+
 - name: HTTP Server
   github: https://github.com/cattyman919/http
   github_handle: cattyman919/http
@@ -111,6 +115,7 @@
     - "Engineered a **non-blocking, polling-based socket server** in **C** to handle multiple concurrent client connections efficiently."
     - "Implemented a **custom HTTP parser and response generator**, enabling the server to handle a variety of requests and serve dynamic content."
     - "Designed and implemented a **binary search tree for dynamic routing**, allowing for efficient and scalable URL-to-file mapping."
+
 - name: Home Server
   github: null
   github_handle: null
