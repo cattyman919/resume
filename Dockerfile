@@ -1,14 +1,19 @@
-FROM texlive/texlive:latest
+FROM debian:bullseye-slim
+
+# Avoid interactive prompts during installation
+ENV DEBIAN_FRONTEND=noninteractive
 
 ARG GO_VERSION=1.24.6
 
 ENV GOROOT=/usr/local/go
-ENV GOPATH=/go
+ENV GOPATH=/app/go-modules
+ENV GOCACHE=/app/.go-build-cache
 ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
-# Install make and the necessary TeX Live packages.
+# Install Go and LaTeX dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
+    ca-certificates \
     texlive-latex-extra \
     texlive-fonts-recommended \
     texlive-pictures \

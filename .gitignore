@@ -4,5 +4,6 @@ repomix*
 cv
 .git
 bin/*
-.aider*
 target
+/go-modules
+/.go-build-cache

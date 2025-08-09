@@ -26,7 +26,6 @@ docker:
 	docker run --rm \
 		-u "$(shell id -u):$(shell id -g)" \
 		-v "./:/app" \
-		-v "go-resume-cache:/go" \
 		$(IMAGE_NAME)
 
 # if you have pdflatex installed, you can use this target to generate a PDF
@@ -43,6 +42,9 @@ run_benchmark:
 
 clean:
 	@echo "Cleaning up..."
+	@chmod -R u+w go-modules .go-build-cache || true
 	$(RM) out
 	$(RM) cv
 	$(RM) bin
+	$(RM) go-modules
+	$(RM) .go-build-cache

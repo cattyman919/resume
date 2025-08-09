@@ -6,6 +6,9 @@
 out/
 /out
 
+cv/
+/cv
+
 # Ignore docker stuff
 Dockerfile
 .dockerignore
