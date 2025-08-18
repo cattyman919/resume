@@ -16,9 +16,6 @@ import org.senop.model.Project;
 
 public final class YAMLProcessor {
 
-  private final List<String> YAML_FILES =
-      List.of("general.yaml", "experiences.yaml", "projects.yaml");
-
   private General general;
   private List<Experience> experiences;
   private List<Project> projects;
@@ -83,16 +80,13 @@ public final class YAMLProcessor {
                       CompletableFuture.supplyAsync(
                               () -> {
                                 try {
-                                  // The unchecked cast is safe because the Supplier and Consumer
-                                  // are linked in the record
-                                  return (Object) task.parser().get();
+                                  return task.parser();
                                 } catch (Exception e) {
                                   throw new RuntimeException(e);
                                 }
                               },
                               executor)
-                          .thenAccept(
-                              result -> ((Consumer<Object>) task.resultConsumer()).accept(result))
+                          .thenAccept(result -> task.resultConsumer())
                           .exceptionally(
                               ex -> {
                                 System.err.printf(
