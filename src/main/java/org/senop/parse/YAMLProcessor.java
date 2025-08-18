@@ -74,8 +74,7 @@ public final class YAMLProcessor {
     try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 
       List<CompletableFuture<Void>> futures =
-          tasks.stream()
-              .map(
+          tasks.stream() .map(
                   task ->
                       CompletableFuture.supplyAsync(
                               () -> {
@@ -92,6 +91,7 @@ public final class YAMLProcessor {
                                 System.err.printf(
                                     "Error parsing %s: %s\n",
                                     task.filename(), ex.getCause().getMessage());
+                                ex.printStackTrace();
                                 return null;
                               }))
               .toList();
