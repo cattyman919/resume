@@ -74,18 +74,23 @@ public final class YAMLProcessor {
     try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 
       List<CompletableFuture<Void>> futures =
-          tasks.stream() .map(
+          tasks.stream()
+              .map(
                   task ->
-                      CompletableFuture.supplyAsync(
+                      CompletableFuture
+                      .supplyAsync(
                               () -> {
                                 try {
-                                  return task.parser();
+                                  // The unchecked cast is safe because the Supplier and Consumer
+                                  // are linked in the record
+                                  return (Object) task.parser().get();
                                 } catch (Exception e) {
                                   throw new RuntimeException(e);
                                 }
                               },
                               executor)
-                          .thenAccept(result -> task.resultConsumer())
+                          .thenAccept(
+                              result -> ((Consumer<Object>) task.resultConsumer()).accept(result))
                           .exceptionally(
                               ex -> {
                                 System.err.printf(
