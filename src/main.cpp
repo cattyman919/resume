@@ -1,51 +1,7 @@
-#include <iostream>
 #include "yaml-cpp/yaml.h"
+#include "model/project.h"
 
-struct Project
-{
-    std::string name {};
-    std::string github {};
-    std::string github_handle {};
-    std::vector<std::string> cv_type {};
-    std::string description {};
-    std::vector<std::string> points {};
-
-    Project() = default;
-
-    // Constructor
-    explicit Project(std::string name,
-        std::string github,
-        std::string github_handle,
-        std::vector<std::string> cv_type,
-        std::string description,
-        std::vector<std::string> points) :
-      name(name),
-      github(github),
-      github_handle(github_handle),
-      cv_type(cv_type),
-      description(description),
-      points(points) {}
-
-    friend std::ostream& operator<<(std::ostream& os, const Project& p);
-};
-
-std::ostream& operator<<(std::ostream& os, const Project& p) {
-    os << "Project { name: " << p.name << '\n'
-       << "github: " << p.github << '\n'
-       << "github_handle: " << p.github_handle << '\n'
-       << "cv_type: [ " ;
-        for (const auto& type : p.cv_type){
-          os << type << ", ";
-        }
-       os << " ]\n"
-       << "description: " << p.description << '\n'
-       << "points: [ " ;
-        for (const auto& point : p.points){
-          os << point << "\n";
-        }
-       os << "]"  << " }";
-    return os;
-}
+#include <iostream>
 
 int main(){
   std::vector<Project> projects;
@@ -56,10 +12,12 @@ int main(){
         if (projects_node && projects_node.IsSequence()) {
             Project project;
             for (const YAML::Node& project_node : projects_node) {
-                std::vector<std::string> cv_types ;
+
+                std::vector<std::string> cv_types;
                 if (project_node["cv_type"] && project_node["cv_type"].IsSequence()) {
                     cv_types = project_node["cv_type"].as<std::vector<std::string>>();
                 }
+
                 project.name = project_node["name"].as<std::string>();
                 project.github =  project_node["github"].as<std::string>();
                 project.github_handle =  project_node["github_handle"].as<std::string>();

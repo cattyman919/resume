@@ -1,4 +1,4 @@
-set(SOURCES "main.cpp")
+set(SOURCES "main.cpp" "model/project.cpp")
 add_executable(${PROJECT_NAME} "${SOURCES}")
 
 target_include_directories(${PROJECT_NAME}
