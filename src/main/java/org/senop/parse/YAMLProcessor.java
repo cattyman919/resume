@@ -20,6 +20,30 @@ public final class YAMLProcessor {
   private List<Experience> experiences;
   private List<Project> projects;
 
+  public General getGeneral() {
+    return general;
+  }
+
+  public void setGeneral(General general) {
+    this.general = general;
+  }
+
+  public List<Experience> getExperiences() {
+    return experiences;
+  }
+
+  public void setExperiences(List<Experience> experiences) {
+    this.experiences = experiences;
+  }
+
+  public List<Project> getProjects() {
+    return projects;
+  }
+
+  public void setProjects(List<Project> projects) {
+    this.projects = projects;
+  }
+
   public YAMLProcessor() {
     this.general = new General();
     this.experiences = new ArrayList<>();
