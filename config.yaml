@@ -1,0 +1,13 @@
+# config.yaml
+application:
+  name: "My Awesome App"
+  version: 1.2
+  threaded: true
+
+database:
+  host: "localhost"
+  port: 5432
+  users:
+    - "admin"
+    - "guest"
+    - "service_account"

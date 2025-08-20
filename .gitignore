@@ -6,5 +6,6 @@ cv
 bin/*
 target
 build
+.cache
 /go-modules
 /.go-build-cache

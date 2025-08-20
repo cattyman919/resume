@@ -1,7 +1,7 @@
 set(SOURCES "main.cpp")
-add_executable(app "${SOURCES}")
+add_executable(${PROJECT_NAME} "${SOURCES}")
 
-target_include_directories(app
+target_include_directories(${PROJECT_NAME}
   PUBLIC
   "${CMAKE_SOURCE_DIR}/include"
 )

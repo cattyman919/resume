@@ -1,6 +1,6 @@
 OS = linux
 RM = rm -rf
-TARGET := bin/cv_builder
+TARGET := Resume
 IMAGE_NAME := resume-generator
 
 .PHONY: all run run_debug docker clean build
@@ -8,7 +8,7 @@ IMAGE_NAME := resume-generator
 all:
 	@echo "Running application..."
 	@ninja --quiet -C build
-	@./build/bin/app
+	@./build/bin/$(TARGET)
 
 docker:
 	@# It checks if the output of 'docker images -q' is empty (-z).

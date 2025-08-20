@@ -12,4 +12,13 @@ project(
     LANGUAGES CXX
 )
 
+include(cmake/dependencies.cmake)
+
 add_subdirectory(src)
+
+target_include_directories(${PROJECT_NAME}
+  PRIVATE
+  ${Boost_INCLUDE_DIRS}
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE yaml-cpp::yaml-cpp)
