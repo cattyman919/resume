@@ -6,10 +6,10 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import org.senop.model.Experience;
 import org.senop.model.General;
 import org.senop.model.Project;
@@ -26,87 +26,70 @@ public final class YAMLProcessor {
     this.projects = new ArrayList<>();
   }
 
-  private record ParsingTask<T>(String filename, Supplier<T> parser, Consumer<T> resultConsumer) {}
+   private <T> Callable<Void> createParsingTask(ObjectMapper mapper, String filename, Class<T> type, Consumer<T> resultConsumer) {
+        return () -> {
+            try {
+                var res = mapper.readValue(Path.of("config", filename).toFile(), type);
+                resultConsumer.accept(res);
+            } catch (Exception e) {
+                throw new YAMLParsingException("Failed to parse file: " + filename, e);
+            }
+            return null; 
+        };
+    }
+
+    private <T> Callable<Void> createParsingTask(ObjectMapper mapper, String filename, TypeReference<T> typeRef, Consumer<T> resultConsumer) {
+        return () -> {
+            try {
+                var res = mapper.readValue(Path.of("config", filename).toFile(), typeRef);
+                resultConsumer.accept(res);
+            } catch (Exception e) {
+                throw new YAMLParsingException("Failed to parse file: " + filename, e);
+            }
+            return null; 
+        };
+    }
 
   public void Parse() {
     System.out.println("Parsing YAML files...");
 
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
-    List<ParsingTask<?>> tasks =
-        List.of(
-            new ParsingTask<>(
-                "general.yaml",
-                () -> {
-                  try {
-                    return mapper.readValue(
-                        Path.of("config", "general.yaml").toFile(), General.class);
-                  } catch (Exception e) { // Catch the checked exception
-                    throw new RuntimeException(e); // And wrap it
-                  }
-                },
-                result -> this.general = result),
-            new ParsingTask<>(
-                "projects.yaml",
-                () -> {
-                  try {
-                    return mapper.readValue(
-                        Path.of("config", "projects.yaml").toFile(),
-                        new TypeReference<List<Project>>() {});
-                  } catch (Exception e) {
-                    throw new RuntimeException(e);
-                  }
-                },
-                result -> this.projects = result),
-            new ParsingTask<>(
-                "experiences.yaml",
-                () -> {
-                  try {
-                    return mapper.readValue(
-                        Path.of("config", "experiences.yaml").toFile(),
-                        new TypeReference<List<Experience>>() {});
-                  } catch (Exception e) {
-                    throw new RuntimeException(e);
-                  }
-                },
-                result -> this.experiences = result));
+        List<Callable<Void>> tasks = List.of(
+            createParsingTask(mapper, "general.yaml", General.class, res -> this.general = res),
+            createParsingTask(mapper, "projects.yaml", new TypeReference<List<Project>>() {}, res -> this.projects = res),
+            createParsingTask(mapper, "experiences.yaml", new TypeReference<List<Experience>>() {}, res -> this.experiences = res)
+        );
 
-    try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            List<Future<Void>> futures = executor.invokeAll(tasks);
 
-      List<CompletableFuture<Void>> futures =
-          tasks.stream()
-              .map(
-                  task ->
-                      CompletableFuture
-                      .supplyAsync(
-                              () -> {
-                                try {
-                                  // The unchecked cast is safe because the Supplier and Consumer
-                                  // are linked in the record
-                                  return (Object) task.parser().get();
-                                } catch (Exception e) {
-                                  throw new RuntimeException(e);
-                                }
-                              },
-                              executor)
-                          .thenAccept(
-                              result -> ((Consumer<Object>) task.resultConsumer()).accept(result))
-                          .exceptionally(
-                              ex -> {
-                                System.err.printf(
-                                    "Error parsing %s: %s\n",
-                                    task.filename(), ex.getCause().getMessage());
-                                ex.printStackTrace();
-                                return null;
-                              }))
-              .toList();
+            for (var future : futures) {
+                try {
+                    future.get(); 
+                } catch (Exception e) {
+                    System.err.println("[ERROR] A parsing task failed catastrophically.");
+                    if (e.getCause() instanceof YAMLParsingException) {
+                        System.err.println(e.getCause().getMessage());
+                        System.err.println(e.getCause().getCause().getClass().getSimpleName() + " - " + e.getCause().getCause().getMessage());
+                    } else {
+                        e.printStackTrace(); 
+                    }
+                    System.exit(1);
+                }
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Main thread was interrupted during parsing.", e);
+        }
+    // Automaically join all tasks when the try-with-resources block exits
+    // because it implements AutoCloseable
 
-      CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-    }
+    System.out.println("All YAML files parsed successfully.");
   }
 
   public void Print() {
-    System.out.println("General Information:");
+    System.out.println("\nGeneral Information:");
     System.out.println("Name: " + general.getPersonalInfo().getName());
     System.out.println("Location: " + general.getPersonalInfo().getLocation());
     System.out.println("Email: " + general.getPersonalInfo().getEmail());
