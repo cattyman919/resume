@@ -1,40 +1,10 @@
-#include "yaml-cpp/yaml.h"
-#include "model/project.h"
-
-#include <iostream>
+#include "parse/YAMLProcessor.h"
 
 int main(){
-  std::vector<Project> projects;
-
-    try {
-        YAML::Node projects_node = YAML::LoadFile("config/projects.yaml");
-
-        if (projects_node && projects_node.IsSequence()) {
-            Project project;
-            for (const YAML::Node& project_node : projects_node) {
-
-                std::vector<std::string> cv_types;
-                if (project_node["cv_type"] && project_node["cv_type"].IsSequence()) {
-                    cv_types = project_node["cv_type"].as<std::vector<std::string>>();
-                }
-
-                project.name = project_node["name"].as<std::string>();
-                project.github =  project_node["github"].as<std::string>();
-                project.github_handle =  project_node["github_handle"].as<std::string>();
-                project.cv_type =  std::move(cv_types);
-                project.description =  project_node["description"].as<std::string>();
-                project.points =  project_node["points"].as<std::vector<std::string>>();
-
-                std::cout << "- " << project << "\n\n";
-
-                projects.emplace_back(std::move(project));
-            }
-        }
-        std::cout << "Total Project: " << projects.size() << '\n';
-
-    } catch (const YAML::Exception& e) {
-        std::cerr << "Error parsing YAML: " << e.what() << std::endl;
-        std::exit(1);
-    }
+  YAMLProcessor yaml_processor{};
+  yaml_processor.parseGeneral();
+  yaml_processor.parseProject();
+  yaml_processor.parseExperience();
+  yaml_processor.general.print_skills_achivements();
   return 0;
 }

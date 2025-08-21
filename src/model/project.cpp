@@ -2,7 +2,7 @@
 #include <iostream>
 
 std::ostream& operator<<(std::ostream& os, const Project& p) {
-    os << "Project { name: " << p.name << '\n'
+   os << "Project {\nname: " << p.name << '\n'
        << "github: " << p.github << '\n'
        << "github_handle: " << p.github_handle << '\n'
        << "cv_type: [ " ;
@@ -11,9 +11,9 @@ std::ostream& operator<<(std::ostream& os, const Project& p) {
         }
        os << " ]\n"
        << "description: " << p.description << '\n'
-       << "points: [ " ;
+       << "points: [\n" ;
         for (const auto& point : p.points){
-          os << point << "\n";
+          os << "- " << point << "\n";
         }
        os << "]"  << " }";
     return os;

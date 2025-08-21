@@ -3,8 +3,9 @@
 #include <string>
 #include <vector>
 
-struct Project
+class Project
 {
+  public:
     std::string name{};
     std::string github{};
     std::string github_handle{};
