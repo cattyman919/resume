@@ -5,74 +5,72 @@
 #include <variant>
 #include <vector>
 
-class PersonalInfo
-{
-  public:
-    std::string name{};
-    std::string location{};
-    std::string email{};
-    std::string phone{};
-    std::string website{};
-    std::string linkedin{};
-    std::string linkedin_handle{};
-    std::string github{};
-    std::string github_handle{};
-    std::string profile_pic{};
+class PersonalInfo {
+public:
+  std::string name{};
+  std::string location{};
+  std::string email{};
+  std::string phone{};
+  std::string website{};
+  std::string linkedin{};
+  std::string linkedin_handle{};
+  std::string github{};
+  std::string github_handle{};
+  std::string profile_pic{};
 
-    PersonalInfo() = default;
+  PersonalInfo() = default;
 
-    explicit PersonalInfo(std::string name,
-        std::string location,
-        std::string email,
-        std::string phone,
-        std::string website,
-        std::string linkedin,
-        std::string linkedin_handle,
-        std::string github,
-        std::string github_handle,
-        std::string profile_pic) :
-      name(name),
-      location(location),
-      email(email),
-      phone(phone),
-      website(website),
-      linkedin(linkedin),
-      linkedin_handle(linkedin_handle),
-      github(github),
-github_handle(github_handle),
-      profile_pic(profile_pic) {}
+  explicit PersonalInfo(std::string name, std::string location,
+                        std::string email, std::string phone,
+                        std::string website, std::string linkedin,
+                        std::string linkedin_handle, std::string github,
+                        std::string github_handle, std::string profile_pic)
+      : name(name), location(location), email(email), phone(phone),
+        website(website), linkedin(linkedin), linkedin_handle(linkedin_handle),
+        github(github), github_handle(github_handle), profile_pic(profile_pic) {
+  }
 
-    friend std::ostream& operator<<(std::ostream& os, const PersonalInfo& p);
+  friend std::ostream &operator<<(std::ostream &os, const PersonalInfo &p);
 };
 
 struct Education {
-    const std::string institution{};
-    const std::string degree{};
-    const std::string dates{};
-    const std::string gpa{};
-    const std::vector<std::string> details{};
+  const std::string institution{};
+  const std::string degree{};
+  const std::string dates{};
+  const std::string gpa{};
+  const std::vector<std::string> details{};
+
+  friend std::ostream &operator<<(std::ostream &os, const Education &e);
 };
 
 struct Award {
-    const std::string title{};
-    const std::string organization{};
-    const std::string date{};
-    const std::vector<std::string> points{};
+  const std::string title{};
+  const std::string organization{};
+  const std::string date{};
+  const std::vector<std::string> points{};
+
+  friend std::ostream &operator<<(std::ostream &os, const Education &e);
 };
 
 struct Certificate {
-    const unsigned int year{};
-    const std::string name{};
+  const unsigned int year{};
+  const std::string name{};
+
+  Certificate(unsigned int year, std::string name)
+      : year(year), name(std::move(name)) {}
+
+  friend std::ostream &operator<<(std::ostream &os, const Certificate &c);
 };
 
 struct Skills {
   std::string name{};
   std::vector<std::string> skills{};
+
+  friend std::ostream &operator<<(std::ostream &os, const Skills &c);
 };
 
 class General {
-  public:
-
+public:
   using AchievementItem = std::variant<Skills, Certificate>;
 
   PersonalInfo personal_info{};
@@ -83,13 +81,18 @@ class General {
   General() = default;
 
   explicit General(PersonalInfo personal_info,
-      std::vector<AchievementItem> skills_achievements,
-      std::vector<Education> educations,
-      std::vector<Award> awards) :
-    personal_info(personal_info),
-    skills_achievements(skills_achievements),
-    educations(educations),
-    awards(awards) {}
+                   std::vector<AchievementItem> skills_achievements,
+                   std::vector<Education> educations, std::vector<Award> awards)
+      : personal_info(personal_info), skills_achievements(skills_achievements),
+        educations(educations), awards(awards) {}
 
-    void print_skills_achivements() const;
+  void print_skills_achivements() const;
+
+  friend std::ostream &operator<<(std::ostream &os, const General &g);
+  friend std::ostream &operator<<(std::ostream &os,
+                                  const std::vector<AchievementItem> &sa);
+  friend std::ostream &operator<<(std::ostream &os,
+                                  const std::vector<Education> &eds);
+  friend std::ostream &operator<<(std::ostream &os,
+                                  const std::vector<Award> &awa);
 };

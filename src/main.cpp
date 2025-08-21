@@ -14,7 +14,7 @@ int main() {
   }
 
   std::cout << "Main thread (" << std::this_thread::get_id()
-            << ") will use a total of " << thread_count << " threads."
+            << ") will use a total of " << thread_count << " Logical Cores."
             << std::endl;
 
   BoostFiberScheduler scheduler(thread_count);
@@ -40,6 +40,8 @@ int main() {
     return 1;
   }
 
-  // yaml_processor.general.print_skills_achivements();
+  std::cout << "\n--- General Information ---\n";
+  std::cout << yaml_processor.general << "\n";
+
   return 0;
 }
