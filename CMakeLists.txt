@@ -21,4 +21,15 @@ target_include_directories(${PROJECT_NAME}
   ${Boost_INCLUDE_DIRS}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE yaml-cpp::yaml-cpp)
+target_link_libraries(
+  ${PROJECT_NAME} PRIVATE
+  yaml-cpp::yaml-cpp
+  Boost::fiber
+  Boost::thread
+)
+
+target_link_libraries(
+  test PRIVATE
+  Boost::fiber
+  Boost::thread
+)

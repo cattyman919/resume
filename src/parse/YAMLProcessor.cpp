@@ -2,9 +2,14 @@
 #include "model/experience.h"
 #include "model/general.h"
 #include "yaml-cpp/yaml.h"
+#include <thread>
+#include <vector>
 
 void YAMLProcessor::parseGeneral() {
-  std::cout << "Parsing general.yaml...\n";
+  std::thread::id thread_id = std::this_thread::get_id();
+  std::stringstream ss;
+  ss << "Thread (" << thread_id << ") :  Parsing general.yaml...\n";
+  std::cout << ss.str();
     try {
         YAML::Node general_node = YAML::LoadFile("config/general.yaml");
 
@@ -56,7 +61,7 @@ void YAMLProcessor::parseGeneral() {
                         edu_node["gpa"].as<std::string>(),
                         edu_node["details"] && edu_node["details"].IsSequence() ? edu_node["details"].as<std::vector<std::string>>() : std::vector<std::string>{}
                     };
-                    this->general.educations.push_back(education);
+                    this->general.educations.emplace_back(education);
                 }
             }
 
@@ -68,7 +73,7 @@ void YAMLProcessor::parseGeneral() {
                         award_node["date"].as<std::string>(),
                         award_node["points"] && award_node["points"].IsSequence() ? award_node["points"].as<std::vector<std::string>>() : std::vector<std::string>{}
                     };
-                    this->general.awards.push_back(award);
+                    this->general.awards.emplace_back(award);
                 }
             }
         }
@@ -79,7 +84,10 @@ void YAMLProcessor::parseGeneral() {
 }
 
 void YAMLProcessor::parseProject(){
-  std::cout << "Parsing projects.yaml...\n";
+  std::thread::id thread_id = std::this_thread::get_id();
+  std::stringstream ss;
+  ss << "Thread (" << thread_id << ") :  Parsing project.yaml...\n";
+  std::cout << ss.str();
     try {
         YAML::Node projects_node = YAML::LoadFile("config/projects.yaml");
 
@@ -103,10 +111,9 @@ void YAMLProcessor::parseProject(){
                 std::cout << "- " << project << "\n\n";
 #endif // DEBUG
 
-                this->projects.emplace_back(std::move(project));
+                projects.emplace_back(std::move(project));
             }
         }
-        std::cout << "Total Project: " << this->projects.size() << '\n';
 
     } catch (const YAML::Exception& e) {
         std::cerr << "Error parsing YAML: " << e.what() << std::endl;
@@ -115,7 +122,10 @@ void YAMLProcessor::parseProject(){
 }
 
 void YAMLProcessor::parseExperience() {
-  std::cout << "Parsing experiences.yaml...\n";
+  std::thread::id thread_id = std::this_thread::get_id();
+  std::stringstream ss;
+  ss << "Thread (" << thread_id << ") :  Parsing experiences.yaml...\n";
+  std::cout << ss.str();
     try {
         YAML::Node experiences_node = YAML::LoadFile("config/experiences.yaml");
 
@@ -139,10 +149,9 @@ void YAMLProcessor::parseExperience() {
                 std::cout << "- " << experience << "\n\n";
 #endif // DEBUG
 
-                this->experiences.emplace_back(std::move(experience));
+                experiences.emplace_back(std::move(experience));
             }
         }
-        std::cout << "Total Experiences: " << this->experiences.size() << '\n';
 
     } catch (const YAML::Exception& e) {
         std::cerr << "Error parsing YAML: " << e.what() << std::endl;

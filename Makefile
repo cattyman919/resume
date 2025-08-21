@@ -3,12 +3,15 @@ RM = rm -rf
 TARGET := Resume
 IMAGE_NAME := resume-generator
 
-.PHONY: all run run_debug docker clean build
+.PHONY: all run run_debug docker clean build test
 
 all:
-	@echo "Running application..."
 	@ninja --quiet -C build
 	@./build/bin/$(TARGET)
+
+test:
+	@ninja --quiet -C build
+	@./build/bin/test
 
 docker:
 	@# It checks if the output of 'docker images -q' is empty (-z).
