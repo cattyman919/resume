@@ -1,0 +1,25 @@
+---
+# This file configures clang-tidy.
+# Documentation: https://clang.llvm.org/extra/clang-tidy/
+
+Checks: >
+  # The '*' enables all checks. Subsequent lines with a '-' disable specific ones.
+  *,
+  -altera-*,                 # Disabled for non-FPGA work
+  -llvmlibc-implementation-in-headers, # Usually not relevant
+  -fuchsia-*,               # Fuchsia OS specific
+  -hicpp-signed-bitwise,    # Can be noisy if you know what you're doing
+  -google-build-using-namespace, # A matter of style preference
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay # Can be noisy
+
+# Only show diagnostics from files within our project, not from system headers or third-party libs.
+HeaderFilterRegex: '^(src|include|app)/.*'
+
+# You can also set options for specific checks
+CheckOptions:
+  - key:             readability-identifier-naming.CaseMenmonic
+    value:           ''
+  - key:             readability-identifier-naming.GlobalConstantCase
+    value:           'UPPER_CASE'
+  - key:             readability-identifier-naming.PrivateMemberCase
+    value:           'lower_case'

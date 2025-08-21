@@ -1,29 +1,44 @@
-#include "scheduler/scheduler.h"
 #include "parse/YAMLProcessor.h"
+#include "scheduler/scheduler.h"
+#include "yaml-cpp/yaml.h"
 
-#include <thread>
 #include <iostream>
+#include <thread>
 
-int main(){
-   unsigned int thread_count = std::thread::hardware_concurrency();
+int main() {
+  unsigned int thread_count = std::thread::hardware_concurrency();
 
-    // If hardware_concurrency() returns 0, we can assume a single thread.
-    if (thread_count == 0) {
-        thread_count = 1;
-    }
+  // If hardware_concurrency() returns 0, we can assume a single thread.
+  if (thread_count == 0) {
+    thread_count = 1;
+  }
 
-   std::cout << "Main thread (" << std::this_thread::get_id() << ") will use a total of " << thread_count << " threads." << std::endl;
+  std::cout << "Main thread (" << std::this_thread::get_id()
+            << ") will use a total of " << thread_count << " threads."
+            << std::endl;
 
-    BoostFiberScheduler scheduler(thread_count);
+  BoostFiberScheduler scheduler(thread_count);
 
-    YAMLProcessor yaml_processor{};
+  YAMLProcessor yaml_processor{};
 
-    scheduler.addTask(&YAMLProcessor::parseGeneral, &yaml_processor);
-    scheduler.addTask(&YAMLProcessor::parseExperience, &yaml_processor);
-    scheduler.addTask(&YAMLProcessor::parseProject, &yaml_processor);
+  scheduler.addTask(&YAMLProcessor::parseGeneral, &yaml_processor);
+  scheduler.addTask(&YAMLProcessor::parseExperience, &yaml_processor);
+  scheduler.addTask(&YAMLProcessor::parseProject, &yaml_processor);
 
+  try {
     scheduler.wait();
     std::cout << "\n--- All YAML files parsed successfully ---\n\n";
+
+  } catch (const YAML::Exception &e) {
+    std::cerr << "\n--- A YAML parsing task failed --- \n";
+    std::cerr << "Error: " << e.what() << std::endl;
+    return 1;
+
+  } catch (const std::exception &e) {
+    std::cerr << "\n--- An unexpected error occurred --- \n";
+    std::cerr << "Error: " << e.what() << std::endl;
+    return 1;
+  }
 
   // yaml_processor.general.print_skills_achivements();
   return 0;

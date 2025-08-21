@@ -1,57 +1,60 @@
 #include "scheduler/scheduler.h"
 #include "boost/fiber/all.hpp"
-#include <thread>
 #include <iostream>
+#include <thread>
 
-BoostFiberScheduler::BoostFiberScheduler(unsigned int thread_count) :
-        thread_count_(thread_count),
-        b_(thread_count) // Initialize barrier to wait for all threads
-    {
-        // Register Woker threads with the scheduler first, then main thread.
-        setupWorkerThreads();
+BoostFiberScheduler::BoostFiberScheduler(unsigned int thread_count)
+    : thread_count_(thread_count),
+      b_(thread_count) // Initialize barrier to wait for all threads
+{
+  // Register Woker threads with the scheduler first, then main thread.
+  setupWorkerThreads();
 
-        // Register the main thread with the work-stealing scheduler.
-        boost::fibers::use_scheduling_algorithm<boost::fibers::algo::work_stealing>(thread_count_);
-    }
-
-BoostFiberScheduler::~BoostFiberScheduler() {
-        wait();
+  // Register the main thread with the work-stealing scheduler.
+  boost::fibers::use_scheduling_algorithm<boost::fibers::algo::work_stealing>(
+      thread_count_);
 }
 
-    // Waits for all fibers to complete and then cleanly shuts down the worker threads.
-    void BoostFiberScheduler::wait() {
-        // Only run this logic once.
-        if (is_shutdown_) {
-            return;
-        }
+BoostFiberScheduler::~BoostFiberScheduler() { wait(); }
 
-        // Join all the fibers. The main thread will participate in work.
-        for (auto& f : fibers) {
-            if (f.joinable()) {
-                f.join();
-            }
-        }
+// Waits for all fibers to complete and then cleanly shuts down the worker
+// threads.
+// @throws YAML::Exception if any fiber throws an exception.
+// @throws std::exception for any other unexpected errors.
+void BoostFiberScheduler::wait() {
+  // Only run this logic once.
+  if (is_shutdown_) {
+    return;
+  }
 
-        // Signal the barrier to release the worker threads.
-        std::cout << "\nAll fibers have completed. Signaling threads to exit.\n";
-        b_.wait();
-
-        // Join all the worker threads.
-        for (auto& t : threads) {
-            if (t.joinable()) {
-                t.join();
-            }
-        }
-        is_shutdown_ = true;
-        std::cout << "All threads have finished." << std::endl;
+  // Join all the fibers. The main thread will participate in work.
+  for (auto &f : fibers) {
+    if (f.joinable()) {
+      f.join();
     }
+  }
 
-    void BoostFiberScheduler::setupWorkerThreads() {
-        for (unsigned int i = 1; i < thread_count_; ++i) {
-            threads.emplace_back([this]() {
-                boost::fibers::use_scheduling_algorithm<boost::fibers::algo::work_stealing>(thread_count_);
+  // Signal the barrier to release the worker threads.
+  std::cout << "\nAll fibers have completed. Signaling threads to exit.\n";
+  b_.wait();
 
-                b_.wait();
-            });
-        }
+  // Join all the worker threads.
+  for (auto &t : threads) {
+    if (t.joinable()) {
+      t.join();
     }
+  }
+  is_shutdown_ = true;
+  std::cout << "All threads have finished." << std::endl;
+}
+
+void BoostFiberScheduler::setupWorkerThreads() {
+  for (unsigned int i = 1; i < thread_count_; ++i) {
+    threads.emplace_back([this]() {
+      boost::fibers::use_scheduling_algorithm<
+          boost::fibers::algo::work_stealing>(thread_count_);
+
+      b_.wait();
+    });
+  }
+}
