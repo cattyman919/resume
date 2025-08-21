@@ -4,6 +4,7 @@ set(SOURCES
   "model/experience.cpp"
   "model/general.cpp"
   "parse/YAMLProcessor.cpp"
+  "scheduler/scheduler.cpp"
 )
 add_executable(${PROJECT_NAME} "${SOURCES}")
 
