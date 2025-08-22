@@ -18,12 +18,14 @@ class BoostFiberScheduler {
     fibers.emplace_back(std::forward<F>(func), std::forward<Args>(args)...);
   };
 
-  // Waits for all fibers to complete and then cleanly shuts down the worker
-  // threads.
-  void wait();
+  // Waits for all fibers to complete
+  void join();
 
  private:
   void setupWorkerThreads();
+
+  // Waits for all fibers to complete and then cleanly shuts down the worker
+  void shutdown();
 
   unsigned int thread_count_;
   boost::fibers::barrier b_;

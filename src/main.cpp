@@ -26,7 +26,7 @@ int main() {
     scheduler.addTask(&YAMLProcessor::parseExperience, &yaml_processor);
     scheduler.addTask(&YAMLProcessor::parseProject, &yaml_processor);
 
-    scheduler.wait();
+    scheduler.join();
     std::cout << "\n--- All YAML files parsed successfully ---\n\n";
 
   } catch (const YAML::Exception &e) {
@@ -39,6 +39,18 @@ int main() {
     std::cerr << "Error: " << e.what() << std::endl;
     return 1;
   }
+
+  // auto lambda = [] {
+  //   std::thread::id thread_id = std::this_thread::get_id();
+  //   std::stringstream ss;
+  //   ss << "Thread (" << thread_id << ") :  Hello World!\n";
+  //   std::cout << ss.str();
+  // };
+  //
+  // scheduler.addTask(lambda);
+  // scheduler.addTask(lambda);
+  // scheduler.addTask(lambda);
+  // scheduler.join();
 
   // std::cout << "\n--- General Information ---\n";
   // std::cout << yaml_processor.general << "\n";
