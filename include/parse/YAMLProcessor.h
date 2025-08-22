@@ -9,10 +9,11 @@ public:
   std::vector<Project> projects{};
   std::vector<Experience> experiences{};
 
-  YAMLProcessor() = default;
+  constexpr YAMLProcessor() = default;
 
-  YAMLProcessor(const General &general, const std::vector<Project> &projects,
-                const std::vector<Experience> &experiences)
+  constexpr YAMLProcessor(const General &general,
+                          const std::vector<Project> &projects,
+                          const std::vector<Experience> &experiences)
       : general(general), projects(projects), experiences(experiences) {}
 
   void parseGeneral();

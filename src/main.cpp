@@ -1,9 +1,9 @@
+#include <iostream>
+#include <thread>
+
 #include "parse/YAMLProcessor.h"
 #include "scheduler/scheduler.h"
 #include "yaml-cpp/yaml.h"
-
-#include <iostream>
-#include <thread>
 
 int main() {
   unsigned int thread_count = std::thread::hardware_concurrency();
@@ -19,13 +19,13 @@ int main() {
 
   BoostFiberScheduler scheduler(thread_count);
 
-  YAMLProcessor yaml_processor{};
-
-  scheduler.addTask(&YAMLProcessor::parseGeneral, &yaml_processor);
-  scheduler.addTask(&YAMLProcessor::parseExperience, &yaml_processor);
-  scheduler.addTask(&YAMLProcessor::parseProject, &yaml_processor);
+  YAMLProcessor yaml_processor;
 
   try {
+    scheduler.addTask(&YAMLProcessor::parseGeneral, &yaml_processor);
+    scheduler.addTask(&YAMLProcessor::parseExperience, &yaml_processor);
+    scheduler.addTask(&YAMLProcessor::parseProject, &yaml_processor);
+
     scheduler.wait();
     std::cout << "\n--- All YAML files parsed successfully ---\n\n";
 
@@ -40,8 +40,8 @@ int main() {
     return 1;
   }
 
-  std::cout << "\n--- General Information ---\n";
-  std::cout << yaml_processor.general << "\n";
+  // std::cout << "\n--- General Information ---\n";
+  // std::cout << yaml_processor.general << "\n";
 
   return 0;
 }
