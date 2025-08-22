@@ -17,16 +17,16 @@ int main() {
             << ") will use a total of " << thread_count << " Logical Cores."
             << std::endl;
 
-  BoostFiberScheduler scheduler(thread_count);
+  BoostFiberScheduler executor(thread_count);
 
   YAMLProcessor yaml_processor;
 
   try {
-    scheduler.addTask(&YAMLProcessor::parseGeneral, &yaml_processor);
-    scheduler.addTask(&YAMLProcessor::parseExperience, &yaml_processor);
-    scheduler.addTask(&YAMLProcessor::parseProject, &yaml_processor);
+    executor.addTask(&YAMLProcessor::parseGeneral, &yaml_processor);
+    executor.addTask(&YAMLProcessor::parseExperience, &yaml_processor);
+    executor.addTask(&YAMLProcessor::parseProject, &yaml_processor);
 
-    scheduler.join();
+    executor.join();
     std::cout << "\n--- All YAML files parsed successfully ---\n\n";
 
   } catch (const YAML::Exception &e) {
@@ -47,10 +47,10 @@ int main() {
   //   std::cout << ss.str();
   // };
   //
-  // scheduler.addTask(lambda);
-  // scheduler.addTask(lambda);
-  // scheduler.addTask(lambda);
-  // scheduler.join();
+  // executor.addTask(lambda);
+  // executor.addTask(lambda);
+  // executor.addTask(lambda);
+  // executor.join();
 
   // std::cout << "\n--- General Information ---\n";
   // std::cout << yaml_processor.general << "\n";

@@ -42,7 +42,8 @@ void BoostFiberScheduler::shutdown() {
     return;
   }
 
-  b_.wait();  // Wait for all worker threads to finish their tasks.
+  this->join();  // waits for the fibers to finish
+  b_.wait();     // Wait for all worker threads to finish their tasks.
 
   // Join all the worker threads.
   for (auto &t : threads) {
