@@ -2,6 +2,7 @@
 
 #include <concepts>
 #include <thread>
+#include <utility>
 
 #include "boost/fiber/all.hpp"
 
@@ -15,11 +16,22 @@ class BoostFiberScheduler {
   template <typename F, typename... Args>
     requires std::invocable<F, Args...>
   void addTask(F&& func, Args&&... args) {
-    fibers.emplace_back(std::forward<F>(func), std::forward<Args>(args)...);
+    // Debug Version
+    fibers.emplace_back([&] {
+      std::stringstream ss;
+      ss << "Running Task in thread (" << std::this_thread::get_id() << ")\n";
+      std::cout << ss.str();
+      std::invoke(std::forward<F>(func), std::forward<Args>(args)...);
+    });
+    // Release Version
+    // fibers.emplace_back(std::forward<F>(func), std::forward<Args>(args)...);
   };
 
   // Waits for all fibers to complete
   void join();
+
+  size_t getTotalTask() { return fibers.size(); }
+  size_t getFiberCapacity() { return fibers.capacity(); }
 
  private:
   void setupWorkerThreads();

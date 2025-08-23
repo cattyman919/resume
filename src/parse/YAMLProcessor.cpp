@@ -32,10 +32,7 @@ void setPersonalInfo(General &general, YAML::Node &general_node) {
 }
 
 void YAMLProcessor::parseGeneral(General &general) {
-  std::thread::id thread_id = std::this_thread::get_id();
-  std::stringstream ss;
-  ss << "Thread (" << thread_id << ") :  Parsing general.yaml...\n";
-  std::cout << ss.str();
+  std::cout << "Parsing general.yaml...\n";
 
   YAML::Node general_node = YAML::LoadFile("config/general.yaml");
 
@@ -95,10 +92,7 @@ void YAMLProcessor::parseGeneral(General &general) {
 }
 
 void YAMLProcessor::parseProject(std::vector<Project> &projects) {
-  std::thread::id thread_id = std::this_thread::get_id();
-  std::stringstream ss;
-  ss << "Thread (" << thread_id << ") :  Parsing project.yaml...\n";
-  std::cout << ss.str();
+  std::cout << "Parsing projects.yaml...\n";
 
   YAML::Node projects_node = YAML::LoadFile("config/projects.yaml");
 
@@ -120,10 +114,8 @@ void YAMLProcessor::parseProject(std::vector<Project> &projects) {
 }
 
 void YAMLProcessor::parseExperience(std::vector<Experience> &experiences) {
-  std::thread::id thread_id = std::this_thread::get_id();
-  std::stringstream ss;
-  ss << "Thread (" << thread_id << ") :  Parsing experiences.yaml...\n";
-  std::cout << ss.str();
+  std::cout << "Parsing experiences.yaml...\n";
+
   YAML::Node experiences_node = YAML::LoadFile("config/experiences.yaml");
 
   if (experiences_node && experiences_node.IsSequence()) {

@@ -31,6 +31,8 @@ void BoostFiberScheduler::join() {
     }
   }
 
+  fibers.clear();
+
   // Signal the barrier to release the worker threads.
   std::cout << "\nAll fibers have completed.\n";
 }
