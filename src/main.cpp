@@ -1,3 +1,4 @@
+#include <functional>
 #include <iostream>
 #include <thread>
 
@@ -19,41 +20,38 @@ int main() {
 
   BoostFiberScheduler executor(thread_count);
 
-  YAMLProcessor yaml_processor;
+  General general{};
+  std::vector<Experience> experiences{};
+  std::vector<Project> projects{};
 
   try {
-    executor.addTask(&YAMLProcessor::parseGeneral, &yaml_processor);
-    executor.addTask(&YAMLProcessor::parseExperience, &yaml_processor);
-    executor.addTask(&YAMLProcessor::parseProject, &yaml_processor);
+    executor.addTask(YAMLProcessor::parseGeneral, std::ref(general));
+    executor.addTask(YAMLProcessor::parseExperience, std::ref(experiences));
+    executor.addTask(YAMLProcessor::parseProject, std::ref(projects));
 
     executor.join();
     std::cout << "\n--- All YAML files parsed successfully ---\n\n";
 
-  } catch (const YAML::Exception &e) {
+  } catch (const YAML::Exception& e) {
     std::cerr << "\n--- A YAML parsing task failed --- \n";
     std::cerr << "Error: " << e.what() << std::endl;
     return 1;
 
-  } catch (const std::exception &e) {
+  } catch (const std::exception& e) {
     std::cerr << "\n--- An unexpected error occurred --- \n";
     std::cerr << "Error: " << e.what() << std::endl;
     return 1;
   }
 
-  // auto lambda = [] {
-  //   std::thread::id thread_id = std::this_thread::get_id();
-  //   std::stringstream ss;
-  //   ss << "Thread (" << thread_id << ") :  Hello World!\n";
-  //   std::cout << ss.str();
-  // };
-  //
-  // executor.addTask(lambda);
-  // executor.addTask(lambda);
-  // executor.addTask(lambda);
-  // executor.join();
+  std::cout << "\n--- General Information ---\n";
+  std::cout << general << "\n";
+  for (const auto& exp : experiences) {
+    std::cout << exp << "\n";
+  }
 
-  // std::cout << "\n--- General Information ---\n";
-  // std::cout << yaml_processor.general << "\n";
+  for (const auto& proj : projects) {
+    std::cout << proj << "\n";
+  }
 
   return 0;
 }

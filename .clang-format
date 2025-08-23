@@ -248,7 +248,7 @@ RawStringFormats:
       - ParsePartialTestProto
     CanonicalDelimiter: pb
     BasedOnStyle:    google
-ReferenceAlignment: Pointer
+ReferenceAlignment: Left
 ReflowComments:  Always
 RemoveBracesLLVM: false
 RemoveEmptyLinesInUnwrappedLines: false
