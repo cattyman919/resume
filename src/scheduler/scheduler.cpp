@@ -1,11 +1,13 @@
 #include "scheduler/scheduler.h"
 
+#include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <thread>
 
 #include "boost/fiber/all.hpp"
 
-BoostFiberScheduler::BoostFiberScheduler(unsigned int thread_count)
+BoostFiberScheduler::BoostFiberScheduler(size_t thread_count)
     : thread_count_(thread_count),
       b_(thread_count)  // Initialize barrier to wait for all threads
 {

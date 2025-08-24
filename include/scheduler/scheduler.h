@@ -1,6 +1,7 @@
 #pragma once
 
 #include <concepts>
+#include <cstddef>
 #include <thread>
 #include <utility>
 
@@ -8,7 +9,12 @@
 
 class BoostFiberScheduler {
  public:
-  BoostFiberScheduler(unsigned int thread_count);
+  explicit BoostFiberScheduler(size_t thread_count);
+
+  // Remove Copy Constructor and Assignment
+  BoostFiberScheduler(const BoostFiberScheduler& other) = delete;
+  BoostFiberScheduler& operator=(const BoostFiberScheduler& other) = delete;
+
   ~BoostFiberScheduler();
 
   // A user-friendly way to add a task (a fiber).
@@ -39,9 +45,9 @@ class BoostFiberScheduler {
   // Waits for all fibers to complete and then cleanly shuts down the worker
   void shutdown();
 
-  unsigned int thread_count_;
+  size_t thread_count_{};
   boost::fibers::barrier b_;
-  std::vector<std::thread> threads;
-  std::vector<boost::fibers::fiber> fibers;
-  bool is_shutdown_ = false;
+  std::vector<std::thread> threads{};
+  std::vector<boost::fibers::fiber> fibers{};
+  bool is_shutdown_{false};
 };

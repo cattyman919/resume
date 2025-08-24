@@ -30,7 +30,7 @@ void getAllCVTypes(std::shared_ptr<ConcurrentHashSet<std::string>> shared_set,
 }
 
 int main() {
-  unsigned int thread_count = std::thread::hardware_concurrency();
+  size_t thread_count = std::thread::hardware_concurrency();
 
   // If hardware_concurrency() returns 0, we can assume a single thread.
   if (thread_count == 0) {
@@ -41,7 +41,7 @@ int main() {
             << ") will use a total of " << thread_count << " Logical Cores."
             << std::endl;
 
-  BoostFiberScheduler executor(thread_count);
+  BoostFiberScheduler executor{thread_count};
 
   General general{};
   std::vector<Experience> experiences{};
@@ -64,6 +64,9 @@ int main() {
     std::cerr << "\n--- An unexpected error occurred --- \n";
     std::cerr << "Error: " << e.what() << std::endl;
     return 1;
+  } catch (...) {
+    std::cerr << "\n--- An unexpected error occurred --- \n";
+    return 1;
   }
 
   // std::cout << "\n--- General Information ---\n";
@@ -76,11 +79,11 @@ int main() {
   //   std::cout << proj << "\n";
   // }
 
-  auto shared_set = std::make_shared<ConcurrentHashSet<std::string>>();
+  auto unique_cv_types = std::make_shared<ConcurrentHashSet<std::string>>();
 
   try {
-    executor.addTask([&] { getAllCVTypes(shared_set, projects); });
-    executor.addTask([&] { getAllCVTypes(shared_set, experiences); });
+    executor.addTask([&] { getAllCVTypes(unique_cv_types, projects); });
+    executor.addTask([&] { getAllCVTypes(unique_cv_types, experiences); });
 
     executor.join();
 
@@ -88,11 +91,14 @@ int main() {
     std::cerr << "\n--- An unexpected error occurred --- \n";
     std::cerr << "Error: " << e.what() << std::endl;
     return 1;
+  } catch (...) {
+    std::cerr << "\n--- An unexpected error occurred --- \n";
+    return 1;
   }
 
   std::cout << "CV Types\n";
 
-  for (const auto& item : shared_set->getSet()) {
+  for (const auto& item : unique_cv_types->getSet()) {
     std::cout << "- " << item << '\n';
   }
 
