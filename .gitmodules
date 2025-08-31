@@ -1,0 +1,3 @@
+[submodule "deps/odin-yaml"]
+	path = deps/odin-yaml
+	url = https://github.com/PucklaJ/odin-yaml
