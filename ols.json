@@ -4,6 +4,7 @@
     { "name": "core", "path": "/home/senohebat/odin/core" },
     { "name": "vendor", "path": "/home/senohebat/odin/vendor" }
     { "name": "deps", "path": "./deps" }
+    { "name": "src", "path": "./src" }
   ],
   "enable_semantic_tokens": true,
   "enable_document_symbols": true,

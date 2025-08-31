@@ -30,7 +30,7 @@ docker:
 # This process is much faster than using the Docker container
 # but requires a manually installed TexLive on your system
 run:
-	@odin run . --collection:deps=deps
+	@odin run . --collection:deps=deps --collection:src=src
 
 clean:
 	@echo "Cleaning up..."

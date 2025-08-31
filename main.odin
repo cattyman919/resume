@@ -4,6 +4,7 @@ import "core:fmt"
 import "core:os"
 import yaml "deps:odin-yaml"
 import "src/model"
+import "src/parse"
 
 main :: proc() {
 
@@ -12,14 +13,15 @@ main :: proc() {
 		fmt.eprintfln("---- {}", yaml.error_string(err, "config/projects.yaml"))
 		os.exit(1)
 	}
-	projects_sequence := doc.(yaml.Sequence)
+	project_seq := doc.(yaml.Sequence)
 
+	projects := make([dynamic]model.Project)
+	model.unmarshal_projects(doc, &projects)
+	fmt.println(projects)
 
-	// fmt.println(projects_slice[0])
-
-	projects := model.unmarshal_projects(projects_sequence)
-	fmt.println(projects[0].Name)
-
-	// project.Name = projects_slice[0].(yaml.Mapping)["name"].(string)
+	// projects := model.unmarshal_projects(doc.(yaml.Sequence))
+	// project := model.make_project()
+	// parse.unmarshal(project_seq[0], &project)
+	// fmt.println(project)
 }
 
