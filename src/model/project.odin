@@ -36,7 +36,7 @@ unmarshal_projects :: proc(projects_yaml: yaml.Sequence) -> [dynamic]Project {
 				continue
 			}
 
-			field_ptr := uintptr(uintptr(ptr) + s_field.offset)
+			field_ptr := uintptr(ptr + s_field.offset)
 
 			#partial switch v in value {
 			case string:

@@ -18,6 +18,7 @@ main :: proc() {
 	// fmt.println(projects_slice[0])
 
 	projects := model.unmarshal_projects(projects_sequence)
+	fmt.println(projects[0].Name)
 
 	// project.Name = projects_slice[0].(yaml.Mapping)["name"].(string)
 }

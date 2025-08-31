@@ -5,9 +5,7 @@ IMAGE_NAME := resume-generator
 
 .PHONY: all run run_debug docker clean build
 
-all: $(TARGET)
-	@echo "Running application..."
-	./$(TARGET)
+all: run
 
 build:
 	mkdir -p bin
@@ -32,13 +30,7 @@ docker:
 # This process is much faster than using the Docker container
 # but requires a manually installed TexLive on your system
 run:
-	go run cmd/resume/main.go
-
-run_debug:
-	go run cmd/resume/main.go --debug
-
-run_benchmark:
-	go run cmd/resume/main.go --benchmark
+	@odin run . --collection:deps=deps
 
 clean:
 	@echo "Cleaning up..."
