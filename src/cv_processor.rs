@@ -2,11 +2,13 @@ use crate::{
     latex,
     types::{Award, CVData, Education, Experience, HasCvTypes, Project},
 };
+use anyhow::{Context, Result};
 use futures::future::join_all;
 use std::{collections::HashSet, path::Path, process::Stdio, sync::Arc};
 use tokio::{fs, io, process::Command, sync::Mutex};
 
-pub async fn get_all_cv_types(cv_data: &CVData) -> Result<HashSet<String>, &'static str> {
+pub async fn get_all_cv_types(cv_data: &CVData) -> Result<HashSet<String>> {
+    // Atomic Reference Counted pointer to a Mutex-wrapped HashSet
     let total_types = Arc::new(Mutex::new(HashSet::<String>::new()));
 
     let experience_task = get_types_per_section(&cv_data.experiences, Arc::clone(&total_types));
@@ -14,9 +16,11 @@ pub async fn get_all_cv_types(cv_data: &CVData) -> Result<HashSet<String>, &'sta
 
     tokio::join!(experience_task, project_task);
 
-    let final_set = Arc::try_unwrap(total_types)
-        .expect("Error: Arc should be uniquely owned here")
-        .into_inner();
+    let mutex = Arc::try_unwrap(total_types)
+        .ok()
+        .context("Failed to get unique ownership of Arc for final processing.")?;
+
+    let final_set = mutex.into_inner();
 
     Ok(final_set)
 }
@@ -246,7 +250,7 @@ async fn write_pdf(cv_type: &str, style: &str, debug_mode: bool) -> io::Result<(
             "pdflatex failed for {}.pdf with exit code: {}\nError: {}",
             target_pdf, output.status, stderr_info
         );
-        return Err(io::Error::new(io::ErrorKind::Other, error_message));
+        return Err(io::Error::other(error_message));
     }
 
     println!("Generated {}.pdf", target_pdf);
@@ -263,16 +267,15 @@ pub async fn move_aux_files() -> io::Result<()> {
     let mut entries = fs::read_dir(out_dir).await?;
     while let Some(entry) = entries.next_entry().await? {
         let path = entry.path();
-        if path.is_file() {
-            if let Some(ext) = path.extension().and_then(|s| s.to_str()) {
-                if ext == "log" || ext == "aux" {
-                    if let Some(file_name) = path.file_name() {
-                        let new_path = aux_dir.join(file_name);
-                        fs::rename(&path, &new_path).await?;
-                        // println!("Moved {:?} to {:?}", path, new_path);
-                    }
-                }
-            }
+
+        if path.is_file()
+            && let Some(ext) = path.extension().and_then(|s| s.to_str())
+            && (ext == "log" || ext == "aux")
+            && let Some(file_name) = path.file_name()
+        {
+            let new_path = aux_dir.join(file_name);
+            fs::rename(&path, &new_path).await?;
+            // println!("Moved {:?} to {:?}", path, new_path);
         }
     }
     Ok(())

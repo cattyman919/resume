@@ -4,6 +4,9 @@ repomix*
 cv/*
 bin/*
 .aider*
+.cache
+deps
+.bacon*
 
 
 # Added by cargo
