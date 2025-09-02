@@ -473,8 +473,10 @@ name = "autocv-core"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "env_logger",
  "futures",
  "lazy_static",
+ "log",
  "regex",
  "serde",
  "serde_yaml",
@@ -491,6 +493,7 @@ dependencies = [
  "egui",
  "env_logger",
  "futures",
+ "log",
  "tokio",
 ]
 

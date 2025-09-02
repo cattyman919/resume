@@ -32,7 +32,7 @@ async fn load_parse_yaml<T: DeserializeOwned>(path: &str) -> Result<T, CvLoadErr
         source: e,
     })?;
 
-    return Ok(data);
+    Ok(data)
 }
 
 #[derive(Debug)]

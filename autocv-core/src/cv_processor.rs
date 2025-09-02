@@ -7,6 +7,7 @@ use crate::{
 };
 use anyhow::{Context, Result};
 use futures::future::join_all;
+use log::info;
 use std::{
     collections::HashSet,
     path::{Path, PathBuf},
@@ -42,7 +43,7 @@ where
 }
 
 pub async fn setup_directories() -> Result<()> {
-    println!("Creating out & cv directory...");
+    info!("Creating out & cv directory...");
     let create_out = fs::create_dir("out");
     let create_cv = fs::create_dir("cv");
 
@@ -52,7 +53,7 @@ pub async fn setup_directories() -> Result<()> {
         return Err(e).context("Failed to create initial directories");
     }
 
-    println!("Directories are ready.");
+    info!("Directories are ready.");
     Ok(())
 }
 

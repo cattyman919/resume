@@ -18,7 +18,7 @@ run_benchmark:
 	cargo run --bin autocv-cli -- --benchmark
 
 run_gui:
-	 cargo run --bin autocv-gui
+	 RUST_LOG=info cargo run --bin autocv-gui
 
 clean:
 	@echo "Cleaning up..."

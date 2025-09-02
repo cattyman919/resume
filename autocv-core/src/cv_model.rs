@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct PersonalInfo {
     pub name: String,
     pub email: String,
@@ -14,7 +14,7 @@ pub struct PersonalInfo {
     pub location: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct Experience {
     pub role: String,
     pub job_type: String,
@@ -25,7 +25,7 @@ pub struct Experience {
     pub cv_type: Vec<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct Education {
     pub institution: String,
     pub degree: String,
@@ -34,7 +34,7 @@ pub struct Education {
     pub details: Vec<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct Award {
     pub title: String,
     pub organization: String,
@@ -42,7 +42,7 @@ pub struct Award {
     pub points: Vec<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct Project {
     pub name: String,
     pub github: String,
@@ -51,13 +51,13 @@ pub struct Project {
     pub cv_type: Vec<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct Certificate {
     pub name: String,
     pub year: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct SkillsAchievements {
     #[serde(rename = "Hard Skills")]
     pub hard_skills: Vec<String>,
@@ -78,7 +78,7 @@ pub struct SkillsAchievements {
     pub certificates: Vec<Certificate>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct GeneralCVData {
     pub personal_info: PersonalInfo,
     pub education: Vec<Education>,

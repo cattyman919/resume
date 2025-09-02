@@ -1,10 +1,81 @@
-use crate::app::{App, AppTab};
+use autocv_core::cv_model::PersonalInfo;
 
-pub fn general_ui(ui: &mut egui::Ui) {
-    personal_info_ui(ui);
+use crate::{
+    actor::State,
+    app::{App, AppTab},
+};
+
+pub fn general_ui(ui: &mut egui::Ui, local_state: &mut State) {
+    personal_info_ui(ui, &mut local_state.general_cv.personal_info);
     skills_achivements_ui(ui);
     education_ui(ui);
     awards_ui(ui);
+}
+
+pub fn personal_info_ui(ui: &mut egui::Ui, personal_info: &mut PersonalInfo) {
+    ui.heading("Personal Info");
+    ui.label("Name");
+    ui.add(egui::TextEdit::singleline(&mut personal_info.name).hint_text("Your Name"));
+    ui.label("Location");
+    ui.add(egui::TextEdit::singleline(&mut personal_info.location).hint_text("Your Location"));
+    ui.label("Email");
+    ui.add(egui::TextEdit::singleline(&mut personal_info.email).hint_text("Your email"));
+    ui.label("Phone");
+    ui.add(egui::TextEdit::singleline(&mut personal_info.phone).hint_text("Your phone number"));
+    ui.label("Website");
+    ui.add(egui::TextEdit::singleline(&mut personal_info.website).hint_text("Your website"));
+    ui.label("LinkedIn");
+    ui.add(
+        egui::TextEdit::singleline(&mut personal_info.linkedin).hint_text("Your LinkedIn profile"),
+    );
+    ui.label("LinkedIn Handle");
+    ui.add(
+        egui::TextEdit::singleline(&mut personal_info.linkedin_handle)
+            .hint_text("Your LinkedIn handle"),
+    );
+    ui.label("Github");
+    ui.add(egui::TextEdit::singleline(&mut personal_info.github).hint_text("Your GitHub profile"));
+    ui.label("Github Handle");
+    ui.add(
+        egui::TextEdit::singleline(&mut personal_info.github_handle)
+            .hint_text("Your GitHub handle"),
+    );
+    ui.label("Profile Pic");
+    ui.add(egui::TextEdit::singleline(&mut personal_info.profile_pic).hint_text("Profile Pic"));
+}
+
+pub fn skills_achivements_ui(ui: &mut egui::Ui) {
+    ui.heading("Skills & Achievements");
+    ui.label("Skills");
+    ui.add(egui::TextEdit::multiline(&mut String::new()).hint_text("Your Skills"));
+    ui.label("Achievements");
+    ui.add(egui::TextEdit::multiline(&mut String::new()).hint_text("Your Achievements"));
+}
+
+pub fn education_ui(ui: &mut egui::Ui) {
+    ui.heading("Education");
+    ui.label("Institution");
+    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your Institution"));
+    ui.label("Degree");
+    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your Degree"));
+    ui.label("Dates");
+    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your Dates"));
+    ui.label("GPA");
+    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your GPA"));
+    ui.label("Details");
+    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your GPA"));
+}
+
+pub fn awards_ui(ui: &mut egui::Ui) {
+    ui.heading("Awards");
+    ui.label("Title");
+    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Title"));
+    ui.label("Organization");
+    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Organization"));
+    ui.label("Date");
+    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Date"));
+    ui.label("Points");
+    ui.add(egui::TextEdit::multiline(&mut String::new()).hint_text("Points"));
 }
 
 pub fn project_ui(ui: &mut egui::Ui) {
@@ -109,62 +180,4 @@ pub fn side_panel_ui(ctx: &egui::Context, app: &mut App) {
                 app.selected_tab = AppTab::Projects;
             }
         });
-}
-
-pub fn personal_info_ui(ui: &mut egui::Ui) {
-    ui.heading("Personal Info");
-    ui.label("Name");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your Name"));
-    ui.label("Location");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your Location"));
-    ui.label("Email");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your email"));
-    ui.label("Phone");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your phone number"));
-    ui.label("Website");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your website"));
-    ui.label("LinkedIn");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your LinkedIn profile"));
-    ui.label("LinkedIn Handle");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your LinkedIn handle"));
-    ui.label("Github");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your GitHub profile"));
-    ui.label("Github Handle");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your GitHub handle"));
-    ui.label("Profile Pic");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Profile Pic"));
-}
-
-pub fn skills_achivements_ui(ui: &mut egui::Ui) {
-    ui.heading("Skills & Achievements");
-    ui.label("Skills");
-    ui.add(egui::TextEdit::multiline(&mut String::new()).hint_text("Your Skills"));
-    ui.label("Achievements");
-    ui.add(egui::TextEdit::multiline(&mut String::new()).hint_text("Your Achievements"));
-}
-
-pub fn education_ui(ui: &mut egui::Ui) {
-    ui.heading("Education");
-    ui.label("Institution");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your Institution"));
-    ui.label("Degree");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your Degree"));
-    ui.label("Dates");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your Dates"));
-    ui.label("GPA");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your GPA"));
-    ui.label("Details");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your GPA"));
-}
-
-pub fn awards_ui(ui: &mut egui::Ui) {
-    ui.heading("Awards");
-    ui.label("Title");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Title"));
-    ui.label("Organization");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Organization"));
-    ui.label("Date");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Date"));
-    ui.label("Points");
-    ui.add(egui::TextEdit::multiline(&mut String::new()).hint_text("Points"));
 }

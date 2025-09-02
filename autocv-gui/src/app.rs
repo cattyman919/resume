@@ -1,9 +1,16 @@
 mod ui;
+use std::sync::{Arc, Mutex};
+
+use log::{info, warn};
+use tokio::sync::mpsc;
 use ui::general_ui;
 
-use crate::app::ui::{experience_ui, project_ui, side_panel_ui};
+use crate::{
+    actor::{ActorMessage, State},
+    app::ui::{experience_ui, project_ui, side_panel_ui},
+};
 
-#[derive(PartialEq)] // We need this to compare enum variants
+#[derive(PartialEq)]
 pub enum AppTab {
     General,
     Experiences,
@@ -11,34 +18,35 @@ pub enum AppTab {
 }
 
 pub struct App {
-    label: String,
-    value: f32,
     selected_tab: AppTab,
-}
-
-impl Default for App {
-    fn default() -> Self {
-        Self {
-            label: "Hello World!".to_owned(),
-            value: 2.7,
-            selected_tab: AppTab::General,
-        }
-    }
+    shared_state: Arc<Mutex<State>>,
+    local_state: State,
+    actor_sender: mpsc::Sender<ActorMessage>,
 }
 
 impl App {
     /// Called once before the first frame.
-    pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
+    pub fn new(
+        _cc: &eframe::CreationContext<'_>,
+        actor_sender: mpsc::Sender<ActorMessage>,
+        shared_state: Arc<Mutex<State>>,
+    ) -> Self {
         // This is also where you can customize the look and feel of egui using
         // `cc.egui_ctx.set_visuals` and `cc.egui_ctx.set_fonts`.
+        // Default::default()
 
-        Default::default()
+        Self {
+            selected_tab: AppTab::General,
+            local_state: Arc::clone(&shared_state).lock().unwrap().clone(),
+            shared_state,
+            actor_sender,
+        }
     }
 }
 
 impl eframe::App for App {
     /// Called by the framework to save state before shutdown.
-    fn save(&mut self, storage: &mut dyn eframe::Storage) {
+    fn save(&mut self, _storage: &mut dyn eframe::Storage) {
         // eframe::set_value(storage, eframe::APP_KEY, self);
     }
 
@@ -46,20 +54,18 @@ impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
-        // egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
-        //     // The top panel is often a good place for a menu bar:
-        //
-        //     egui::MenuBar::new().ui(ui, |ui| {
-        //         ui.menu_button("File", |ui| {
-        //             if ui.button("Quit").clicked() {
-        //                 ctx.send_viewport_cmd(egui::ViewportCommand::Close);
-        //             }
-        //         });
-        //         ui.add_space(16.0);
-        //
-        //         egui::widgets::global_theme_preference_buttons(ui);
-        //     });
-        // });
+        egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
+            // The top panel is often a good place for a menu bar:
+
+            egui::MenuBar::new().ui(ui, |ui| {
+                if ui.button("Compile").clicked() {
+                    // ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                }
+                ui.add_space(16.0);
+
+                egui::widgets::global_theme_preference_buttons(ui);
+            });
+        });
 
         side_panel_ui(ctx, self);
 
@@ -69,31 +75,29 @@ impl eframe::App for App {
 
             egui::ScrollArea::vertical().show(ui, |ui| {
                 match self.selected_tab {
-                    AppTab::General => general_ui(ui),
+                    AppTab::General => general_ui(ui, &mut self.local_state),
                     AppTab::Experiences => experience_ui(ui),
                     AppTab::Projects => project_ui(ui),
                 }
                 ui.allocate_space(ui.available_size());
             });
 
-            // ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
-            //     powered_by_egui_and_eframe(ui);
-            //     egui::warn_if_debug_build(ui);
-            // });
+            // ui.separator();
+            // ui.heading("Content from Actor:");
+            //
+            // if let Ok(state) = self.shared_state.try_lock() {
+            //     info!("Successfully locked the shared state.",);
+            //     ui.label(&state.general_cv.personal_info.name);
+            // } else {
+            //     warn!("Failed to lock the shared state.");
+            //     ui.label("State is being updated...");
+            // }
+            //
+            // Lock the mutex to safely read the data
+            // let state = self.shared_state.lock().unwrap();
+            // ui.label(&state);
+
+            // ctx.request_repaint(); // Ensures the UI updates when the actor changes the state
         });
     }
-}
-
-fn _powered_by_egui_and_eframe(ui: &mut egui::Ui) {
-    ui.horizontal(|ui| {
-        ui.spacing_mut().item_spacing.x = 0.0;
-        ui.label("Powered by ");
-        ui.hyperlink_to("egui", "https://github.com/emilk/egui");
-        ui.label(" and ");
-        ui.hyperlink_to(
-            "eframe",
-            "https://github.com/emilk/egui/tree/master/crates/eframe",
-        );
-        ui.label(".");
-    });
 }
