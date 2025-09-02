@@ -1,4 +1,6 @@
+mod style;
 mod ui;
+
 use std::sync::{Arc, Mutex};
 
 use log::{info, warn};
@@ -7,6 +9,7 @@ use ui::general_ui;
 
 use crate::{
     actor::{ActorMessage, State},
+    app::style::apply_style,
     app::ui::{experience_ui, project_ui, side_panel_ui},
 };
 
@@ -27,13 +30,16 @@ pub struct App {
 impl App {
     /// Called once before the first frame.
     pub fn new(
-        _cc: &eframe::CreationContext<'_>,
+        cc: &eframe::CreationContext<'_>,
         actor_sender: mpsc::Sender<ActorMessage>,
         shared_state: Arc<Mutex<State>>,
     ) -> Self {
         // This is also where you can customize the look and feel of egui using
         // `cc.egui_ctx.set_visuals` and `cc.egui_ctx.set_fonts`.
         // Default::default()
+
+        let style = apply_style();
+        cc.egui_ctx.set_style(style);
 
         Self {
             selected_tab: AppTab::General,
