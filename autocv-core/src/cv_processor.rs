@@ -5,7 +5,7 @@ use crate::{
     },
     latex,
 };
-use anyhow::Result;
+use anyhow::{Context, Result};
 use futures::future::join_all;
 use std::{
     collections::HashSet,
@@ -39,6 +39,21 @@ where
         }
     }
     local_types
+}
+
+pub async fn setup_directories() -> Result<()> {
+    println!("Creating out & cv directory...");
+    let create_out = fs::create_dir("out");
+    let create_cv = fs::create_dir("cv");
+
+    if let Err(e) = tokio::try_join!(create_out, create_cv)
+        && e.kind() != std::io::ErrorKind::AlreadyExists
+    {
+        return Err(e).context("Failed to create initial directories");
+    }
+
+    println!("Directories are ready.");
+    Ok(())
 }
 
 #[derive(Clone, Copy)]

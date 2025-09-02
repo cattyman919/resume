@@ -1,7 +1,6 @@
-use anyhow::{Context, Result};
+use anyhow::Result;
 use futures::future::join_all;
 use std::{env, error::Error, process, sync::Arc, time::Instant};
-use tokio::fs;
 
 use autocv_core::{self, cv_processor, load_cv};
 
@@ -20,21 +19,6 @@ impl AppConfig {
     }
 }
 
-async fn setup_directories() -> Result<()> {
-    println!("Creating out & cv directory...");
-    let create_out = fs::create_dir("out");
-    let create_cv = fs::create_dir("cv");
-
-    if let Err(e) = tokio::try_join!(create_out, create_cv)
-        && e.kind() != std::io::ErrorKind::AlreadyExists
-    {
-        return Err(e).context("Failed to create initial directories");
-    }
-
-    println!("Directories are ready.");
-    Ok(())
-}
-
 async fn run() -> Result<(), Box<dyn Error>> {
     let config = AppConfig::new();
     let start_time = if config.is_benchmark_mode {
@@ -45,7 +29,7 @@ async fn run() -> Result<(), Box<dyn Error>> {
 
     println!("\n==== Generating All LaTeX CV ====\n");
 
-    setup_directories().await?;
+    cv_processor::setup_directories().await?;
 
     println!("Loading YAML Data...");
     let (general_cv, projects_cv, experiences_cv) = load_cv::load_cv_data().await?;

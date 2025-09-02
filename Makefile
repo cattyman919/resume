@@ -17,6 +17,9 @@ run_debug:
 run_benchmark:
 	cargo run --bin autocv-cli -- --benchmark
 
+run_gui:
+	 cargo run --bin autocv-gui
+
 clean:
 	@echo "Cleaning up..."
 	$(RM) out
