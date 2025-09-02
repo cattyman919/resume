@@ -6,7 +6,7 @@ use egui::{
 };
 
 // Define the color palette for our Ayu Dark theme
-mod ayu_dark {
+pub mod ayu_dark {
     use egui::Color32;
     pub const BG_DARK: Color32 = Color32::from_rgb(13, 17, 23); // Background
     pub const BG_MEDIUM: Color32 = Color32::from_rgb(22, 27, 34); // Panels, frames
@@ -15,6 +15,14 @@ mod ayu_dark {
     pub const FG_LIGHT: Color32 = Color32::from_rgb(182, 189, 202); // Main text
     pub const ACCENT_YELLOW: Color32 = Color32::from_rgb(255, 198, 0); // Primary accent
     pub const ACCENT_ORANGE: Color32 = Color32::from_rgb(255, 167, 26); // Other accents
+}
+
+pub fn top_panel_frame() -> egui::Frame {
+    egui::Frame {
+        inner_margin: egui::Margin::symmetric(10, 8),
+        fill: ayu_dark::BG_MEDIUM, // Use the medium background color
+        ..Default::default()
+    }
 }
 
 pub fn apply_style() -> Style {

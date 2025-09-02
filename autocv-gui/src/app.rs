@@ -60,18 +60,38 @@ impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
-        egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
-            // The top panel is often a good place for a menu bar:
+        let top_panel_frame = style::top_panel_frame();
 
-            egui::MenuBar::new().ui(ui, |ui| {
-                if ui.button("Compile").clicked() {
-                    // ctx.send_viewport_cmd(egui::ViewportCommand::Close);
-                }
-                ui.add_space(16.0);
+        // Top Panel
+        egui::TopBottomPanel::top("top_panel")
+            .frame(top_panel_frame)
+            .show(ctx, |ui| {
+                ui.horizontal(|ui| {
+                    // --- Left side of the panel ---
+                    ui.with_layout(egui::Layout::left_to_right(egui::Align::Center), |ui| {
+                        ui.label(egui::RichText::new("AutoCV Config").strong().size(16.0));
+                    });
 
-                egui::widgets::global_theme_preference_buttons(ui);
+                    // --- Right side of the panel ---
+                    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                        let compile_button = egui::Button::new(
+                            egui::RichText::new("Compile PDF")
+                                .color(crate::app::style::ayu_dark::BG_DARK)
+                                .strong(),
+                        )
+                        .fill(crate::app::style::ayu_dark::ACCENT_YELLOW);
+
+                        if ui
+                            .add(compile_button)
+                            .on_hover_text("Compile the CV configuration to a PDF file")
+                            .clicked()
+                        {
+                            // TODO: Send compile message to actor
+                            info!("Compile button clicked!");
+                        }
+                    });
+                });
             });
-        });
 
         side_panel_ui(ctx, self);
 
