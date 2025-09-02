@@ -47,8 +47,8 @@ pub struct Project {
     pub name: String,
     pub github: String,
     pub github_handle: String,
-    pub points: Vec<String>,
     pub cv_type: Vec<String>,
+    pub points: Vec<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]

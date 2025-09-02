@@ -75,9 +75,19 @@ impl eframe::App for App {
 
             egui::ScrollArea::vertical().show(ui, |ui| {
                 match self.selected_tab {
-                    AppTab::General => general_ui(ui, &mut self.local_state),
-                    AppTab::Experiences => experience_ui(ui),
-                    AppTab::Projects => project_ui(ui),
+                    AppTab::General => general_ui(ui, &mut self.local_state.general_cv),
+                    AppTab::Experiences => {
+                        for experience in self.local_state.experiences_cv.iter_mut() {
+                            experience_ui(ui, experience);
+                            ui.separator();
+                        }
+                    }
+                    AppTab::Projects => {
+                        for project in self.local_state.projects_cv.iter_mut() {
+                            project_ui(ui, project);
+                            ui.separator();
+                        }
+                    }
                 }
                 ui.allocate_space(ui.available_size());
             });

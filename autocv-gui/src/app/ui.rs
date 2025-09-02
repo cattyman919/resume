@@ -1,118 +1,280 @@
-use autocv_core::cv_model::PersonalInfo;
-
-use crate::{
-    actor::State,
-    app::{App, AppTab},
+use autocv_core::cv_model::{
+    Award, Certificate, Education, Experience, GeneralCVData, PersonalInfo, Project,
+    SkillsAchievements,
 };
 
-pub fn general_ui(ui: &mut egui::Ui, local_state: &mut State) {
-    personal_info_ui(ui, &mut local_state.general_cv.personal_info);
-    skills_achivements_ui(ui);
-    education_ui(ui);
-    awards_ui(ui);
+use crate::app::{App, AppTab};
+
+// A helper function to create a consistent section header
+fn section_header(ui: &mut egui::Ui, title: &str) {
+    ui.add_space(10.0);
+    ui.heading(title);
+    ui.add_space(4.0);
+}
+
+// A helper for adding/removing items from a Vec<String>
+fn editable_list(ui: &mut egui::Ui, title: &str, items: &mut Vec<String>) {
+    ui.label(title);
+    let mut item_to_remove = None;
+    for (i, item) in items.iter_mut().enumerate() {
+        ui.horizontal(|ui| {
+            ui.text_edit_multiline(item);
+            if ui.button("➖").on_hover_text("Remove").clicked() {
+                item_to_remove = Some(i);
+            }
+        });
+    }
+
+    if let Some(index) = item_to_remove {
+        items.remove(index);
+    }
+
+    if ui.button("➕ Add").clicked() {
+        items.push(String::new());
+    }
+    ui.add_space(5.0);
+}
+
+// A specific helper for the Vec<Certificate>
+fn certificate_list(ui: &mut egui::Ui, title: &str, items: &mut Vec<Certificate>) {
+    ui.label(title);
+    let mut item_to_remove = None;
+    for (i, cert) in items.iter_mut().enumerate() {
+        ui.horizontal(|ui| {
+            ui.add(egui::TextEdit::singleline(&mut cert.year).desired_width(40.0));
+            ui.add(egui::TextEdit::singleline(&mut cert.name).desired_width(f32::INFINITY));
+            if ui.button("➖").on_hover_text("Remove").clicked() {
+                item_to_remove = Some(i);
+            }
+        });
+    }
+
+    if let Some(index) = item_to_remove {
+        items.remove(index);
+    }
+
+    if ui.button("➕ Add Certificate").clicked() {
+        items.push(Certificate::default());
+    }
+    ui.add_space(5.0);
+}
+
+pub fn general_ui(ui: &mut egui::Ui, general_cv: &mut GeneralCVData) {
+    personal_info_ui(ui, &mut general_cv.personal_info);
+    skills_achivements_ui(ui, &mut general_cv.skills_achievements);
+
+    section_header(ui, "Education");
+    // TODO: Add a button to add/remove education entries
+    for education in general_cv.education.iter_mut() {
+        education_ui(ui, education);
+    }
+
+    section_header(ui, "Awards");
+    // TODO: Add a button to add/remove award entries
+    for award in general_cv.awards.iter_mut() {
+        awards_ui(ui, award);
+    }
 }
 
 pub fn personal_info_ui(ui: &mut egui::Ui, personal_info: &mut PersonalInfo) {
-    ui.heading("Personal Info");
-    ui.label("Name");
-    ui.add(egui::TextEdit::singleline(&mut personal_info.name).hint_text("Your Name"));
-    ui.label("Location");
-    ui.add(egui::TextEdit::singleline(&mut personal_info.location).hint_text("Your Location"));
-    ui.label("Email");
-    ui.add(egui::TextEdit::singleline(&mut personal_info.email).hint_text("Your email"));
-    ui.label("Phone");
-    ui.add(egui::TextEdit::singleline(&mut personal_info.phone).hint_text("Your phone number"));
-    ui.label("Website");
-    ui.add(egui::TextEdit::singleline(&mut personal_info.website).hint_text("Your website"));
-    ui.label("LinkedIn");
-    ui.add(
-        egui::TextEdit::singleline(&mut personal_info.linkedin).hint_text("Your LinkedIn profile"),
-    );
-    ui.label("LinkedIn Handle");
-    ui.add(
-        egui::TextEdit::singleline(&mut personal_info.linkedin_handle)
-            .hint_text("Your LinkedIn handle"),
-    );
-    ui.label("Github");
-    ui.add(egui::TextEdit::singleline(&mut personal_info.github).hint_text("Your GitHub profile"));
-    ui.label("Github Handle");
-    ui.add(
-        egui::TextEdit::singleline(&mut personal_info.github_handle)
-            .hint_text("Your GitHub handle"),
-    );
-    ui.label("Profile Pic");
-    ui.add(egui::TextEdit::singleline(&mut personal_info.profile_pic).hint_text("Profile Pic"));
+    section_header(ui, "Personal Info");
+    egui::Grid::new("personal_info_grid")
+        .num_columns(2)
+        .spacing([40.0, 4.0])
+        .striped(true)
+        .show(ui, |ui| {
+            ui.label("Name");
+            ui.text_edit_singleline(&mut personal_info.name);
+            ui.end_row();
+
+            ui.label("Location");
+            ui.text_edit_singleline(&mut personal_info.location);
+            ui.end_row();
+
+            ui.label("Email");
+            ui.text_edit_singleline(&mut personal_info.email);
+            ui.end_row();
+
+            ui.label("Phone");
+            ui.text_edit_singleline(&mut personal_info.phone);
+            ui.end_row();
+
+            ui.label("Website");
+            ui.text_edit_singleline(&mut personal_info.website);
+            ui.end_row();
+
+            ui.label("LinkedIn Profile");
+            ui.text_edit_singleline(&mut personal_info.linkedin);
+            ui.end_row();
+
+            ui.label("GitHub Profile");
+            ui.text_edit_singleline(&mut personal_info.github);
+            ui.end_row();
+        });
 }
 
-pub fn skills_achivements_ui(ui: &mut egui::Ui) {
-    ui.heading("Skills & Achievements");
-    ui.label("Skills");
-    ui.add(egui::TextEdit::multiline(&mut String::new()).hint_text("Your Skills"));
-    ui.label("Achievements");
-    ui.add(egui::TextEdit::multiline(&mut String::new()).hint_text("Your Achievements"));
+pub fn skills_achivements_ui(ui: &mut egui::Ui, skills_achievements: &mut SkillsAchievements) {
+    section_header(ui, "Skills & Achievements");
+
+    egui::CollapsingHeader::new("Skills & Certificates").show(ui, |ui| {
+        editable_list(ui, "Hard Skills", &mut skills_achievements.hard_skills);
+        editable_list(ui, "Soft Skills", &mut skills_achievements.soft_skills);
+        editable_list(
+            ui,
+            "Programming Languages",
+            &mut skills_achievements.programming_languages,
+        );
+        editable_list(ui, "Databases", &mut skills_achievements.databases);
+        editable_list(ui, "Misc Tools", &mut skills_achievements.misc);
+        certificate_list(ui, "Certificates", &mut skills_achievements.certificates);
+    });
 }
 
-pub fn education_ui(ui: &mut egui::Ui) {
-    ui.heading("Education");
-    ui.label("Institution");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your Institution"));
-    ui.label("Degree");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your Degree"));
-    ui.label("Dates");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your Dates"));
-    ui.label("GPA");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your GPA"));
-    ui.label("Details");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Your GPA"));
+pub fn education_ui(ui: &mut egui::Ui, education: &mut Education) {
+    egui::CollapsingHeader::new(if education.institution.is_empty() {
+        "New Entry"
+    } else {
+        &education.institution
+    })
+    .show(ui, |ui| {
+        egui::Grid::new(format!("education_grid_{}", education.institution))
+            .num_columns(2)
+            .spacing([40.0, 4.0])
+            .striped(true)
+            .show(ui, |ui| {
+                ui.label("Institution");
+                ui.text_edit_singleline(&mut education.institution);
+                ui.end_row();
+
+                ui.label("Degree");
+                ui.text_edit_singleline(&mut education.degree);
+                ui.end_row();
+
+                ui.label("Dates");
+                ui.text_edit_singleline(&mut education.dates);
+                ui.end_row();
+
+                ui.label("GPA");
+                ui.text_edit_singleline(&mut education.gpa);
+                ui.end_row();
+            });
+
+        ui.add_space(10.0);
+        editable_list(ui, "Details", &mut education.details);
+    });
 }
 
-pub fn awards_ui(ui: &mut egui::Ui) {
-    ui.heading("Awards");
-    ui.label("Title");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Title"));
-    ui.label("Organization");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Organization"));
-    ui.label("Date");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Date"));
-    ui.label("Points");
-    ui.add(egui::TextEdit::multiline(&mut String::new()).hint_text("Points"));
+pub fn awards_ui(ui: &mut egui::Ui, award: &mut Award) {
+    egui::CollapsingHeader::new(if award.title.is_empty() {
+        "New Award".to_string()
+    } else {
+        award.title.clone()
+    })
+    .show(ui, |ui| {
+        egui::Grid::new(format!("award_grid_{}", award.title))
+            .num_columns(2)
+            .spacing([40.0, 4.0])
+            .striped(true)
+            .show(ui, |ui| {
+                ui.label("Title");
+                ui.text_edit_singleline(&mut award.title);
+                ui.end_row();
+
+                ui.label("Organization");
+                ui.text_edit_singleline(&mut award.organization);
+                ui.end_row();
+
+                ui.label("Date");
+                ui.text_edit_singleline(&mut award.date);
+                ui.end_row();
+            });
+
+        ui.add_space(10.0);
+        editable_list(ui, "Points", &mut award.points);
+    });
 }
 
-pub fn project_ui(ui: &mut egui::Ui) {
-    ui.label("Name");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Project Name"));
-    ui.label("Github");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Project Github"));
-    ui.label("Github Handle");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Project Github Handle"));
-    ui.label("Description");
-    ui.add(egui::TextEdit::multiline(&mut String::new()).hint_text("Project Description"));
-    ui.label("CV Types");
-    ui.add(egui::TextEdit::multiline(&mut String::new()).hint_text("Project CV Types"));
-    ui.label("Points");
-    ui.add(egui::TextEdit::multiline(&mut String::new()).hint_text("Project Points"));
+pub fn project_ui(ui: &mut egui::Ui, project: &mut Project) {
+    egui::CollapsingHeader::new(if project.name.is_empty() {
+        "New Project"
+    } else {
+        &project.name
+    })
+    .show(ui, |ui| {
+        egui::Grid::new(format!("project_grid_{}", project.name))
+            .num_columns(2)
+            .spacing([40.0, 4.0])
+            .striped(true)
+            .show(ui, |ui| {
+                ui.label("Name");
+                ui.text_edit_singleline(&mut project.name);
+                ui.end_row();
+
+                ui.label("GitHub URL");
+                ui.text_edit_singleline(&mut project.github);
+                ui.end_row();
+            });
+
+        ui.add_space(10.0);
+        editable_list(ui, "Points", &mut project.points);
+        editable_list(ui, "CV Types", &mut project.cv_type);
+    });
 }
 
-pub fn experience_ui(ui: &mut egui::Ui) {
-    ui.label("Company");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Experience Company"));
-    ui.label("Location");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Experience Location"));
-    ui.label("Role");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Experience Role"));
-    ui.label("Dates");
-    ui.add(egui::TextEdit::singleline(&mut String::new()).hint_text("Experience Dates"));
-    ui.label("Job Type");
-    ui.add(egui::TextEdit::multiline(&mut String::new()).hint_text("Experience CV Types"));
-    ui.label("CV Types");
-    ui.add(egui::TextEdit::multiline(&mut String::new()).hint_text("Experience CV Types"));
-    ui.label("Points");
-    ui.add(egui::TextEdit::multiline(&mut String::new()).hint_text("Experience Points"));
+pub fn experience_ui(ui: &mut egui::Ui, experience: &mut Experience) {
+    egui::CollapsingHeader::new(format!(
+        "{} at {}",
+        if experience.role.is_empty() {
+            "New Role"
+        } else {
+            &experience.role
+        },
+        if experience.company.is_empty() {
+            "New Company"
+        } else {
+            &experience.company
+        }
+    ))
+    .show(ui, |ui| {
+        egui::Grid::new(format!(
+            "experience_grid_{}_{}",
+            experience.company, experience.role
+        ))
+        .num_columns(2)
+        .spacing([40.0, 4.0])
+        .striped(true)
+        .show(ui, |ui| {
+            ui.label("Company");
+            ui.text_edit_singleline(&mut experience.company);
+            ui.end_row();
+
+            ui.label("Location");
+            ui.text_edit_singleline(&mut experience.location);
+            ui.end_row();
+
+            ui.label("Role");
+            ui.text_edit_singleline(&mut experience.role);
+            ui.end_row();
+
+            ui.label("Dates");
+            ui.text_edit_singleline(&mut experience.dates);
+            ui.end_row();
+
+            ui.label("Job Type");
+            ui.text_edit_singleline(&mut experience.job_type);
+            ui.end_row();
+        });
+
+        ui.add_space(10.0);
+        editable_list(ui, "Points", &mut experience.points);
+        editable_list(ui, "CV Types", &mut experience.cv_type);
+    });
 }
 
 pub fn side_panel_ui(ctx: &egui::Context, app: &mut App) {
     egui::SidePanel::left("side_panel")
         .min_width(150.0)
+        .resizable(false)
         .show(ctx, |ui| {
             ui.heading("Config Tab");
             ui.separator();
