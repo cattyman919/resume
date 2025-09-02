@@ -4,36 +4,18 @@ TARGET := bin/cv_builder
 
 .PHONY: all run run_debug docker clean
 
-all: $(TARGET)
-	mkdir -p out
-	@echo "Running application..."
-	./$(TARGET)
-
-$(TARGET):
-	mkdir -p bin
-	@echo "Building $(TARGET)..."
-	CGO_ENABLED=0 GOOS=$(OS) go build -a -installsuffix cgo -o ./$(TARGET) ./cmd/resume/main.go
-
-docker: $(TARGET)
-	@echo "Building Docker image..."
-	docker build -t resume-generator .
-	@echo "Running Docker container..."
-	docker run --rm \
-		-u "$(shell id -u):$(shell id -g)" \
-		-v "./out:/app/out" \
-		-v "./$(TARGET):/app/$(TARGET)" \
-		-v "./cv_data.yaml:/app/cv_data.yaml" \
-		resume-generator
+all:
+	cargo run --bin autocv-cli
 
 # Better for development (Local Build)
 run:
-	cargo run
+	cargo run --bin autocv-cli
 
 run_debug:
-	cargo run -- --debug
+	cargo run --bin autocv-cli -- --debug
 
 run_benchmark:
-	cargo run -- --benchmark
+	cargo run --bin autocv-cli -- --benchmark
 
 clean:
 	@echo "Cleaning up..."

@@ -1,9 +1,8 @@
-[package]
-name = "resume"
-version = "0.1.0"
-edition = "2024"
+[workspace]
+members = [ "autocv-core", "autocv-cli", "autocv-gui",]
+resolver = "3"
 
-[dependencies]
+[workspace.dependencies]
 tokio = { version = "1.46.1", features = ["full"] }
 futures = "0.3"
 serde = { version = "1.0", features = ["derive"]}
