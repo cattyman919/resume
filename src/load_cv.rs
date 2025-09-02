@@ -1,46 +1,69 @@
-use std::{error::Error, fmt, fs, io};
+use serde::de::DeserializeOwned;
+use std::{error::Error, fmt, io};
+use tokio::fs;
 
-use crate::types::CVData;
+use crate::types::{ExperiencesCVData, GeneralCVData, ProjectsCVData};
 
-const CV_FILE_PATH: &str = "cv_data.yaml";
+const GENERAL_CV_PATH: &str = "config/general.yaml";
+const PROJECTS_CV_PATH: &str = "config/projects.yaml";
+const EXPERIENCES_CV_PATH: &str = "config/experiences.yaml";
 
-pub fn load_cv_data() -> Result<CVData, CvLoadError> {
-    let config_cv_str = fs::read_to_string(CV_FILE_PATH)?;
-    let config = serde_yaml::from_str(&config_cv_str)?;
-    Ok(config)
+pub async fn load_cv_data()
+-> Result<(GeneralCVData, ProjectsCVData, ExperiencesCVData), CvLoadError> {
+    let (general_cv, projects_cv, experiences_cv) = tokio::try_join!(
+        load_parse_yaml(GENERAL_CV_PATH),
+        load_parse_yaml(PROJECTS_CV_PATH),
+        load_parse_yaml(EXPERIENCES_CV_PATH)
+    )?;
+
+    Ok((general_cv, projects_cv, experiences_cv))
+}
+
+async fn load_parse_yaml<T: DeserializeOwned>(path: &str) -> Result<T, CvLoadError> {
+    let content = fs::read_to_string(path)
+        .await
+        .map_err(|e| CvLoadError::Io {
+            path: path.to_string(),
+            source: e,
+        })?;
+
+    let data = serde_yaml::from_str(&content).map_err(|e| CvLoadError::Parse {
+        path: path.to_string(),
+        source: e,
+    })?;
+
+    return Ok(data);
 }
 
 #[derive(Debug)]
 pub enum CvLoadError {
-    Io(io::Error),
-    Parse(serde_yaml::Error),
+    Io {
+        path: String,
+        source: io::Error,
+    },
+    Parse {
+        path: String,
+        source: serde_yaml::Error,
+    },
 }
 
 impl fmt::Display for CvLoadError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            CvLoadError::Io(e) => match e.kind() {
+            CvLoadError::Io { path, source } => match source.kind() {
                 io::ErrorKind::NotFound => {
-                    write!(
-                        f,
-                        "Error: Configuration file '{}' was not found.",
-                        CV_FILE_PATH
-                    )
+                    write!(f, "Error: Configuration file '{}' was not found.", path)
                 }
                 io::ErrorKind::PermissionDenied => {
-                    write!(
-                        f,
-                        "Error: Insufficient permissions to read '{}'.",
-                        CV_FILE_PATH
-                    )
+                    write!(f, "Error: Insufficient permissions to read '{}'.", path)
                 }
-                _ => write!(f, "Error reading file '{}': {}", CV_FILE_PATH, e),
+                _ => write!(f, "Error reading file '{}': {}", path, source),
             },
-            CvLoadError::Parse(e) => {
+            CvLoadError::Parse { path, source } => {
                 write!(
                     f,
                     "Error parsing '{}'. Please check for valid YAML syntax.\n  Details: {}",
-                    CV_FILE_PATH, e
+                    path, source
                 )
             }
         }
@@ -49,14 +72,16 @@ impl fmt::Display for CvLoadError {
 
 impl Error for CvLoadError {}
 
-impl From<io::Error> for CvLoadError {
-    fn from(err: io::Error) -> CvLoadError {
-        CvLoadError::Io(err)
-    }
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-impl From<serde_yaml::Error> for CvLoadError {
-    fn from(err: serde_yaml::Error) -> Self {
-        CvLoadError::Parse(err)
+    #[tokio::test]
+    async fn load_cv_data_test() {
+        let result = load_cv_data().await;
+        if let Err(r) = &result {
+            eprintln!("Error details: {:?}", r);
+        }
+        assert!(result.is_ok(), "Failed to load Projects CV data");
     }
 }

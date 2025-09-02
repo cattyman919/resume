@@ -1,31 +1,34 @@
 use crate::{
     latex,
-    types::{Award, CVData, Education, Experience, HasCvTypes, Project},
+    types::{
+        Award, Education, Experience, ExperiencesCVData, GeneralCVData, HasCvTypes, Project,
+        ProjectsCVData,
+    },
 };
-use anyhow::{Context, Result};
+use anyhow::Result;
 use futures::future::join_all;
-use std::{collections::HashSet, path::Path, process::Stdio, sync::Arc};
-use tokio::{fs, io, process::Command, sync::Mutex};
+use std::{
+    collections::HashSet,
+    path::{Path, PathBuf},
+    process::Stdio,
+    sync::Arc,
+};
+use tokio::{fs, io, process::Command};
 
-pub async fn get_all_cv_types(cv_data: &CVData) -> Result<HashSet<String>> {
-    // Atomic Reference Counted pointer to a Mutex-wrapped HashSet
-    let total_types = Arc::new(Mutex::new(HashSet::<String>::new()));
+pub async fn get_all_cv_types(
+    projects_cv: &ProjectsCVData,
+    experiences_cv: &ExperiencesCVData,
+) -> Result<HashSet<String>> {
+    let experience_task = get_types_per_section(projects_cv);
+    let project_task = get_types_per_section(experiences_cv);
 
-    let experience_task = get_types_per_section(&cv_data.experiences, Arc::clone(&total_types));
-    let project_task = get_types_per_section(&cv_data.projects, Arc::clone(&total_types));
+    let (mut project_cv_types, experiences_cv_types) = tokio::join!(experience_task, project_task);
+    project_cv_types.extend(experiences_cv_types);
 
-    tokio::join!(experience_task, project_task);
-
-    let mutex = Arc::try_unwrap(total_types)
-        .ok()
-        .context("Failed to get unique ownership of Arc for final processing.")?;
-
-    let final_set = mutex.into_inner();
-
-    Ok(final_set)
+    Ok(project_cv_types)
 }
 
-async fn get_types_per_section<T>(section: &[T], total_types: Arc<Mutex<HashSet<String>>>)
+async fn get_types_per_section<T>(section: &[T]) -> HashSet<String>
 where
     T: HasCvTypes,
 {
@@ -35,9 +38,10 @@ where
             local_types.insert(cv_type.into());
         }
     }
-    total_types.lock().await.extend(local_types);
+    local_types
 }
 
+#[derive(Clone, Copy)]
 enum Section {
     Header,
     Experience,
@@ -58,17 +62,89 @@ impl Section {
             Section::Skills => "Achivements_Skills.tex",
         }
     }
+    fn generate_content(&self, style: &str, context: &CvContext) -> String {
+        match self {
+            Section::Header => {
+                let data = &context.general.personal_info;
+                match style {
+                    "main" => latex::generate_header_main_cv(data),
+                    "bw" => latex::generate_header_bw_cv(data),
+                    _ => String::new(),
+                }
+            }
+            Section::Experience => {
+                let filtered: Vec<&Experience> = context
+                    .experiences
+                    .iter()
+                    .filter(|e| e.cv_types().contains(context.cv_type.as_ref()))
+                    .collect();
+                match style {
+                    "main" => latex::generate_experience_main_cv(&filtered),
+                    "bw" => latex::generate_experience_bw_cv(&filtered),
+                    _ => String::new(),
+                }
+            }
+            Section::Education => {
+                let data: Vec<&Education> = context.general.education.iter().collect();
+                match style {
+                    "main" => latex::generate_education_main_cv(&data),
+                    "bw" => latex::generate_education_bw_cv(&data),
+                    _ => String::new(),
+                }
+            }
+            Section::Awards => {
+                let data: Vec<&Award> = context.general.awards.iter().collect();
+                match style {
+                    "main" => latex::generate_awards_main_cv(&data),
+                    "bw" => latex::generate_awards_bw_cv(&data),
+                    _ => String::new(),
+                }
+            }
+            Section::Projects => {
+                let filtered: Vec<&Project> = context
+                    .projects
+                    .iter()
+                    .filter(|p| p.cv_type.contains(context.cv_type.as_ref()))
+                    .collect();
+                match style {
+                    "main" => latex::generate_projects_main_cv(&filtered),
+                    "bw" => latex::generate_projects_bw_cv(&filtered),
+                    _ => String::new(),
+                }
+            }
+            Section::Skills => {
+                let data = &context.general.skills_achievements;
+                match style {
+                    "main" => latex::generate_skills_main_cv(data),
+                    "bw" => latex::generate_skills_bw_cv(data),
+                    _ => String::new(),
+                }
+            }
+        }
+    }
 }
-pub async fn write_cv(cv_data: Arc<CVData>, cv_type: String, debug_mode: bool) -> io::Result<()> {
-    let main_path_dir = format!("cv/{cv_type}/main_cv");
-    let bw_path_dir = format!("cv/{cv_type}/bw_cv");
 
-    let main_path = Path::new(&main_path_dir);
-    let bw_path = Path::new(&bw_path_dir);
+struct CvContext {
+    general: Arc<GeneralCVData>,
+    projects: Arc<ProjectsCVData>,
+    experiences: Arc<ExperiencesCVData>,
+    cv_type: Arc<String>,
+}
+
+// Generates the .tex files for each section and compiles the final PDFs.
+pub async fn write_cv(
+    general_cv: Arc<GeneralCVData>,
+    projects_cv: ProjectsCVData,
+    experiences_cv: ExperiencesCVData,
+    cv_type: String,
+    debug_mode: bool,
+) -> io::Result<()> {
+    let main_path: PathBuf = format!("cv/{}/main_cv", cv_type).into();
+    let bw_path: PathBuf = format!("cv/{}/bw_cv", cv_type).into();
 
     tokio::try_join!(
-        copy_dir_recursively(Path::new("template_cv/main_cv"), main_path),
-        copy_dir_recursively(Path::new("template_cv/bw_cv"), bw_path)
+        copy_dir_recursively(Path::new("template_cv/main_cv"), &main_path),
+        copy_dir_recursively(Path::new("template_cv/bw_cv"), &bw_path)
     )?;
 
     let main_sections_path = main_path.join("sections");
@@ -79,7 +155,13 @@ pub async fn write_cv(cv_data: Arc<CVData>, cv_type: String, debug_mode: bool) -
         fs::create_dir_all(&bw_sections_path)
     )?;
 
-    let mut handles = Vec::new();
+    let context = Arc::new(CvContext {
+        general: general_cv,
+        projects: Arc::new(projects_cv),
+        experiences: Arc::new(experiences_cv),
+        cv_type: Arc::new(cv_type.clone()),
+    });
+
     let sections_to_generate = [
         Section::Header,
         Section::Experience,
@@ -89,105 +171,27 @@ pub async fn write_cv(cv_data: Arc<CVData>, cv_type: String, debug_mode: bool) -
         Section::Skills,
     ];
 
-    let cv_type = Arc::new(cv_type);
-
-    for section in &sections_to_generate {
+    let mut join_handles = Vec::new();
+    for section in sections_to_generate {
         let main_path = Path::new(&main_sections_path).join(section.filename());
         let bw_path = Path::new(&bw_sections_path).join(section.filename());
-        let data_main = Arc::clone(&cv_data);
-        let data_bw = Arc::clone(&cv_data);
-        let type_clone_main = Arc::clone(&cv_type);
-        let type_clone_bw = Arc::clone(&cv_type);
 
-        match section {
-            Section::Header => {
-                handles.push(tokio::spawn(async move {
-                    let content = latex::generate_header_main_cv(&data_main.personal_info);
-                    write_tex_file(&main_path, content).await
-                }));
-                handles.push(tokio::spawn(async move {
-                    let content = latex::generate_header_bw_cv(&data_bw.personal_info);
-                    write_tex_file(&bw_path, content).await
-                }));
-            }
-            Section::Experience => {
-                handles.push(tokio::spawn(async move {
-                    let filtered: Vec<&Experience> = data_main
-                        .experiences
-                        .iter()
-                        .filter(|e| e.cv_types.contains(&type_clone_main))
-                        .collect();
-                    let content = latex::generate_experience_main_cv(&filtered);
-                    write_tex_file(&main_path, content).await
-                }));
-                handles.push(tokio::spawn(async move {
-                    let filtered: Vec<&Experience> = data_bw
-                        .experiences
-                        .iter()
-                        .filter(|e| e.cv_types.contains(&type_clone_bw))
-                        .collect();
-                    let content = latex::generate_experience_bw_cv(&filtered);
-                    write_tex_file(&bw_path, content).await
-                }));
-            }
-            Section::Education => {
-                handles.push(tokio::spawn(async move {
-                    let edu_refs: Vec<&Education> = data_main.education.iter().collect();
-                    let content = latex::generate_education_main_cv(&edu_refs);
-                    write_tex_file(&main_path, content).await
-                }));
-                handles.push(tokio::spawn(async move {
-                    let edu_refs: Vec<&Education> = data_bw.education.iter().collect();
-                    let content = latex::generate_education_bw_cv(&edu_refs);
-                    write_tex_file(&bw_path, content).await
-                }));
-            }
-            Section::Awards => {
-                handles.push(tokio::spawn(async move {
-                    let award_refs: Vec<&Award> = data_main.awards.iter().collect();
-                    let content = latex::generate_awards_main_cv(&award_refs);
-                    write_tex_file(&main_path, content).await
-                }));
-                handles.push(tokio::spawn(async move {
-                    let award_refs: Vec<&Award> = data_bw.awards.iter().collect();
-                    let content = latex::generate_awards_bw_cv(&award_refs);
-                    write_tex_file(&bw_path, content).await
-                }));
-            }
-            Section::Projects => {
-                handles.push(tokio::spawn(async move {
-                    let filtered: Vec<&Project> = data_main
-                        .projects
-                        .iter()
-                        .filter(|p| p.cv_types.contains(&type_clone_main))
-                        .collect();
-                    let content = latex::generate_projects_main_cv(&filtered);
-                    write_tex_file(&main_path, content).await
-                }));
-                handles.push(tokio::spawn(async move {
-                    let filtered: Vec<&Project> = data_bw
-                        .projects
-                        .iter()
-                        .filter(|p| p.cv_types.contains(&type_clone_bw))
-                        .collect();
-                    let content = latex::generate_projects_bw_cv(&filtered);
-                    write_tex_file(&bw_path, content).await
-                }));
-            }
-            Section::Skills => {
-                handles.push(tokio::spawn(async move {
-                    let content = latex::generate_skills_main_cv(&data_main.skills);
-                    write_tex_file(&main_path, content).await
-                }));
-                handles.push(tokio::spawn(async move {
-                    let content = latex::generate_skills_bw_cv(&data_bw.skills);
-                    write_tex_file(&bw_path, content).await
-                }));
-            }
-        }
+        let context_clone = Arc::clone(&context);
+
+        join_handles.push(tokio::spawn(async move {
+            let content = section.generate_content("main", &context_clone);
+            write_tex_file(&main_path, content).await
+        }));
+
+        let context_clone = Arc::clone(&context);
+
+        join_handles.push(tokio::spawn(async move {
+            let content = section.generate_content("bw", &context_clone);
+            write_tex_file(&bw_path, content).await
+        }));
     }
 
-    for result in join_all(handles).await {
+    for result in join_all(join_handles).await {
         result.unwrap()?;
     }
 
@@ -196,8 +200,18 @@ pub async fn write_cv(cv_data: Arc<CVData>, cv_type: String, debug_mode: bool) -
         cv_type
     );
 
-    let pdf_main_handle = write_pdf(&cv_type, "main", debug_mode);
-    let pdf_bw_handle = write_pdf(&cv_type, "bw", debug_mode);
+    let pdf_main_handle = write_pdf(
+        &context.general.personal_info.name,
+        &cv_type,
+        "main",
+        debug_mode,
+    );
+    let pdf_bw_handle = write_pdf(
+        &context.general.personal_info.name,
+        &cv_type,
+        "bw",
+        debug_mode,
+    );
 
     tokio::try_join!(pdf_main_handle, pdf_bw_handle)?;
 
@@ -205,12 +219,8 @@ pub async fn write_cv(cv_data: Arc<CVData>, cv_type: String, debug_mode: bool) -
 }
 
 /// Runs pdflatex to generate the final PDF.
-async fn write_pdf(cv_type: &str, style: &str, debug_mode: bool) -> io::Result<()> {
-    let target_pdf = format!(
-        "Seno Pamungkas Rahman - CV ({}) ({})",
-        cv_type,
-        style.to_uppercase()
-    );
+async fn write_pdf(name: &str, cv_type: &str, style: &str, debug_mode: bool) -> io::Result<()> {
+    let target_pdf = format!("{} - CV ({}) ({})", name, cv_type, style.to_uppercase());
     let working_dir = match style {
         "main" => format!("cv/{cv_type}/main_cv"),
         "bw" => format!("cv/{cv_type}/bw_cv"),
@@ -275,12 +285,12 @@ pub async fn move_aux_files() -> io::Result<()> {
         {
             let new_path = aux_dir.join(file_name);
             fs::rename(&path, &new_path).await?;
-            // println!("Moved {:?} to {:?}", path, new_path);
         }
     }
     Ok(())
 }
 
+#[inline]
 async fn write_tex_file(path: &Path, content: String) -> io::Result<()> {
     if content.is_empty() {
         return Ok(());
@@ -289,6 +299,7 @@ async fn write_tex_file(path: &Path, content: String) -> io::Result<()> {
     println!("Successfully wrote file: {:?}", path);
     Ok(())
 }
+
 async fn copy_dir_recursively(from: &Path, to: &Path) -> io::Result<()> {
     fs::create_dir_all(to).await?;
 

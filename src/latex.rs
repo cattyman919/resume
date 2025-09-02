@@ -1,4 +1,4 @@
-use crate::types::{Award, Education, Experience, PersonalInfo, Project, Skills};
+use crate::types::{Award, Education, Experience, PersonalInfo, Project, SkillsAchievements};
 use lazy_static::lazy_static;
 use regex::Regex;
 
@@ -425,7 +425,7 @@ pub fn generate_projects_bw_cv(data: &Vec<&Project>) -> String {
 }
 
 // == Skills & Achievements ==
-fn generate_skills_achievements(skills: &Skills) -> String {
+fn generate_skills_achievements(skills: &SkillsAchievements) -> String {
     let mut builder = String::from("\\begin{highlights}\n");
     if !skills.hard_skills.is_empty() {
         builder.push_str(&format!(
@@ -468,7 +468,7 @@ fn generate_skills_achievements(skills: &Skills) -> String {
     builder
 }
 
-pub fn generate_skills_main_cv(data: &Skills) -> String {
+pub fn generate_skills_main_cv(data: &SkillsAchievements) -> String {
     let section_content = generate_skills_achievements(data);
     format!(
         "\\documentclass[../main.tex]{{subfiles}}\n\\begin{{document}}\n\\section{{Skills}}\n{}\\end{{document}}",
@@ -476,7 +476,7 @@ pub fn generate_skills_main_cv(data: &Skills) -> String {
     )
 }
 
-pub fn generate_skills_bw_cv(data: &Skills) -> String {
+pub fn generate_skills_bw_cv(data: &SkillsAchievements) -> String {
     let section_content = generate_skills_achievements(data);
     format!(
         "\\documentclass[../main.tex]{{subfiles}}\n\\begin{{document}}\n\\section{{\\sectiontitle[\\Large]{{Skills}}}}\n{}\\end{{document}}",

@@ -1,0 +1,85 @@
+personal_info:
+  name: Seno Pamungkas Rahman
+  location: Tangerang Selatan
+  email: senop.rahman@gmail.com
+  phone: "+62-812-9357-8560"
+  website: https://senop.dev
+  linkedin: https://www.linkedin.com/in/seno-pamungkas-rahman-714341192/
+  linkedin_handle: Seno
+  github: https://github.com/cattyman919
+  github_handle: cattyman919
+  profile_pic: profile.jpg
+
+skills_achievements:
+  "Hard Skills":
+    - Web Development
+    - Android Development
+    - Fullstack Engineer
+    - Networking
+    - Internet of Things
+    - Machine Learning
+  "Soft Skills":
+    - Teamwork
+    - Communication
+    - Adaptability
+    - Responsibility
+    - Creativity
+    - Discipline
+    - Honesty
+  "Programming Languages":
+    - C
+    - "C#"
+    - C++
+    - Go
+    - Javascript
+    - HTML
+    - CSS
+    - Python
+    - Typescript
+    - Java
+    - PHP
+    - Dart
+    - Rust
+  "Databases":
+    - PostgreSQL
+    - MySQL
+    - NoSQL
+  Misc:
+    - React
+    - NestJS
+    - NextJS
+    - Flutter
+    - Spring Boot
+    - ExpressJs
+    - Docker
+    - Tailwind CSS
+    - Git
+    - Linux
+  Certificates:
+    - year: 2025
+      name: "Red Hat System Administration I & II (RH134 - RHA) - Ver. 9.3"
+    - year: 2024
+      name: "AWS Knowledge: Cloud Essentials"
+    - year: 2023
+      name: "CCNA: Enterprise Networking, Security, and Automation"
+    - year: 2023
+      name: "CCNA: Switching, Routing, and Wireless Essentials"
+    - year: 2023
+      name: "CCNA: Introduction to Networks"
+
+education:
+  - institution: Universitas Indonesia
+    degree: Bachelor of Computer Engineering
+    dates: September 2021 – September 2025
+    gpa: 3.78/4.0
+    details:
+      - "**GPA:** 3.78/4.0"
+      - "**Coursework:** Computer Architecture, Operating System, Real Time System and IoT, Computer Networks, Software Engineering, Cloud Computing"
+
+awards:
+  - title: Top 10 Finalist Hackathon BI 2024
+    organization: Bank Indonesia
+    date: August 2024
+    points:
+      - "Top 10 Finalist in **Bank Indonesia Hackathon 2024** **out of 2,200 participants and 450+ proposals**"
+      - "**Spearheaded the development of BitTrack's Frontend and UI/UX**, ensuring a seamless user experience and visually appealing design, while also **driving the business strategy and direction of the product**."

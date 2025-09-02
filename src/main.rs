@@ -51,17 +51,30 @@ async fn run() -> Result<(), Box<dyn Error>> {
     setup_directories().await?;
 
     println!("Loading YAML Data...");
-    let cv_data = Arc::new(load_cv::load_cv_data().context("Failed to load CV data")?);
+    let (general_cv, projects_cv, experiences_cv) = load_cv::load_cv_data().await?;
+
+    let general_cv = Arc::new(general_cv);
+    let projects_cv = Arc::new(projects_cv);
+    let experiences_cv = Arc::new(experiences_cv);
 
     println!("Getting Total CV Types...");
-    let all_cv_types = cv_processor::get_all_cv_types(&cv_data).await?;
+    let all_cv_types = cv_processor::get_all_cv_types(&projects_cv, &experiences_cv).await?;
     println!("All CV Types: {:?}", all_cv_types);
 
     let processing_tasks = all_cv_types.into_iter().map(|cv_type| {
-        let cv_data_clone = Arc::clone(&cv_data);
+        let general_cv_clone = Arc::clone(&general_cv);
+        let projects_cv_clone = projects_cv.as_ref().clone();
+        let experiences_cv_clone = experiences_cv.as_ref().clone();
         tokio::spawn(async move {
             println!("Processing CV type: {}", cv_type);
-            cv_processor::write_cv(cv_data_clone, cv_type, config.is_debug_mode).await
+            cv_processor::write_cv(
+                general_cv_clone,
+                projects_cv_clone,
+                experiences_cv_clone,
+                cv_type,
+                config.is_debug_mode,
+            )
+            .await
         })
     });
 
@@ -101,7 +114,7 @@ async fn run() -> Result<(), Box<dyn Error>> {
 #[tokio::main]
 async fn main() {
     if let Err(e) = run().await {
-        eprintln!("\nApplication error: {}", e);
+        eprintln!("\n{}", e);
         process::exit(1);
     }
 }

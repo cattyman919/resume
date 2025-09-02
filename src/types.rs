@@ -22,7 +22,7 @@ pub struct Experience {
     pub location: String,
     pub dates: String,
     pub points: Vec<String>,
-    pub cv_types: Vec<String>,
+    pub cv_type: Vec<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -48,7 +48,7 @@ pub struct Project {
     pub github: String,
     pub github_handle: String,
     pub points: Vec<String>,
-    pub cv_types: Vec<String>,
+    pub cv_type: Vec<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -58,7 +58,7 @@ pub struct Certificate {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct Skills {
+pub struct SkillsAchievements {
     #[serde(rename = "Hard Skills")]
     pub hard_skills: Vec<String>,
 
@@ -68,7 +68,7 @@ pub struct Skills {
     #[serde(rename = "Programming Languages")]
     pub programming_languages: Vec<String>,
 
-    #[serde(rename = "Database")]
+    #[serde(rename = "Databases")]
     pub databases: Vec<String>,
 
     #[serde(rename = "Misc")]
@@ -77,15 +77,18 @@ pub struct Skills {
     #[serde(rename = "Certificates")]
     pub certificates: Vec<Certificate>,
 }
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct CVData {
+pub struct GeneralCVData {
     pub personal_info: PersonalInfo,
-    pub experiences: Vec<Experience>,
     pub education: Vec<Education>,
     pub awards: Vec<Award>,
-    pub projects: Vec<Project>,
-    pub skills: Skills,
+    pub skills_achievements: SkillsAchievements,
 }
+
+pub type ProjectsCVData = Vec<Project>;
+
+pub type ExperiencesCVData = Vec<Experience>;
 
 pub trait HasCvTypes {
     fn cv_types(&self) -> &Vec<String>;
@@ -93,12 +96,12 @@ pub trait HasCvTypes {
 
 impl HasCvTypes for Experience {
     fn cv_types(&self) -> &Vec<String> {
-        &self.cv_types
+        &self.cv_type
     }
 }
 
 impl HasCvTypes for Project {
     fn cv_types(&self) -> &Vec<String> {
-        &self.cv_types
+        &self.cv_type
     }
 }

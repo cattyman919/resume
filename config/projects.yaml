@@ -1,0 +1,128 @@
+- name: AutoCV
+  github: https://github.com/cattyman919/resume
+  github_handle: cattyman919/resume
+  cv_type:
+    - devops
+    - go
+    - custom
+  description: "A dynamic CV generator that builds multiple tailored PDF resumes from a modular YAML data source using **Go** and **LaTeX**."
+  points:
+    - "Streamlined CV creation by developing a tool that generates **multiple customized PDF versions** from a modular data source split across three YAML files (`general`, `experiences`, `projects`), eliminating repetitive manual editing."
+    - "Engineered a **concurrent build process** using **Go's goroutines and waitgroups**, significantly cutting down generation time for multiple CVs."
+    - "Containerized the entire build environment with **Docker**, ensuring consistent and reproducible builds across different machines."
+
+- name: MovieDB Showcase
+  github: https://github.com/cattyman919/movies
+  github_handle: cattyman919/movies
+  cv_type:
+    - go
+    - custom
+  description: "A full-stack movie browsing application featuring a **Go** backend API that serves data from the TMDB API, and a modern **React** frontend."
+  points:
+    - "Architected a backend API using **Go** and the **Gin framework** to serve as a proxy for the TMDB API, handling requests for popular, top-rated, and upcoming movies."
+    - "Developed a responsive frontend with **React**, **TypeScript**, and **Tailwind CSS** to display movie data fetched from the backend, creating an interactive user experience."
+    - "Containerized the entire application (**Go backend, React frontend, MongoDB**) using **Docker** and **Docker Compose**, and wrote integration tests with **Testcontainers** for the database layer."
+
+- name: Slash
+  github: https://github.com/cattyman919/slash
+  github_handle: cattyman919/slash
+  cv_type:
+  description: "A 2D platformer game built from the ground up in **Go** using the **Ebitengine** game engine, featuring custom tilemap rendering, player/enemy mechanics, and a dynamic camera system."
+  points:
+    - "Developed a complete 2D game engine loop using **Go** and **Ebitengine**, managing game state, entity updates, and rendering."
+    - "Integrated **Tiled** for level design by creating a custom parser to load and render tilemaps from JSON data, including collision detection logic."
+    - "Implemented core gameplay mechanics including player movement (WASD), enemy AI that follows the player, and a dynamic camera that smoothly tracks the player's position."
+
+- name: Restomatic
+  github: https://github.com/SistemBasisData2023/RestoMatic
+  github_handle: SistemBasisData2023/RestoMatic
+  cv_type:
+    - main
+    - fullstack
+    - go
+  description: "A web platform for easy food and drink ordering. Users can browse restaurant menus, add funds, and leave ratings."
+  points:
+    - "Engineered a responsive and intuitive user interface with **React** and **Tailwind CSS**, leading the frontend development to enhance user engagement."
+    - "Developed a dynamic order cart using **React hooks**, providing users with a clear and real-time overview of their selections."
+    - "Implemented a secure payment system with **frontend validation**, ensuring sufficient balance before processing transactions."
+
+- name: DanceRTOS
+  github: https://github.com/cattyman919/AbsenceSystem
+  github_handle: cattyman919/AbsenceSystem
+  cv_type:
+    - iot
+    - main
+    - fullstack
+    - devops
+  description: "An attendance system using FreeRTOS ESP32 and RFID, with a web server and Blynk integration for class and schedule management."
+  points:
+    - "Led the end-to-end development of the DanceRTOS attendance system, building both the **Flutter frontend** and **NestJS backend**."
+    - "Engineered a real-time student login system using **MQTT** and **RFID** on an **ESP32**, enabling secure and instantaneous attendance tracking."
+    - "Designed and implemented a dynamic class schedule and attendance table, providing lecturers with an organized and **real-time view of student presence**."
+
+- name: Jaga
+  github: https://github.com/cattyman919/Jaga
+  github_handle: cattyman919/Jaga
+  cv_type:
+  description: "A vehicle maintenance app with GPS tracking to monitor kilometers and notify users of service needs based on distance and time."
+  points:
+    - "Led the full-stack development of the Jaga vehicle maintenance app, creating a seamless user experience with **Flutter** and **NestJS**."
+    - "Developed a **GPS-based tracking system** to monitor vehicle mileage and trigger timely service reminders."
+    - "Implemented a **multi-vehicle management system**, allowing users to track and manage maintenance for their entire fleet."
+
+- name: JSleep
+  github: https://github.com/cattyman919/JSleep
+  github_handle: cattyman919/JSleep
+  cv_type:
+    - main
+    - fullstack
+    - custom
+  description: "A full-stack room reservation backend built with Java and Spring Boot, featuring a custom JSON-based database engine for managing users, rooms, and bookings."
+  points:
+    - "Developed a complete RESTful API using **Java** and **Spring Boot** to manage the entire hotel booking lifecycle, from user authentication to room reservations."
+    - "Engineered a custom, lightweight database solution using a **JSON-based file system (`JsonDBEngine`)**, enabling persistent data storage and retrieval without a traditional database server."
+    - "Implemented core business logic for dynamic room filtering, availability checking based on booking dates, and a complete payment processing system including balance management and voucher application."
+
+- name: Electronic Vault Lock
+  github: https://github.com/rroiii/Electronic-Vault-Lock
+  github_handle: rroiii/Electronic-Vault-Lock
+  cv_type:
+    - iot
+  description: "A secure 4-digit combination lock for protecting items, offering a simple and reliable locking mechanism."
+  points:
+    - "Authored and optimized the **VHDL code** for the electronic vault lock, ensuring robust and reliable security."
+    - "Conducted extensive simulations in **ModelSim** to validate the system's performance and identify potential vulnerabilities."
+    - "Led the synthesis of the design in **Quartus**, optimizing for area and power to create an efficient and compact solution."
+
+- name: VAIO (Vacuum All in One)
+  github: https://github.com/VAIO-CE/VAIO-Code
+  github_handle: VAIO-CE/VAIO-Code
+  cv_type:
+    - iot
+  description: "VAIO is an ESP32-based robot featuring autonomous navigation, a vacuum system, and multiple intuitive control methods including a sensor-equipped glove, voice commands via speech recognition, and a standard PS4 controller."
+  points:
+    - "Architected a modular and scalable codebase in **C++** on the **PlatformIO IDE**, enabling efficient team collaboration and future development."
+    - "Engineered a real-time gyroscope-based control system with **ESP-NOW**, allowing for intuitive and responsive robot control via a wearable glove."
+    - "Implemented a multi-threaded **FreeRTOS** environment to manage concurrent tasks, ensuring seamless switching between autonomous, gesture, and PS4 control modes."
+
+- name: HTTP Server
+  github: https://github.com/cattyman919/http
+  github_handle: cattyman919/http
+  cv_type:
+    - devops
+  description: "A custom HTTP server written in C that leverages low-level socket programming and polling to handle multiple client connections. It features dynamic routing via a binary search tree and simple HTTP parsing for flexible response handling."
+  points:
+    - "Engineered a **non-blocking, polling-based socket server** in **C** to handle multiple concurrent client connections efficiently."
+    - "Implemented a **custom HTTP parser and response generator**, enabling the server to handle a variety of requests and serve dynamic content."
+    - "Designed and implemented a **binary search tree for dynamic routing**, allowing for efficient and scalable URL-to-file mapping."
+
+- name: Home Server
+  github: null
+  github_handle: null
+  cv_type:
+    - devops
+  description: "Dell OptiPlex 7050 running Debian as the Operating System used for my personal custom server. It currently provides services such as Portainer, Jellyfin, CasaOS, Samba Server, SIP Server, and also used as a backup for my files. Connected remotely using Tailscale."
+  points:
+    - "Deployed and manage a suite of services including **Jellyfin for media streaming**, **Portainer for Docker container management**, and an **Asterisk SIP server for home VoIP**."
+    - "Configured core network services, including **Samba for local file sharing**, **nginx as a reverse proxy** for simplified service access, and implemented **fail2ban and firewalld** for enhanced security."
+    - "Established a robust data management and remote access strategy using **rsync for automated backups** and **Tailscale** for secure, seamless access to the entire home network from any location."
