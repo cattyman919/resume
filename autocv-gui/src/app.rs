@@ -3,6 +3,7 @@ mod ui;
 
 use std::sync::{Arc, Mutex};
 
+use egui::Label;
 use log::{info, warn};
 use tokio::sync::mpsc;
 use ui::general_ui;
@@ -69,7 +70,7 @@ impl eframe::App for App {
                 ui.horizontal(|ui| {
                     // --- Left side of the panel ---
                     ui.with_layout(egui::Layout::left_to_right(egui::Align::Center), |ui| {
-                        ui.label(egui::RichText::new("AutoCV Config").strong().size(16.0));
+                        ui.label(egui::RichText::new("AutoCV Config").strong().size(24.0));
                     });
 
                     // --- Right side of the panel ---
@@ -118,9 +119,6 @@ impl eframe::App for App {
                 ui.allocate_space(ui.available_size());
             });
 
-            // ui.separator();
-            // ui.heading("Content from Actor:");
-            //
             // if let Ok(state) = self.shared_state.try_lock() {
             //     info!("Successfully locked the shared state.",);
             //     ui.label(&state.general_cv.personal_info.name);

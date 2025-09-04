@@ -57,6 +57,11 @@ pub async fn setup_directories() -> Result<()> {
     Ok(())
 }
 
+enum TemplateCVStyle {
+    Main,
+    BW,
+}
+
 #[derive(Clone, Copy)]
 enum Section {
     Header,
@@ -78,14 +83,14 @@ impl Section {
             Section::Skills => "Achivements_Skills.tex",
         }
     }
-    fn generate_content(&self, style: &str, context: &CvContext) -> String {
+
+    fn generate_content(&self, style: TemplateCVStyle, context: &CvContext) -> String {
         match self {
             Section::Header => {
                 let data = &context.general.personal_info;
                 match style {
-                    "main" => latex::generate_header_main_cv(data),
-                    "bw" => latex::generate_header_bw_cv(data),
-                    _ => String::new(),
+                    TemplateCVStyle::Main => latex::generate_header_main_cv(data),
+                    TemplateCVStyle::BW => latex::generate_header_bw_cv(data),
                 }
             }
             Section::Experience => {
@@ -95,25 +100,22 @@ impl Section {
                     .filter(|e| e.cv_types().contains(context.cv_type.as_ref()))
                     .collect();
                 match style {
-                    "main" => latex::generate_experience_main_cv(&filtered),
-                    "bw" => latex::generate_experience_bw_cv(&filtered),
-                    _ => String::new(),
+                    TemplateCVStyle::Main => latex::generate_experience_main_cv(&filtered),
+                    TemplateCVStyle::BW => latex::generate_experience_bw_cv(&filtered),
                 }
             }
             Section::Education => {
                 let data: Vec<&Education> = context.general.education.iter().collect();
                 match style {
-                    "main" => latex::generate_education_main_cv(&data),
-                    "bw" => latex::generate_education_bw_cv(&data),
-                    _ => String::new(),
+                    TemplateCVStyle::Main => latex::generate_education_main_cv(&data),
+                    TemplateCVStyle::BW => latex::generate_education_bw_cv(&data),
                 }
             }
             Section::Awards => {
                 let data: Vec<&Award> = context.general.awards.iter().collect();
                 match style {
-                    "main" => latex::generate_awards_main_cv(&data),
-                    "bw" => latex::generate_awards_bw_cv(&data),
-                    _ => String::new(),
+                    TemplateCVStyle::Main => latex::generate_awards_main_cv(&data),
+                    TemplateCVStyle::BW => latex::generate_awards_bw_cv(&data),
                 }
             }
             Section::Projects => {
@@ -123,17 +125,15 @@ impl Section {
                     .filter(|p| p.cv_type.contains(context.cv_type.as_ref()))
                     .collect();
                 match style {
-                    "main" => latex::generate_projects_main_cv(&filtered),
-                    "bw" => latex::generate_projects_bw_cv(&filtered),
-                    _ => String::new(),
+                    TemplateCVStyle::Main => latex::generate_projects_main_cv(&filtered),
+                    TemplateCVStyle::BW => latex::generate_projects_bw_cv(&filtered),
                 }
             }
             Section::Skills => {
                 let data = &context.general.skills_achievements;
                 match style {
-                    "main" => latex::generate_skills_main_cv(data),
-                    "bw" => latex::generate_skills_bw_cv(data),
-                    _ => String::new(),
+                    TemplateCVStyle::Main => latex::generate_skills_main_cv(data),
+                    TemplateCVStyle::BW => latex::generate_skills_bw_cv(data),
                 }
             }
         }
@@ -187,24 +187,31 @@ pub async fn write_cv(
         Section::Skills,
     ];
 
+    macro_rules! generate_content_task {
+        ($context:ident, $join_handles:ident, $section:ident, $path:ident, $cv_style:expr) => {
+            let context_clone = Arc::clone(&$context);
+
+            $join_handles.push(tokio::spawn(async move {
+                let content = $section.generate_content($cv_style, &context_clone);
+                write_tex_file(&$path, content).await
+            }));
+        };
+    }
+
     let mut join_handles = Vec::new();
+
     for section in sections_to_generate {
         let main_path = Path::new(&main_sections_path).join(section.filename());
         let bw_path = Path::new(&bw_sections_path).join(section.filename());
 
-        let context_clone = Arc::clone(&context);
-
-        join_handles.push(tokio::spawn(async move {
-            let content = section.generate_content("main", &context_clone);
-            write_tex_file(&main_path, content).await
-        }));
-
-        let context_clone = Arc::clone(&context);
-
-        join_handles.push(tokio::spawn(async move {
-            let content = section.generate_content("bw", &context_clone);
-            write_tex_file(&bw_path, content).await
-        }));
+        generate_content_task!(
+            context,
+            join_handles,
+            section,
+            main_path,
+            TemplateCVStyle::Main
+        );
+        generate_content_task!(context, join_handles, section, bw_path, TemplateCVStyle::BW);
     }
 
     for result in join_all(join_handles).await {

@@ -210,6 +210,7 @@ pub fn project_ui(ui: &mut egui::Ui, project: &mut Project) {
     } else {
         &project.name
     })
+    .default_open(true)
     .show(ui, |ui| {
         egui::Grid::new(format!("project_grid_{}", project.name))
             .num_columns(2)
@@ -287,10 +288,6 @@ pub fn side_panel_ui(ctx: &egui::Context, app: &mut App) {
         .resizable(false)
         .show(ctx, |ui| {
             ui.add_space(10.0);
-            ui.heading("Config Tab");
-            ui.add_space(5.0);
-            ui.separator();
-            ui.add_space(10.0);
 
             // Center the buttons vertically and horizontally
             ui.with_layout(
@@ -338,68 +335,5 @@ pub fn side_panel_ui(ctx: &egui::Context, app: &mut App) {
                     }
                 },
             );
-
-            // ui.spacing_mut().item_spacing.y = 10.0;
-            // // Get the style once to reuse it
-            // let theme = &ctx.style().visuals.clone();
-            // let selected_fill = theme.selection.bg_fill;
-            // let selected_stroke = theme.selection.stroke;
-            //
-            // // -- General Tab Button --
-            // let is_general_selected = app.selected_tab == AppTab::General;
-            // let general_button = egui::Button::new("General")
-            //     .min_size(egui::vec2(120.0, 25.0)) // Give it a fixed size
-            //     .fill(if is_general_selected {
-            //         selected_fill
-            //     } else {
-            //         egui::Color32::TRANSPARENT
-            //     })
-            //     .stroke(if is_general_selected {
-            //         selected_stroke
-            //     } else {
-            //         egui::Stroke::NONE
-            //     });
-            //
-            // if ui.add(general_button).clicked() {
-            //     app.selected_tab = AppTab::General;
-            // }
-            //
-            // // -- Experiences Tab Button --
-            // let is_experiences_selected = app.selected_tab == AppTab::Experiences;
-            // let experiences_button = egui::Button::new("Experiences")
-            //     .min_size(egui::vec2(120.0, 25.0))
-            //     .fill(if is_experiences_selected {
-            //         selected_fill
-            //     } else {
-            //         egui::Color32::TRANSPARENT
-            //     })
-            //     .stroke(if is_experiences_selected {
-            //         selected_stroke
-            //     } else {
-            //         egui::Stroke::NONE
-            //     });
-            //
-            // if ui.add(experiences_button).clicked() {
-            //     app.selected_tab = AppTab::Experiences;
-            // }
-            //
-            // // -- Projects Tab Button --
-            // let is_projects_selected = app.selected_tab == AppTab::Projects;
-            // let projects_button = egui::Button::new("Projects")
-            //     .min_size(egui::vec2(120.0, 25.0))
-            //     .fill(if is_projects_selected {
-            //         selected_fill
-            //     } else {
-            //         egui::Color32::TRANSPARENT
-            //     })
-            //     .stroke(if is_projects_selected {
-            //         selected_stroke
-            //     } else {
-            //         egui::Stroke::NONE
-            //     });
-            //
-            // if ui.add(projects_button).clicked() {
-            //     app.selected_tab = AppTab::Projects;
-            // }
         });
 }
