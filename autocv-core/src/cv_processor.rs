@@ -218,10 +218,10 @@ pub async fn write_cv(
         result.unwrap()?;
     }
 
-    println!(
-        "Finished writing all .tex sections for CV type: {}",
-        cv_type
-    );
+    // println!(
+    //     "Finished writing all .tex sections for CV type: {}",
+    //     cv_type
+    // );
 
     let pdf_main_handle = write_pdf(
         &context.general.personal_info.name,
@@ -255,7 +255,7 @@ async fn write_pdf(name: &str, cv_type: &str, style: &str, debug_mode: bool) -> 
         }
     };
 
-    println!("Running pdflatex for {}...", target_pdf);
+    // println!("Running pdflatex for {}...", target_pdf);
 
     let mut cmd = Command::new("pdflatex");
     cmd.current_dir(working_dir)
@@ -286,7 +286,7 @@ async fn write_pdf(name: &str, cv_type: &str, style: &str, debug_mode: bool) -> 
         return Err(io::Error::other(error_message));
     }
 
-    println!("Generated {}.pdf", target_pdf);
+    // println!("Generated {}.pdf", target_pdf);
     Ok(())
 }
 
@@ -319,7 +319,7 @@ async fn write_tex_file(path: &Path, content: String) -> io::Result<()> {
         return Ok(());
     }
     fs::write(path, content).await?;
-    println!("Successfully wrote file: {:?}", path);
+    // println!("Successfully wrote file: {:?}", path);
     Ok(())
 }
 

@@ -27,27 +27,27 @@ async fn run() -> Result<(), Box<dyn Error>> {
         None
     };
 
-    println!("\n==== Generating All LaTeX CV ====\n");
+    // println!("\n==== Generating All LaTeX CV ====\n");
 
     cv_processor::setup_directories().await?;
 
-    println!("Loading YAML Data...");
+    // println!("Loading YAML Data...");
     let (general_cv, projects_cv, experiences_cv) = load_cv::load_cv_data().await?;
 
     let general_cv = Arc::new(general_cv);
     let projects_cv = Arc::new(projects_cv);
     let experiences_cv = Arc::new(experiences_cv);
 
-    println!("Getting Total CV Types...");
+    // println!("Getting Total CV Types...");
     let all_cv_types = cv_processor::get_all_cv_types(&projects_cv, &experiences_cv).await?;
-    println!("All CV Types: {:?}", all_cv_types);
+    // println!("All CV Types: {:?}", all_cv_types);
 
     let processing_tasks = all_cv_types.into_iter().map(|cv_type| {
         let general_cv_clone = Arc::clone(&general_cv);
         let projects_cv_clone = projects_cv.as_ref().clone();
         let experiences_cv_clone = experiences_cv.as_ref().clone();
         tokio::spawn(async move {
-            println!("Processing CV type: {}", cv_type);
+            // println!("Processing CV type: {}", cv_type);
             cv_processor::write_cv(
                 general_cv_clone,
                 projects_cv_clone,
@@ -83,10 +83,10 @@ async fn run() -> Result<(), Box<dyn Error>> {
 
     cv_processor::move_aux_files().await?;
 
-    println!("\n==== All LaTeX CV Generation Complete ====");
+    // println!("\n==== All LaTeX CV Generation Complete ====");
 
     if let Some(start) = start_time {
-        println!("Total time taken: {:?}", start.elapsed());
+        // println!("Total time taken: {:?}", start.elapsed());
     }
 
     Ok(())

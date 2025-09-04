@@ -4,7 +4,10 @@ use autocv_core::cv_model::{
 };
 use log::info;
 
-use crate::app::{App, AppTab};
+use crate::{
+    actor::ActorMessage,
+    app::{App, AppTab},
+};
 
 // A helper function to create a consistent section header
 fn section_header(ui: &mut egui::Ui, title: &str) {
@@ -258,7 +261,7 @@ pub fn project_ui(ui: &mut egui::Ui, project: &mut Project, i: usize) {
     } else {
         &project.name
     })
-    .default_open(false)
+    .default_open(true)
     .id_salt(format!("project_{}", i))
     .show(ui, |ui| {
         egui::Grid::new(format!("project_grid_{}", i))
@@ -348,7 +351,7 @@ pub fn experience_ui(ui: &mut egui::Ui, experience: &mut Experience, i: usize) {
     });
 }
 
-pub fn top_panel_ui(ctx: &egui::Context, frame: egui::Frame) {
+pub fn top_panel_ui(app: &App, ctx: &egui::Context, frame: egui::Frame) {
     egui::TopBottomPanel::top("top_panel")
         .frame(frame)
         .show(ctx, |ui| {
@@ -373,7 +376,12 @@ pub fn top_panel_ui(ctx: &egui::Context, frame: egui::Frame) {
                         .clicked()
                     {
                         // TODO: Send compile message to actor
-                        info!("Compile button clicked!");
+                        app.actor_sender
+                            .try_send(ActorMessage::CompileCV(Box::new(app.local_state.clone())))
+                            .unwrap_or_else(|e| {
+                                log::error!("Failed to send CompileCV message: {}", e);
+                            });
+                        info!("CompileCV message sent to actor");
                     }
                 });
             });

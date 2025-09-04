@@ -14,9 +14,10 @@ use tokio::sync::mpsc;
 #[derive(Debug)]
 pub enum ActorMessage {
     LoadCV(),
+    CompileCV(Box<State>),
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct State {
     pub general_cv: GeneralCVData,
     pub experiences_cv: ExperiencesCVData,
@@ -43,12 +44,16 @@ impl Actor {
     }
 
     async fn handle_message(&mut self, msg: ActorMessage) {
-        info!("Actor received message: {:?}", msg);
         match msg {
             ActorMessage::LoadCV() => {
+                info!("Actor Received LoadCV Message");
                 setup(self).await.unwrap();
             }
-        }
+            ActorMessage::CompileCV(state) => {
+                info!("Actor Received CompileCV Message");
+                compile_cv(*state).await.unwrap();
+            }
+        };
     }
 }
 
@@ -65,55 +70,59 @@ pub async fn setup(actor: &mut Actor) -> Result<(), Box<dyn Error>> {
         shared_state.experiences_cv = experiences_cv;
     }
 
-    // info!("Getting Total CV Types...");
-    // let all_cv_types = cv_processor::get_all_cv_types(&projects_cv, &experiences_cv).await?;
-    // info!("All CV Types: {:?}", all_cv_types);
-
     Ok(())
 }
 
-// pub async fn generate_all_cvs() -> Result<(), Box<dyn Error>> {
-//     let processing_tasks = all_cv_types.into_iter().map(|cv_type| {
-//         let general_cv_clone = Arc::clone(&general_cv);
-//         let projects_cv_clone = projects_cv.as_ref().clone();
-//         let experiences_cv_clone = experiences_cv.as_ref().clone();
-//         tokio::spawn(async move {
-//             println!("Processing CV type: {}", cv_type);
-//             cv_processor::write_cv(
-//                 general_cv_clone,
-//                 projects_cv_clone,
-//                 experiences_cv_clone,
-//                 cv_type,
-//                 false,
-//             )
-//             .await
-//         })
-//     });
-//
-//     let results = join_all(processing_tasks).await;
-//
-//     // --- Error Handling for Concurrent Tasks ---
-//     let mut errors = Vec::new();
-//     for result in results {
-//         match result {
-//             // The task itself panicked (a serious bug).
-//             Err(join_error) => errors.push(format!("A task panicked: {}", join_error)),
-//             // The task completed but returned an error.
-//             Ok(Err(task_error)) => errors.push(format!("A task failed: {}", task_error)),
-//             Ok(Ok(_)) => (),
-//         }
-//     }
-//
-//     if !errors.is_empty() {
-//         eprintln!("\nErrors occurred during CV generation:");
-//         for e in errors {
-//             eprintln!("- {}", e);
-//         }
-//         return Err("CV generation failed due to one or more task errors.".into());
-//     }
-//
-//     cv_processor::move_aux_files().await?;
-//
-//     println!("\n==== All LaTeX CV Generation Complete ====");
-//     Ok(())
-// }
+pub async fn compile_cv(state: State) -> Result<(), Box<dyn Error>> {
+    info!("Starting CV Generation...");
+
+    let general_cv = Arc::new(state.general_cv);
+    let projects_cv = Arc::new(state.projects_cv);
+    let experiences_cv = Arc::new(state.experiences_cv);
+
+    let all_cv_types = cv_processor::get_all_cv_types(&projects_cv, &experiences_cv).await?;
+
+    let processing_tasks = all_cv_types.into_iter().map(|cv_type| {
+        let general_cv_clone = Arc::clone(&general_cv);
+        let projects_cv_clone = projects_cv.as_ref().clone();
+        let experiences_cv_clone = experiences_cv.as_ref().clone();
+        tokio::spawn(async move {
+            info!("Processing CV type: {}", cv_type);
+            cv_processor::write_cv(
+                general_cv_clone,
+                projects_cv_clone,
+                experiences_cv_clone,
+                cv_type,
+                false,
+            )
+            .await
+        })
+    });
+
+    let results = futures::future::join_all(processing_tasks).await;
+
+    // --- Error Handling for Concurrent Tasks ---
+    let mut errors = Vec::new();
+    for result in results {
+        match result {
+            // The task itself panicked (a serious bug).
+            Err(join_error) => errors.push(format!("A task panicked: {}", join_error)),
+            // The task completed but returned an error.
+            Ok(Err(task_error)) => errors.push(format!("A task failed: {}", task_error)),
+            Ok(Ok(_)) => (),
+        }
+    }
+
+    if !errors.is_empty() {
+        eprintln!("\nErrors occurred during CV generation:");
+        for e in errors {
+            eprintln!("- {}", e);
+        }
+        return Err("CV generation failed due to one or more task errors.".into());
+    }
+
+    cv_processor::move_aux_files().await?;
+
+    info!("All LaTeX CV Generation Complete");
+    Ok(())
+}

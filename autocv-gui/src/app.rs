@@ -24,7 +24,6 @@ pub enum AppTab {
 
 pub struct App {
     selected_tab: AppTab,
-    shared_state: Arc<Mutex<State>>,
     local_state: State,
     actor_sender: mpsc::Sender<ActorMessage>,
 }
@@ -46,7 +45,6 @@ impl App {
         Self {
             selected_tab: AppTab::General,
             local_state: Arc::clone(&shared_state).lock().unwrap().clone(),
-            shared_state,
             actor_sender,
         }
     }
@@ -64,14 +62,18 @@ impl eframe::App for App {
 
         // Top Panel
         let top_panel_frame = style::top_panel_frame();
-        top_panel_ui(ctx, top_panel_frame);
+        top_panel_ui(self, ctx, top_panel_frame);
 
         // Side Panel
         side_panel_ui(ctx, self);
 
         // Central Panel
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("Configuration");
+            match self.selected_tab {
+                AppTab::General => ui.heading("General Configuration"),
+                AppTab::Experiences => ui.heading("Experiences Configuration"),
+                AppTab::Projects => ui.heading("Projects Configuration"),
+            };
             ui.separator();
 
             egui::ScrollArea::vertical().show(ui, |ui| {
