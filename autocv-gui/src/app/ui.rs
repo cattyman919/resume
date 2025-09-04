@@ -2,6 +2,7 @@ use autocv_core::cv_model::{
     Award, Certificate, Education, Experience, GeneralCVData, PersonalInfo, Project,
     SkillsAchievements,
 };
+use log::info;
 
 use crate::app::{App, AppTab};
 
@@ -13,13 +14,31 @@ fn section_header(ui: &mut egui::Ui, title: &str) {
 }
 
 // A helper for adding/removing items from a Vec<String>
-fn editable_list(ui: &mut egui::Ui, title: &str, items: &mut Vec<String>) {
+enum TextEditMode {
+    SingleLine,
+    MultiLine,
+}
+
+fn editable_list(
+    ui: &mut egui::Ui,
+    title: &str,
+    text_edit_mode: TextEditMode,
+    items: &mut Vec<String>,
+) {
     ui.label(title);
     let mut item_to_remove = None;
     for (i, item) in items.iter_mut().enumerate() {
         ui.horizontal(|ui| {
-            ui.add(egui::TextEdit::multiline(item).desired_width(f32::INFINITY));
-            // Use a styled button for better looks
+            match text_edit_mode {
+                TextEditMode::SingleLine => {
+                    ui.add(egui::TextEdit::singleline(item));
+                }
+                TextEditMode::MultiLine => {
+                    ui.add(
+                        egui::TextEdit::multiline(item).desired_width(ui.available_width() * 0.9),
+                    );
+                }
+            }
             if ui
                 .add(egui::Button::new("➖").frame(false))
                 .on_hover_text("Remove")
@@ -48,7 +67,10 @@ fn certificate_list(ui: &mut egui::Ui, title: &str, items: &mut Vec<Certificate>
     for (i, cert) in items.iter_mut().enumerate() {
         ui.horizontal(|ui| {
             ui.add(egui::TextEdit::singleline(&mut cert.year).desired_width(40.0));
-            ui.add(egui::TextEdit::singleline(&mut cert.name).desired_width(f32::INFINITY));
+            ui.add(
+                egui::TextEdit::singleline(&mut cert.name)
+                    .desired_width(ui.available_width() * 0.9),
+            );
             if ui
                 .add(egui::Button::new("➖").frame(false))
                 .on_hover_text("Remove")
@@ -75,14 +97,14 @@ pub fn general_ui(ui: &mut egui::Ui, general_cv: &mut GeneralCVData) {
 
     section_header(ui, "Education");
     // TODO: Add a button to add/remove education entries
-    for education in general_cv.education.iter_mut() {
-        education_ui(ui, education);
+    for (i, education) in general_cv.education.iter_mut().enumerate() {
+        education_ui(ui, education, i);
     }
 
     section_header(ui, "Awards");
     // TODO: Add a button to add/remove award entries
-    for award in general_cv.awards.iter_mut() {
-        awards_ui(ui, award);
+    for (i, award) in general_cv.awards.iter_mut().enumerate() {
+        awards_ui(ui, award, i);
     }
 }
 
@@ -127,27 +149,48 @@ pub fn skills_achivements_ui(ui: &mut egui::Ui, skills_achievements: &mut Skills
     section_header(ui, "Skills & Achievements");
 
     egui::CollapsingHeader::new("Skills & Certificates").show(ui, |ui| {
-        editable_list(ui, "Hard Skills", &mut skills_achievements.hard_skills);
-        editable_list(ui, "Soft Skills", &mut skills_achievements.soft_skills);
+        editable_list(
+            ui,
+            "Hard Skills",
+            TextEditMode::SingleLine,
+            &mut skills_achievements.hard_skills,
+        );
+        editable_list(
+            ui,
+            "Soft Skills",
+            TextEditMode::SingleLine,
+            &mut skills_achievements.soft_skills,
+        );
         editable_list(
             ui,
             "Programming Languages",
+            TextEditMode::SingleLine,
             &mut skills_achievements.programming_languages,
         );
-        editable_list(ui, "Databases", &mut skills_achievements.databases);
-        editable_list(ui, "Misc Tools", &mut skills_achievements.misc);
+        editable_list(
+            ui,
+            "Databases",
+            TextEditMode::SingleLine,
+            &mut skills_achievements.databases,
+        );
+        editable_list(
+            ui,
+            "Misc Tools",
+            TextEditMode::SingleLine,
+            &mut skills_achievements.misc,
+        );
         certificate_list(ui, "Certificates", &mut skills_achievements.certificates);
     });
 }
 
-pub fn education_ui(ui: &mut egui::Ui, education: &mut Education) {
+pub fn education_ui(ui: &mut egui::Ui, education: &mut Education, i: usize) {
     egui::CollapsingHeader::new(if education.institution.is_empty() {
         "New Entry"
     } else {
         &education.institution
     })
     .show(ui, |ui| {
-        egui::Grid::new(format!("education_grid_{}", education.institution))
+        egui::Grid::new(format!("education_{}", i))
             .num_columns(2)
             .spacing([40.0, 4.0])
             .striped(true)
@@ -170,18 +213,23 @@ pub fn education_ui(ui: &mut egui::Ui, education: &mut Education) {
             });
 
         ui.add_space(10.0);
-        editable_list(ui, "Details", &mut education.details);
+        editable_list(
+            ui,
+            "Details",
+            TextEditMode::MultiLine,
+            &mut education.details,
+        );
     });
 }
 
-pub fn awards_ui(ui: &mut egui::Ui, award: &mut Award) {
+pub fn awards_ui(ui: &mut egui::Ui, award: &mut Award, i: usize) {
     egui::CollapsingHeader::new(if award.title.is_empty() {
         "New Award".to_string()
     } else {
         award.title.clone()
     })
     .show(ui, |ui| {
-        egui::Grid::new(format!("award_grid_{}", award.title))
+        egui::Grid::new(format!("award_{}", i))
             .num_columns(2)
             .spacing([40.0, 4.0])
             .striped(true)
@@ -200,19 +248,20 @@ pub fn awards_ui(ui: &mut egui::Ui, award: &mut Award) {
             });
 
         ui.add_space(10.0);
-        editable_list(ui, "Points", &mut award.points);
+        editable_list(ui, "Points", TextEditMode::MultiLine, &mut award.points);
     });
 }
 
-pub fn project_ui(ui: &mut egui::Ui, project: &mut Project) {
+pub fn project_ui(ui: &mut egui::Ui, project: &mut Project, i: usize) {
     egui::CollapsingHeader::new(if project.name.is_empty() {
         "New Project"
     } else {
         &project.name
     })
-    .default_open(true)
+    .default_open(false)
+    .id_salt(format!("project_{}", i))
     .show(ui, |ui| {
-        egui::Grid::new(format!("project_grid_{}", project.name))
+        egui::Grid::new(format!("project_grid_{}", i))
             .num_columns(2)
             .spacing([40.0, 4.0])
             .striped(true)
@@ -224,17 +273,26 @@ pub fn project_ui(ui: &mut egui::Ui, project: &mut Project) {
                 ui.label("GitHub URL");
                 ui.text_edit_singleline(&mut project.github);
                 ui.end_row();
+
+                ui.label("GitHub Handle");
+                ui.text_edit_singleline(&mut project.github_handle);
+                ui.end_row();
             });
 
         ui.add_space(10.0);
-        editable_list(ui, "Points", &mut project.points);
-        editable_list(ui, "CV Types", &mut project.cv_type);
+        editable_list(
+            ui,
+            "CV Types",
+            TextEditMode::SingleLine,
+            &mut project.cv_type,
+        );
+        editable_list(ui, "Points", TextEditMode::MultiLine, &mut project.points);
     });
 }
 
-pub fn experience_ui(ui: &mut egui::Ui, experience: &mut Experience) {
+pub fn experience_ui(ui: &mut egui::Ui, experience: &mut Experience, i: usize) {
     egui::CollapsingHeader::new(format!(
-        "{} at {}",
+        "{} ({})",
         if experience.role.is_empty() {
             "New Role"
         } else {
@@ -246,40 +304,80 @@ pub fn experience_ui(ui: &mut egui::Ui, experience: &mut Experience) {
             &experience.company
         }
     ))
+    .id_salt(format!("experience_{}", i))
     .show(ui, |ui| {
-        egui::Grid::new(format!(
-            "experience_grid_{}_{}",
-            experience.company, experience.role
-        ))
-        .num_columns(2)
-        .spacing([40.0, 4.0])
-        .striped(true)
-        .show(ui, |ui| {
-            ui.label("Company");
-            ui.text_edit_singleline(&mut experience.company);
-            ui.end_row();
+        egui::Grid::new(format!("experience_{}", i))
+            .num_columns(2)
+            .spacing([40.0, 4.0])
+            .striped(true)
+            .show(ui, |ui| {
+                ui.label("Company");
+                ui.text_edit_singleline(&mut experience.company);
+                ui.end_row();
 
-            ui.label("Location");
-            ui.text_edit_singleline(&mut experience.location);
-            ui.end_row();
+                ui.label("Location");
+                ui.text_edit_singleline(&mut experience.location);
+                ui.end_row();
 
-            ui.label("Role");
-            ui.text_edit_singleline(&mut experience.role);
-            ui.end_row();
+                ui.label("Role");
+                ui.text_edit_singleline(&mut experience.role);
+                ui.end_row();
 
-            ui.label("Dates");
-            ui.text_edit_singleline(&mut experience.dates);
-            ui.end_row();
+                ui.label("Dates");
+                ui.text_edit_singleline(&mut experience.dates);
+                ui.end_row();
 
-            ui.label("Job Type");
-            ui.text_edit_singleline(&mut experience.job_type);
-            ui.end_row();
-        });
+                ui.label("Job Type");
+                ui.text_edit_singleline(&mut experience.job_type);
+                ui.end_row();
+            });
 
         ui.add_space(10.0);
-        editable_list(ui, "Points", &mut experience.points);
-        editable_list(ui, "CV Types", &mut experience.cv_type);
+        editable_list(
+            ui,
+            "CV Types",
+            TextEditMode::SingleLine,
+            &mut experience.cv_type,
+        );
+        editable_list(
+            ui,
+            "Points",
+            TextEditMode::MultiLine,
+            &mut experience.points,
+        );
     });
+}
+
+pub fn top_panel_ui(ctx: &egui::Context, frame: egui::Frame) {
+    egui::TopBottomPanel::top("top_panel")
+        .frame(frame)
+        .show(ctx, |ui| {
+            ui.horizontal(|ui| {
+                // --- Left side of the panel ---
+                ui.with_layout(egui::Layout::left_to_right(egui::Align::Center), |ui| {
+                    ui.label(egui::RichText::new("AutoCV Config").strong().size(24.0));
+                });
+
+                // --- Right side of the panel ---
+                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                    let compile_button = egui::Button::new(
+                        egui::RichText::new("Compile PDF")
+                            .color(crate::app::style::ayu_dark::BG_DARK)
+                            .strong(),
+                    )
+                    .fill(crate::app::style::ayu_dark::ACCENT_YELLOW);
+
+                    if ui
+                        .add(compile_button)
+                        .on_hover_text("Compile the CV configuration to a PDF file")
+                        .clicked()
+                    {
+                        // TODO: Send compile message to actor
+                        info!("Compile button clicked!");
+                    }
+                });
+            });
+        });
 }
 
 pub fn side_panel_ui(ctx: &egui::Context, app: &mut App) {
