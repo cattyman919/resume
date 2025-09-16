@@ -94,11 +94,9 @@ jobs:
 
       - name: Upload CV Release Asset
         id: upload-original-asset
-        uses: actions/upload-release-asset@v1
+        uses: alexellis/upload-assets@0.4.0
         if: steps.create_release.outcome == 'success'
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "./out/*.pdf"
-          asset_content_type: application/pdf
+          asset_path: '["./out/*.pdf"]'
