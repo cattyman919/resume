@@ -167,7 +167,7 @@ func GenerateExperienceBwCV(data *resume.CVData) string {
 \begin{onecolentry}
 %s
 \end{onecolentry}
-`, escapeLatex(exp.Dates), escapeLatex(exp.Company), escapeLatex(exp.Location), escapeLatex(exp.Role), escapeLatex(exp.JobType), GenerateHighlights(exp.Points)))
+`, escapeLatex(exp.Dates), escapeLatex(exp.Role), escapeLatex(exp.JobType), escapeLatex(exp.Company), escapeLatex(exp.Location), GenerateHighlights(exp.Points)))
 		if i < len(data.Experiences)-1 {
 			builder.WriteString("\n\\vspace{0.4 cm}\n")
 		}
