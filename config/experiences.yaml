@@ -1,3 +1,18 @@
+- company: XLSmart
+  location: Jakarta Selatan
+  role: Cloud Operations
+  dates: September 2025 - Present
+  job_type: Contract
+  cv_type:
+    - main
+    - devops
+    - go
+  points:
+    - "**Engineered** a high-concurrency **Go** tool to automate weekly End-of-Support (EOS) and capacity reporting across **~100 AWS accounts** and **~100 GCP projects**, **slashing manual report generation time from 45 minutes to under 3 minutes**."
+    - "**Built** a **Go** utility to **audit Kubernetes clusters** at scale, querying **EKS clusters** to gather **PodDisruptionBudget (PDB)** and **HPA** data for cross-team resilience analysis."
+    - "**Designed and implemented** key **Grafana** dashboards to centralize observability, visualizing **CPU/Memory** from multiple **Prometheus** datasources and tracking **AWS service capacity** (EC2, RDS, EKS)."
+    - "**Investigated and resolved** a production **memory leak** in a microservice by performing deep-dive analysis and tracing using **Datadog** and **Kubernetes CLI** tools."
+
 - company: Superbank
   location: Jakarta Selatan
   role: Technical Support
@@ -71,7 +86,6 @@
   dates: February 2021 - October 2022
   job_type: Part-time
   cv_type:
-    - main
     - fullstack
     - go
     - custom

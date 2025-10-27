@@ -43,7 +43,6 @@
   description: "A web platform for easy food and drink ordering. Users can browse restaurant menus, add funds, and leave ratings."
   points:
     - "Engineered a responsive and intuitive user interface with **React** and **Tailwind CSS**, leading the frontend development to enhance user engagement."
-    - "Developed a dynamic order cart using **React hooks**, providing users with a clear and real-time overview of their selections."
     - "Implemented a secure payment system with **frontend validation**, ensuring sufficient balance before processing transactions."
 
 - name: DanceRTOS
@@ -51,7 +50,6 @@
   github_handle: cattyman919/AbsenceSystem
   cv_type:
     - iot
-    - main
     - fullstack
     - devops
   description: "An attendance system using FreeRTOS ESP32 and RFID, with a web server and Blynk integration for class and schedule management."
@@ -59,6 +57,17 @@
     - "Led the end-to-end development of the DanceRTOS attendance system, building both the **Flutter frontend** and **NestJS backend**."
     - "Engineered a real-time student login system using **MQTT** and **RFID** on an **ESP32**, enabling secure and instantaneous attendance tracking."
     - "Designed and implemented a dynamic class schedule and attendance table, providing lecturers with an organized and **real-time view of student presence**."
+
+- name: DanceRTOS
+  github: https://github.com/cattyman919/AbsenceSystem
+  github_handle: cattyman919/AbsenceSystem
+  cv_type:
+    - main
+  description: "An attendance system using FreeRTOS ESP32 and RFID, with a web server and Blynk integration for class and schedule management."
+  points:
+    - "Designed and implemented a dynamic class schedule and attendance table, providing lecturers with an organized and **real-time view of student presence**."
+    - "Led the end-to-end development of the DanceRTOS attendance system, building both the **Flutter frontend** and **NestJS backend**."
+    - "Engineered a real-time student login system using **MQTT** and **RFID** on an **ESP32**, enabling secure and instantaneous attendance tracking."
 
 - name: Jaga
   github: https://github.com/cattyman919/Jaga
@@ -74,7 +83,6 @@
   github: https://github.com/cattyman919/JSleep
   github_handle: cattyman919/JSleep
   cv_type:
-    - main
     - fullstack
     - custom
   description: "A full-stack room reservation backend built with Java and Spring Boot, featuring a custom JSON-based database engine for managing users, rooms, and bookings."
@@ -126,3 +134,13 @@
     - "Deployed and manage a suite of services including **Jellyfin for media streaming**, **Portainer for Docker container management**, and an **Asterisk SIP server for home VoIP**."
     - "Configured core network services, including **Samba for local file sharing**, **nginx as a reverse proxy** for simplified service access, and implemented **fail2ban and firewalld** for enhanced security."
     - "Established a robust data management and remote access strategy using **rsync for automated backups** and **Tailscale** for secure, seamless access to the entire home network from any location."
+
+- name: Home Server
+  github: null
+  github_handle: null
+  cv_type:
+    - main
+  description: "Dell OptiPlex 7050 running Debian as the Operating System used for my personal custom server. It currently provides services such as Portainer, Jellyfin, CasaOS, Samba Server, SIP Server, and also used as a backup for my files. Connected remotely using Tailscale."
+  points:
+    - "Deployed and manage a suite of services including **Jellyfin for media streaming**, **Portainer for Docker container management**, and an **Asterisk SIP server for home VoIP**."
+    - "Configured core network services, including **Samba for local file sharing**, **nginx as a reverse proxy** for simplified service access, and implemented **fail2ban and firewalld** for enhanced security."
