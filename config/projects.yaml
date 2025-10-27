@@ -142,5 +142,5 @@
     - main
   description: "Dell OptiPlex 7050 running Debian as the Operating System used for my personal custom server. It currently provides services such as Portainer, Jellyfin, CasaOS, Samba Server, SIP Server, and also used as a backup for my files. Connected remotely using Tailscale."
   points:
-    - "Deployed and manage a suite of services including **Jellyfin for media streaming**, **Portainer for Docker container management**, and an **Asterisk SIP server for home VoIP**."
+    - "**Linux Server (Debian)** that deploys and manage a suite of services including **Jellyfin for media streaming**, **Portainer for Docker container management**, and an **Asterisk SIP server for home VoIP**."
     - "Configured core network services, including **Samba for local file sharing**, **nginx as a reverse proxy** for simplified service access, and implemented **fail2ban and firewalld** for enhanced security."
