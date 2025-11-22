@@ -49,7 +49,7 @@ type Project struct {
 
 type Certificate struct {
 	Name string `yaml:"name"`
-	Year int    `yaml:"year"`
+	Year string `yaml:"year"`
 }
 
 type SkillsAchievements struct {

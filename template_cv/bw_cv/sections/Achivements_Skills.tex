@@ -1,0 +1,34 @@
+\documentclass[../main.tex]{subfiles}
+\begin{document}
+\section{\texorpdfstring{\sectiontitle[\Large]{Skills}}{Skills}}
+\begin{highlights}
+    \item \textbf{Hard Skill: }
+    <<- range $index, $element := .General.SkillsAchievements.HardSkills ->>
+        <<- if $index >>, << end ->>
+        <<- $element | latex ->>
+    <<- end >>
+    \item \textbf{Soft Skill: }
+    <<- range $index, $element := .General.SkillsAchievements.SoftSkills ->>
+        <<- if $index >>, << end ->>
+        <<- $element | latex ->>
+    <<- end >>
+    \item \textbf{Programming Languages: }
+    <<- range $index, $element := .General.SkillsAchievements.ProgrammingLanguages ->>
+        <<- if $index >>, << end ->>
+        <<- $element | latex ->>
+    <<- end >>
+    \item \textbf{Database: }
+    <<- range $index, $element := .General.SkillsAchievements.DatabaseLanguages ->>
+        <<- if $index >>, << end ->>
+        <<- $element | latex ->>
+    <<- end >>
+  \item \textbf{Frameworks \& Misc: }
+    <<- range $index, $element := .General.SkillsAchievements.Misc ->>
+        <<- if $index >>, << end ->>
+        <<- $element | latex ->>
+    <<- end >>
+  <<- range .General.SkillsAchievements.Certificates >>
+  \item \textbf{Certificate} (<<- .Year | latex ->>): << .Name | latex ->>
+  <<- end >>
+\end{highlights}
+\end{document}

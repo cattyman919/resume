@@ -1,11 +1,11 @@
 *.log
 *.aux
 repomix*
-cv
 .git
 bin/*
 target
 build
+build_cv
 .cache
 /go-modules
 /.go-build-cache

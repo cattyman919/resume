@@ -1,0 +1,27 @@
+\documentclass[../main.tex]{subfiles}
+\begin{document}
+\section{\texorpdfstring{\sectiontitle[\Large]{Projects}}{Projects}}
+
+<<- range .Projects >>
+\begin{twocolentry}{
+    \small
+    <<- if .Github ->>
+      \textit{\href{<< .Github >>}{<< .GithubHandle | latex >>}}
+    <<- end ->>
+}
+    \sectiontitle{<< .Name | latex >>}
+\end{twocolentry}
+
+\vspace{0.10 cm}
+\begin{onecolentry}
+\begin{highlights}
+  <<- range .Points >>
+    \item << . | latex ->>
+  <<- end >>
+\end{highlights}
+\end{onecolentry}
+
+\vspace{0.2 cm}
+<<- end >>
+
+\end{document}
