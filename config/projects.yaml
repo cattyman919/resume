@@ -62,7 +62,7 @@
   github: https://github.com/cattyman919/AbsenceSystem
   github_handle: cattyman919/AbsenceSystem
   cv_type:
-    - main
+    # - main
   description: "An attendance system using FreeRTOS ESP32 and RFID, with a web server and Blynk integration for class and schedule management."
   points:
     - "Designed and implemented a dynamic class schedule and attendance table, providing lecturers with an organized and **real-time view of student presence**."
