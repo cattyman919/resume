@@ -1,0 +1,23 @@
+\documentclass[../main.tex]{subfiles}
+\begin{document}
+\section{\texorpdfstring{\sectiontitle[\Large]{Experience}}{Experience}}
+((* for exp in experiences *))
+\begin{twocolentry}{(( exp.dates | latex ))}
+    \sectiontitle{(( exp.role | latex ))} \location{-- (( exp.job_type | latex ))}\\
+    \vspace{0.10 cm}
+    \textbf{\textit{(( exp.company | latex ))}} (\textit{(( exp.location | latex ))})
+\end{twocolentry}
+
+\vspace{0.10 cm}
+\begin{onecolentry}
+\begin{highlights}
+  ((* for point in exp.points *))
+    \item (( point | latex ))
+  ((* endfor *))
+\end{highlights}
+\end{onecolentry}
+
+\vspace{0.4 cm}
+((* endfor *))
+
+\end{document}

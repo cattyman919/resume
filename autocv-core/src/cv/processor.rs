@@ -1,9 +1,6 @@
-use crate::{
-    cv_model::{
-        Award, Education, Experience, ExperiencesCVData, GeneralCVData, HasCvTypes, Project,
-        ProjectsCVData,
-    },
-    latex,
+use super::model::{
+    Award, Education, Experience, ExperiencesCVConfig, GeneralCVConfig, HasCvTypes, Project,
+    ProjectsCVConfig,
 };
 use anyhow::{Context, Result};
 use futures::future::join_all;
@@ -17,8 +14,8 @@ use std::{
 use tokio::{fs, io, process::Command};
 
 pub async fn get_all_cv_types(
-    projects_cv: &ProjectsCVData,
-    experiences_cv: &ExperiencesCVData,
+    projects_cv: &ProjectsCVConfig,
+    experiences_cv: &ExperiencesCVConfig,
 ) -> Result<HashSet<String>> {
     let experience_task = get_types_per_section(projects_cv);
     let project_task = get_types_per_section(experiences_cv);
@@ -57,101 +54,18 @@ pub async fn setup_directories() -> Result<()> {
     Ok(())
 }
 
-enum TemplateCVStyle {
-    Main,
-    BW,
-}
-
-#[derive(Clone, Copy)]
-enum Section {
-    Header,
-    Experience,
-    Education,
-    Awards,
-    Projects,
-    Skills,
-}
-
-impl Section {
-    fn filename(&self) -> &'static str {
-        match self {
-            Section::Header => "Header.tex",
-            Section::Experience => "Experience.tex",
-            Section::Education => "Education.tex",
-            Section::Awards => "Awards.tex",
-            Section::Projects => "Projects.tex",
-            Section::Skills => "Achivements_Skills.tex",
-        }
-    }
-
-    fn generate_content(&self, style: TemplateCVStyle, context: &CvContext) -> String {
-        match self {
-            Section::Header => {
-                let data = &context.general.personal_info;
-                match style {
-                    TemplateCVStyle::Main => latex::generate_header_main_cv(data),
-                    TemplateCVStyle::BW => latex::generate_header_bw_cv(data),
-                }
-            }
-            Section::Experience => {
-                let filtered: Vec<&Experience> = context
-                    .experiences
-                    .iter()
-                    .filter(|e| e.cv_types().contains(context.cv_type.as_ref()))
-                    .collect();
-                match style {
-                    TemplateCVStyle::Main => latex::generate_experience_main_cv(&filtered),
-                    TemplateCVStyle::BW => latex::generate_experience_bw_cv(&filtered),
-                }
-            }
-            Section::Education => {
-                let data: Vec<&Education> = context.general.education.iter().collect();
-                match style {
-                    TemplateCVStyle::Main => latex::generate_education_main_cv(&data),
-                    TemplateCVStyle::BW => latex::generate_education_bw_cv(&data),
-                }
-            }
-            Section::Awards => {
-                let data: Vec<&Award> = context.general.awards.iter().collect();
-                match style {
-                    TemplateCVStyle::Main => latex::generate_awards_main_cv(&data),
-                    TemplateCVStyle::BW => latex::generate_awards_bw_cv(&data),
-                }
-            }
-            Section::Projects => {
-                let filtered: Vec<&Project> = context
-                    .projects
-                    .iter()
-                    .filter(|p| p.cv_type.contains(context.cv_type.as_ref()))
-                    .collect();
-                match style {
-                    TemplateCVStyle::Main => latex::generate_projects_main_cv(&filtered),
-                    TemplateCVStyle::BW => latex::generate_projects_bw_cv(&filtered),
-                }
-            }
-            Section::Skills => {
-                let data = &context.general.skills_achievements;
-                match style {
-                    TemplateCVStyle::Main => latex::generate_skills_main_cv(data),
-                    TemplateCVStyle::BW => latex::generate_skills_bw_cv(data),
-                }
-            }
-        }
-    }
-}
-
 struct CvContext {
-    general: Arc<GeneralCVData>,
-    projects: Arc<ProjectsCVData>,
-    experiences: Arc<ExperiencesCVData>,
+    general: Arc<GeneralCVConfig>,
+    projects: Arc<ProjectsCVConfig>,
+    experiences: Arc<ExperiencesCVConfig>,
     cv_type: Arc<String>,
 }
 
 // Generates the .tex files for each section and compiles the final PDFs.
 pub async fn write_cv(
-    general_cv: Arc<GeneralCVData>,
-    projects_cv: ProjectsCVData,
-    experiences_cv: ExperiencesCVData,
+    general_cv: Arc<GeneralCVConfig>,
+    projects_cv: ProjectsCVConfig,
+    experiences_cv: ExperiencesCVConfig,
     cv_type: String,
     debug_mode: bool,
 ) -> io::Result<()> {
@@ -178,14 +92,7 @@ pub async fn write_cv(
         cv_type: Arc::new(cv_type.clone()),
     });
 
-    let sections_to_generate = [
-        Section::Header,
-        Section::Experience,
-        Section::Education,
-        Section::Awards,
-        Section::Projects,
-        Section::Skills,
-    ];
+    todo!();
 
     macro_rules! generate_content_task {
         ($context:ident, $join_handles:ident, $section:ident, $path:ident, $cv_style:expr) => {
@@ -198,30 +105,28 @@ pub async fn write_cv(
         };
     }
 
-    let mut join_handles = Vec::new();
+    // for section in sections_to_generate {
+    //     let main_path = Path::new(&main_sections_path).join(section.filename());
+    //     let bw_path = Path::new(&bw_sections_path).join(section.filename());
+    //
+    //     generate_content_task!(
+    //         context,
+    //         join_handles,
+    //         section,
+    //         main_path,
+    //         TemplateCVStyle::Main
+    //     );
+    //     generate_content_task!(context, join_handles, section, bw_path, TemplateCVStyle::BW);
+    // }
 
-    for section in sections_to_generate {
-        let main_path = Path::new(&main_sections_path).join(section.filename());
-        let bw_path = Path::new(&bw_sections_path).join(section.filename());
+    // for result in join_all(join_handles).await {
+    //     result.unwrap()?;
+    // }
 
-        generate_content_task!(
-            context,
-            join_handles,
-            section,
-            main_path,
-            TemplateCVStyle::Main
-        );
-        generate_content_task!(context, join_handles, section, bw_path, TemplateCVStyle::BW);
-    }
-
-    for result in join_all(join_handles).await {
-        result.unwrap()?;
-    }
-
-    // println!(
-    //     "Finished writing all .tex sections for CV type: {}",
-    //     cv_type
-    // );
+    println!(
+        "Finished writing all .tex sections for CV type: {}",
+        cv_type
+    );
 
     let pdf_main_handle = write_pdf(
         &context.general.personal_info.name,
@@ -255,7 +160,7 @@ async fn write_pdf(name: &str, cv_type: &str, style: &str, debug_mode: bool) -> 
         }
     };
 
-    // println!("Running pdflatex for {}...", target_pdf);
+    println!("Running pdflatex for {}...", target_pdf);
 
     let mut cmd = Command::new("pdflatex");
     cmd.current_dir(working_dir)
@@ -286,11 +191,12 @@ async fn write_pdf(name: &str, cv_type: &str, style: &str, debug_mode: bool) -> 
         return Err(io::Error::other(error_message));
     }
 
-    // println!("Generated {}.pdf", target_pdf);
+    println!("Generated {}.pdf", target_pdf);
     Ok(())
 }
 
 /// Moves .log and .aux files to an 'out/aux' directory.
+#[inline]
 pub async fn move_aux_files() -> io::Result<()> {
     let out_dir = Path::new("out");
     let aux_dir = out_dir.join("aux");
@@ -319,7 +225,7 @@ async fn write_tex_file(path: &Path, content: String) -> io::Result<()> {
         return Ok(());
     }
     fs::write(path, content).await?;
-    // println!("Successfully wrote file: {:?}", path);
+    println!("Successfully wrote file: {:?}", path);
     Ok(())
 }
 

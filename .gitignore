@@ -7,5 +7,7 @@ bin/*
 .cache
 deps
 .bacon*
-
+build_cv
+.git
 /target
+debug

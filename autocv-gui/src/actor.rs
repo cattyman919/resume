@@ -5,7 +5,7 @@ use std::{
 
 use anyhow::Result;
 use autocv_core::{
-    cv_model::{ExperiencesCVData, GeneralCVData, ProjectsCVData},
+    cv_model::{ExperiencesCVConfig, GeneralCVConfig, ProjectsCVConfig},
     cv_processor, load_cv,
 };
 use log::info;
@@ -19,9 +19,9 @@ pub enum ActorMessage {
 
 #[derive(Clone, Default, Debug)]
 pub struct State {
-    pub general_cv: GeneralCVData,
-    pub experiences_cv: ExperiencesCVData,
-    pub projects_cv: ProjectsCVData,
+    pub general_cv: GeneralCVConfig,
+    pub experiences_cv: ExperiencesCVConfig,
+    pub projects_cv: ProjectsCVConfig,
 }
 
 pub struct Actor {
@@ -61,11 +61,11 @@ pub async fn setup(actor: &mut Actor) -> Result<(), Box<dyn Error>> {
     cv_processor::setup_directories().await?;
 
     info!("Loading YAML Data...");
-    let (general_cv, projects_cv, experiences_cv) = load_cv::load_cv_data().await?;
+    let (general_cv, projects_cv, experiences_cv) = load_cv::load_cv_config().await?;
 
     {
         let mut shared_state = actor.shared_state.lock().unwrap();
-        shared_state.general_cv = general_cv;
+        shared_state.general_cv = general_cv.into();
         shared_state.projects_cv = projects_cv;
         shared_state.experiences_cv = experiences_cv;
     }

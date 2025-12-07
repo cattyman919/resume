@@ -1,5 +1,5 @@
 use autocv_core::cv_model::{
-    Award, Certificate, Education, Experience, GeneralCVData, PersonalInfo, Project,
+    Award, Certificate, Education, Experience, GeneralCVConfig, PersonalInfo, Project,
     SkillsAchievements,
 };
 use log::info;
@@ -94,7 +94,7 @@ fn certificate_list(ui: &mut egui::Ui, title: &str, items: &mut Vec<Certificate>
     ui.add_space(5.0);
 }
 
-pub fn general_ui(ui: &mut egui::Ui, general_cv: &mut GeneralCVData) {
+pub fn general_ui(ui: &mut egui::Ui, general_cv: &mut GeneralCVConfig) {
     personal_info_ui(ui, &mut general_cv.personal_info);
     skills_achivements_ui(ui, &mut general_cv.skills_achievements);
 

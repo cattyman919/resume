@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct PersonalInfo {
     pub name: String,
@@ -79,16 +78,16 @@ pub struct SkillsAchievements {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
-pub struct GeneralCVData {
+pub struct GeneralCVConfig {
     pub personal_info: PersonalInfo,
     pub education: Vec<Education>,
     pub awards: Vec<Award>,
     pub skills_achievements: SkillsAchievements,
 }
 
-pub type ProjectsCVData = Vec<Project>;
+pub type ProjectsCVConfig = Vec<Project>;
 
-pub type ExperiencesCVData = Vec<Experience>;
+pub type ExperiencesCVConfig = Vec<Experience>;
 
 pub trait HasCvTypes {
     fn cv_types(&self) -> &Vec<String>;
