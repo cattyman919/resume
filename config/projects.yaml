@@ -1,3 +1,27 @@
+- name: VxLang Security Analysis (Thesis)
+  github: https://github.com/cattyman919/skripsi-project
+  github_handle: cattyman919/skripsi-project
+  cv_type:
+    - cyber
+    - custom
+  description: "A comprehensive undergraduate thesis project analyzing the effectiveness of **VxLang Code Virtualization** in mitigating software reverse engineering, involving the development of custom C++ artifacts and rigorous malware analysis."
+  points:
+    - "Developed multiple C++ test applications (Console, **Qt**, **Dear ImGui**) and cryptographic benchmarks using **CMake**, **Ninja**, and **Clang**, integrating the **VxLang SDK** to implement granular virtualization on critical execution paths."
+    - "Conducted in-depth **static and dynamic analysis** using **Ghidra** and **x64dbg**, demonstrating a **>90% reduction** in identifiable symbols and successful obfuscation of control flows against standard debugging techniques."
+    - "Applied virtualization to a functional **Remote Administration Tool (Lilith RAT)** to test operational integrity and analyzed detection evasion capabilities against 72 antivirus engines via **VirusTotal**."
+
+- name: Yazi (Open Source)
+  github: https://github.com/sxyazi/yazi/pull/3121
+  github_handle: sxyazi/yazi
+  cv_type:
+    - rust
+    - cyber
+  description: "Contributed to **Yazi**, a lightning-fast terminal file manager written in **Rust**, by implementing real-time progress visualization for I/O operations."
+  points:
+    - "Developed a **real-time task progression system** for file copying operations, replacing static status messages with a visual progress bar, byte transfer metrics, and file counts."
+    - "Engineered the solution by modifying the core **Rust** task logic (`yazi-core`) to track I/O states and updating the **Lua**-based UI components (`yazi-plugin`) for rendering."
+    - "Navigated a large, complex open-source codebase to implement the feature, successfully merging the contribution to enhance user feedback for long-running operations."
+
 - name: AutoCV
   github: https://github.com/cattyman919/resume
   github_handle: cattyman919/resume
