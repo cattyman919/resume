@@ -3,6 +3,7 @@
   github_handle: cattyman919/skripsi-project
   cv_type:
     - cyber
+    - main
     - custom
   description: "A comprehensive undergraduate thesis project analyzing the effectiveness of **VxLang Code Virtualization** in mitigating software reverse engineering, involving the development of custom C++ artifacts and rigorous malware analysis."
   points:
@@ -14,6 +15,7 @@
   github: https://github.com/sxyazi/yazi/pull/3121
   github_handle: sxyazi/yazi
   cv_type:
+    - main
     - rust
     - cyber
   description: "Contributed to **Yazi**, a lightning-fast terminal file manager written in **Rust**, by implementing real-time progress visualization for I/O operations."
@@ -61,7 +63,7 @@
   github: https://github.com/SistemBasisData2023/RestoMatic
   github_handle: SistemBasisData2023/RestoMatic
   cv_type:
-    - main
+    # - main
     - fullstack
     - go
   description: "A web platform for easy food and drink ordering. Users can browse restaurant menus, add funds, and leave ratings."
@@ -163,7 +165,7 @@
   github: null
   github_handle: null
   cv_type:
-    - main
+    # - main
   description: "Dell OptiPlex 7050 running Debian as the Operating System used for my personal custom server. It currently provides services such as Portainer, Jellyfin, CasaOS, Samba Server, SIP Server, and also used as a backup for my files. Connected remotely using Tailscale."
   points:
     - "**Linux Server (Debian)** that deploys and manage a suite of services including **Jellyfin for media streaming**, **Portainer for Docker container management**, and an **Asterisk SIP server for home VoIP**."
