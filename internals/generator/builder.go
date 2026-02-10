@@ -68,7 +68,7 @@ func copyDir(src, dst string) error {
 	})
 }
 
-func Write_CV(cvType string, cvData resume.CVData, tmpl *template.Template) {
+func Write_CV(cvType string, cvData resume.CVData, tmpl *template.Template) error {
 
 	log.Printf("Generating CV (%s)\n", cvType)
 
@@ -82,6 +82,7 @@ func Write_CV(cvType string, cvData resume.CVData, tmpl *template.Template) {
 	filterProjects(&cvType, &cvData.Projects)
 
 	filenames := []string{
+		"Research_Interests.tex",
 		"Achivements_Skills.tex",
 		"Awards.tex",
 		"Education.tex",
@@ -118,11 +119,15 @@ func Write_CV(cvType string, cvData resume.CVData, tmpl *template.Template) {
 		log.Printf("Generated: %s\n", outputPath)
 	}
 
-	write_PDF(&cvType, &cvData.General.PersonalInfo.Name)
+	err := write_PDF(&cvType, &cvData.General.PersonalInfo.Name)
+	if err != nil {
+		return fmt.Errorf("Failed to create CV [%s]: %w", cvType, err)
+	}
+	return nil
 }
 
 // Runs the 'pdflatex' external command
-func write_PDF(cvType *string, name *string) {
+func write_PDF(cvType *string, name *string) error {
 
 	target_pdf := fmt.Sprintf("%s - CV (%s)", *name, *cvType)
 
@@ -146,10 +151,11 @@ func write_PDF(cvType *string, name *string) {
 	log.Printf("Generating CV %s.pdf\n", target_pdf)
 
 	if err := cmd.Run(); err != nil {
-		log.Fatalf("Command failed with error: %v", err)
+		return fmt.Errorf("Failed to execute 'pdflatex': %w", err)
 	}
 
 	log.Printf("Generated CV %s.pdf\n", target_pdf)
+	return nil
 }
 
 func MoveAuxFiles() {

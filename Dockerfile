@@ -26,4 +26,4 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-CMD ["go", "run", "cmd/resume/main.go"]
+ENTRYPOINT ["go", "run", "cmd/resume/main.go"]

@@ -49,23 +49,31 @@
   dates: September 2025 - Present
   job_type: Contract
   cv_type:
-    - cyber
+    - database
   points:
-    - "**Engineered** a high-concurrency **Go** tool to automate weekly End-of-Support (EOS) and capacity reporting across **~100 AWS accounts** and **~100 GCP projects**, **slashing manual report generation time from 45 minutes to under 3 minutes**."
-    - "**Built** a **Go** utility to **audit Kubernetes clusters** at scale, querying **EKS clusters** to gather **PodDisruptionBudget (PDB)** and **HPA** data for cross-team resilience analysis."
-    - "**Developed** 'Kluster-Compare', a **full-stack internal tool** (**Go** backend, **Next.js** frontend) to visualize and **diff Kubernetes manifests** between live clusters (**Rancher**) and GitOps states (**ArgoCD**), streamlining **Blue/Green deployment validation**."
-    - "**Optimized container deployments** by implementing **multi-stage Docker builds** (using scratch/distroless images) for internal tooling, reducing image size and **hardening security posture** for Kubernetes deployments."
-    - "**Engineered** an automated **AMI compliance scanner** in **Go** to track **Amazon Linux 2 to 3 migration** progress across **Karpenter** nodepools and **EKS Managed Node Groups** in **50+ AWS accounts**."
+    # REFRAMED for Big Data/Data Processing:
+    - "**Engineered a high-throughput data aggregation engine** in **Go** to process metrics from **~200 distributed cloud environments**, optimizing data collection latency by **93%**."
 
+    # REFRAMED for Data Privacy (Professor's interest):
+    - "**Enforced data privacy and security standards** by implementing automated compliance auditing for **Kubernetes** and **AWS IAM**, ensuring secure access control to critical infrastructure."
+
+    # EXISTING (Perfect match for "Query Processing"):
     - "**Conducted deep-dive performance assessments** on **AWS RDS**, identifying bottlenecks and recommending **composite indexing strategies** that optimized query execution for high-volume transaction tables."
 
-    - "**Integrated internal audit tools** with **Microsoft Graph API** to automatically generate and upload formatted **Excel reports** to SharePoint, eliminating manual data entry for weekly capacity reviews."
+    # EXISTING (Good for Data Orchestration):
     - "**Streamlined** operational reporting workflows by **automating data collection** from disparate cloud sources (AWS, GCP, K8s), significantly **reducing administrative overhead** for the Cloud Operations team."
-    - "**Refactored** legacy automation scripts into modular **Go packages**, improving **code maintainability**, error handling, and enabling easier collaboration within the engineering team."
 
-    - "**Enhanced cloud security posture** by developing custom audit tools to detect exposed **Security Groups**, unencrypted **EBS volumes**, and **WAF** misconfigurations across a multi-account environment."
-
-    - "**Led cost-optimization initiatives** by building automated scanners to identify **underutilized EC2 instances** and detached **EBS volumes**, facilitating data-driven resource rightsizing decisions."
+- company: Superbank
+  location: Jakarta Selatan
+  role: Technical Support
+  dates: December 2024 - June 2025
+  job_type: Internship
+  cv_type:
+    - database
+  points:
+    - "**Resolved production incidents** (e.g., CPU spikes, **SQL query bottlenecks**) by acting as a technical liaison, **analyzing root causes**, and **escalating issues** via **Jira tickets** to cross-functional teams."
+    - "**Automated deployment workflows** by developing a **PowerShell script** to extract ZIP files and **configuration for deployment processes**, **reducing manual effort by 40%** and accelerating deployment cycles."
+    - "**Managed end-to-end deployment** of vendor-provided scripts across **AWS EC2** (Dev/Staging) via **S3 bucket integration**, **WinSCP** file transfers, and **XML configuration adjustments**."
 
 - company: Superbank
   location: Jakarta Selatan
@@ -91,6 +99,17 @@
   dates: February 2024 - June 2024
   job_type: Internship
   cv_type:
+    - database
+  points:
+    - "Developed **automated data ingestion pipelines** using **Python (Pandas)** and **BeautifulSoup** to scrape and structure large datasets for market analysis and **strategic data mining**."
+    - "Presented **data-driven findings** and **strategic recommendations** to mentors and senior management to support **informed business strategy** and **product development**."
+
+- company: PT XL Axiata Tbk
+  location: Jakarta Selatan
+  role: "Fixed Connectivity, ICT & Cloud"
+  dates: February 2024 - June 2024
+  job_type: Internship
+  cv_type:
     - main
     - fullstack
     - devops
@@ -102,6 +121,18 @@
     - "Conducted **comprehensive market research** and **data scraping** using **Python**, **BeautifulSoup**, and **Pandas** to identify **growth opportunities** and assess the competitive landscape for satellite products."
     - "Presented **data-driven findings** and **strategic recommendations** to mentors and senior management to support **informed business strategy** and **product development**."
     - "Collaborated closely with **cross-functional teams** to ensure timely completion of tasks and seamless **integration of research insights** into project outcomes."
+
+- company: PT Bank Victoria International
+  location: Jakarta Selatan
+  role: Fullstack Web Developer
+  dates: September 2023 - November 2023
+  job_type: Internship
+  cv_type:
+    - database
+  points:
+    - "**Integrated the Flutter frontend with backend APIs built in NestJS** and maintained data consistency with **MySQL**, ensuring accurate real-time accounting records."
+    - "Executed **targeted database queries** to correct and optimize data integrity, working in close collaboration with teams to align front-end displays with updated backend data."
+    - "Developed **dynamic journal booking tables** on the frontend with **Flutter**, integrating advanced **filtering** (by date and booking type), **pagination**, and **soft deletion** functionalities."
 
 - company: PT Bank Victoria International
   location: Jakarta Selatan

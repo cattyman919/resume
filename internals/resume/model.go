@@ -63,6 +63,7 @@ type SkillsAchievements struct {
 
 type CV_General struct {
 	PersonalInfo       PersonalInfo       `yaml:"personal_info"`
+	ResearchInterests  []string           `yaml:"research_interests"`
 	SkillsAchievements SkillsAchievements `yaml:"skills_achievements"`
 	Education          []Education        `yaml:"education"`
 	Awards             []Award            `yaml:"awards"`

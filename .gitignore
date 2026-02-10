@@ -1,6 +1,7 @@
 *.log
 *.aux
 repomix*
+out
 .git
 bin/*
 target

@@ -10,10 +10,16 @@ personal_info:
   github_handle: cattyman919
   profile_pic: profile.jpg
 
+research_interests:
+  - Cloud Computing and Cloud Infrastructure
+  - Query Processing and Performance Optimization in Distributed Systems
+  - Cloud Databases and Large-Scale Data Management
+  - Data Privacy and Security in Cloud-Based Systems
+
 skills_achievements:
   "Hard Skills":
+    - Database Systems
     - Web Development
-    - Android Development
     - Fullstack Engineer
     - Networking
     - Internet of Things

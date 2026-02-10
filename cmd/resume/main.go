@@ -43,15 +43,27 @@ func main() {
 		log.Fatalln(err)
 	}
 	// Generate each CV type concurrently
+	errChan := make(chan error, len(total_types))
 	for cvType := range total_types {
 		// Helper function to do wg.Add(1) and wg.Done()| like wg.Go in the newer Go version
 		utils.Go(
 			&wg,
-			func() { generator.Write_CV(cvType, cvData, tmpl) },
+			func() {
+				errChan <- generator.Write_CV(cvType, cvData, tmpl)
+			},
 		)
 	}
 
-	wg.Wait()
+	go func() {
+		wg.Wait()
+		close(errChan)
+	}()
+
+	for err := range errChan {
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}
 
 	generator.MoveAuxFiles()
 
