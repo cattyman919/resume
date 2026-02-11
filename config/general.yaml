@@ -11,10 +11,17 @@ personal_info:
   profile_pic: profile.jpg
 
 research_interests:
-  - Cloud Computing and Cloud Infrastructure
-  - Query Processing and Performance Optimization in Distributed Systems
-  - Cloud Databases and Large-Scale Data Management
-  - Data Privacy and Security in Cloud-Based Systems
+  # Database
+  # - Cloud Computing and Cloud Infrastructure
+  # - Query Processing and Performance Optimization in Distributed Systems
+  # - Cloud Databases and Large-Scale Data Management
+  # - Data Privacy and Security in Cloud-Based Systems
+
+  # Shuting
+  - Intelligent Software Testing and Automated Verification
+  - Optimization of Distributed Algorithms and Protocols
+  - Mobile Commerce Systems and Application Development
+  - Software Reliability and Performance Engineering
 
 skills_achievements:
   "Hard Skills":
@@ -64,8 +71,8 @@ skills_achievements:
   Certificates:
     - year: "2025"
       name: "Red Hat System Administration I & II (RH134 - RHA) - Ver. 9.3"
-    - year: "2024"
-      name: "AWS Knowledge: Cloud Essentials"
+    # - year: "2024"
+    #   name: "AWS Knowledge: Cloud Essentials"
     - year: "2023"
       name: "CCNA: Enterprise Networking, Security, and Automation"
     - year: "2023"
@@ -80,7 +87,7 @@ education:
     gpa: 3.78/4.0
     details:
       - "**GPA:** 3.78/4.0"
-      - "**Coursework:** Computer Architecture, Operating System, Real Time System and IoT, Computer Networks, Software Engineering, Cloud Computing"
+      - "**Coursework:** Computer Architecture, Operating System, Database System, Real Time System and IoT, Computer Networks, Software Engineering, Cloud Computing"
 
 awards:
   - title: Top 10 Finalist Hackathon BI 2024

@@ -16,6 +16,7 @@
     - cyber
     - main
     - custom
+    - shuting
   description: "A comprehensive undergraduate thesis project analyzing the effectiveness of **VxLang Code Virtualization** in mitigating software reverse engineering, involving the development of custom C++ artifacts and rigorous malware analysis."
   points:
     - "Developed multiple C++ test applications (Console, **Qt**, **Dear ImGui**) and cryptographic benchmarks using **CMake**, **Ninja**, and **Clang**, integrating the **VxLang SDK** to implement granular virtualization on critical execution paths."
@@ -30,6 +31,7 @@
     - rust
     - cyber
     - database
+    - shuting
   description: "Contributed to **Yazi**, a lightning-fast terminal file manager written in **Rust**, by implementing real-time progress visualization for I/O operations."
   points:
     - "Developed a **real-time task progression system** for file copying operations, replacing static status messages with a visual progress bar, byte transfer metrics, and file counts."
@@ -43,6 +45,7 @@
     - devops
     - go
     - custom
+    - shuting
   description: "A dynamic CV generator that builds multiple tailored PDF resumes from a modular YAML data source using **Go** and **LaTeX**."
   points:
     - "Streamlined CV creation by developing a tool that generates **multiple customized PDF versions** from a modular data source split across three YAML files (`general`, `experiences`, `projects`), eliminating repetitive manual editing."
