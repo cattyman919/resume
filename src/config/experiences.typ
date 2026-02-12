@@ -1,0 +1,131 @@
+#let dates-helper(start-date, end-date) = {
+  start-date + " " + $dash.em$ + " " + end-date
+}
+
+#let make-experience(
+  company: str,
+  location : str,
+  role: str,
+  job-type: str,
+  dates: "",
+  points: array
+) = {
+  (
+    company: company,
+    location: location,
+    role: role,
+    job-type: job-type,
+    dates: dates,
+    points: points
+  )
+}
+
+#let xlsmart = make-experience(
+    company: "XLSmart",
+    location: "Jakarta Selatan",
+    role: "Platform Engineer",
+    job-type: "Contract",
+    dates: dates-helper("September 2025", "Present"),
+    points: (
+    [*Engineered* a high-concurrency *Go* tool to automate weekly End-of-Support (EOS) and capacity reporting across *~100 AWS accounts* and *~100 GCP projects*, *slashing manual report generation time from 45 minutes to under 3 minutes*.],
+    [*Built* a *Go* utility to *audit Kubernetes clusters* at scale, querying *EKS clusters* to gather *PodDisruptionBudget (PDB)* and *HPA* data for cross-team resilience analysis.],
+    [*Designed and implemented* key *Grafana* dashboards to centralize observability, visualizing *CPU/Memory* from multiple *Prometheus* datasources and tracking *AWS service capacity* (EC2, RDS, EKS).],
+    [*Investigated and resolved* a production *memory leak* in a microservice by performing deep-dive analysis and tracing using *Datadog* and *Kubernetes CLI* tools.],
+    [*Developed* 'Kluster-Compare', a *full-stack internal tool* (*Go* backend, *Next.js* frontend) to visualize and *diff Kubernetes manifests* between live clusters (*Rancher*) and GitOps states (*ArgoCD*), streamlining *Blue/Green deployment validation*.],
+
+    // 2. Docker & CI/CD - From the Dockerfile optimization in logs
+    [*Optimized container deployments* by implementing *multi-stage Docker builds* (using scratch/distroless images) for internal tooling, reducing image size and *hardening security posture* for Kubernetes deployments.],
+
+    // 3. AMI & Karpenter Auditing - From logs regarding "AMI AL2 to AL3" and Karpenter checks
+    [*Engineered* an automated *AMI compliance scanner* in *Go* to track *Amazon Linux 2 to 2023 migration* progress across *Karpenter* nodepools and *EKS Managed Node Groups* in *50+ AWS accounts*.],
+
+    //# 4. Grafana Automation - From 'grafana-healthcheck' code
+    [*Created* a *Grafana health-check automator* that validates *Prometheus datasource connectivity* via the *Grafana API*, ensuring high availability of observability dashboards for critical Telco applications.],
+
+    //# 5. Database Performance - From "Assessment RDS MyXL" logs
+    [*Conducted deep-dive performance assessments* on *AWS RDS*, identifying bottlenecks and recommending *composite indexing strategies* that optimized query execution for high-volume transaction tables.],
+
+    //# 6. MS Graph Integration - From 'weekly_resource' Excel upload code
+    [*Integrated internal audit tools* with *Microsoft Graph API* to automatically generate and upload formatted *Excel reports* to SharePoint, eliminating manual data entry for weekly capacity reviews.],
+    //# --- Operational Excellence & Automation ---
+    [*Streamlined* operational reporting workflows by *automating data collection* from disparate cloud sources (AWS, GCP, K8s), significantly *reducing administrative overhead* for the Cloud Operations team.],
+    [*Refactored* legacy automation scripts into modular *Go packages*, improving *code maintainability*, error handling, and enabling easier collaboration within the engineering team.],
+    [*Orchestrated* the periodic patching and upgrade cycles for *EKS node groups*, ensuring compliance with *security standards* by migrating workloads from *Amazon Linux 2 to AL3*.],
+
+    //# --- Cloud Security & Governance ---
+    [*Enhanced cloud security posture* by developing custom audit tools to detect exposed *Security Groups*, unencrypted *EBS volumes*, and *WAF* misconfigurations across a multi-account environment.],
+    [*Strengthened* access control mechanisms by implementing *AssumeRole* patterns in automation tools, removing the need for static long-lived credentials in scripts.],
+
+    //# --- Cost Optimization ---
+    [*Led cost-optimization initiatives* by building automated scanners to identify *underutilized EC2 instances* and detached *EBS volumes*, facilitating data-driven resource rightsizing decisions.],
+
+    //# --- Kubernetes & Infrastructure Management ---
+    [*Managed and maintained* Kubernetes infrastructure health, ensuring configuration consistency between *Blue/Green environments* via *ArgoCD* and *Rancher*.],
+    [*Improved system observability* by consolidating *Prometheus* metrics into unified *Grafana* dashboards, providing real-time visibility into *cluster health* and resource capacity planning.],
+    )
+)
+
+
+
+#let superbank = make-experience(
+    company: "Superbank",
+    location: "Jakarta Selatan",
+    role: "Technical Support",
+    job-type: "Internship",
+    dates: dates-helper("December 2024", "June 2025"),
+    points: (
+    [*Managed end-to-end deployment* of vendor-provided scripts across *AWS EC2* (Dev/Staging) via *S3 bucket integration*, *WinSCP* file transfers, and *XML configuration adjustments*.],
+    [*Automated deployment workflows* by developing a *PowerShell script* to extract ZIP files and *configuration for deployment processes*, *reducing manual effort by 40%* and accelerating deployment cycles.],
+    [*Resolved production incidents* (e.g., CPU spikes, SQL query bottlenecks) by acting as a technical liaison, *analyzing root causes*, and *escalating issues* via *Jira tickets* to cross-functional teams.],
+    )
+)
+
+#let xlaxiata = make-experience(
+    company: "PT XL Axiata Tbk",
+    location: "Jakarta Selatan",
+    role: "Fixed Connectivity, ICT & Cloud",
+    job-type: "Internship",
+    dates: dates-helper("February 2024", "June 2024"),
+    points: (
+    [Conducted *comprehensive market research* and *data scraping* using *Python*, *BeautifulSoup*, and *Pandas* to identify *growth opportunities* and assess the competitive landscape for satellite products.],
+    [Presented *data-driven findings* and *strategic recommendations* to mentors and senior management to support *informed business strategy* and *product development*.],
+    [Collaborated closely with *cross-functional teams* to ensure timely completion of tasks and seamless *integration of research insights* into project outcomes.],
+    )
+)
+
+#let bank-victoria = make-experience(
+    company: "PT Bank Victoria International",
+    location: "Jakarta Selatan",
+    role: "Fullstack Web Developer",
+    job-type: "Internship",
+    dates: dates-helper("September 2023", "November 2023"),
+    points: (
+    [Developed *dynamic journal booking tables* on the frontend with *Flutter*, integrating advanced *filtering* (by date and booking type), *pagination*, and *soft deletion* functionalities.],
+    [*Integrated the Flutter frontend with backend APIs built in NestJS* and maintained data consistency with *MySQL*, ensuring accurate real-time accounting records.],
+    [Executed *targeted database queries* to correct and optimize data integrity, working in close collaboration with teams to align front-end displays with updated backend data.],
+    )
+)
+
+#let mileapp = make-experience(
+    company: "MileApp",
+    location: "Jakarta Barat",
+    role: "Frontend Web Developer",
+    job-type: "Internship",
+    dates: dates-helper("September 2022", "October 2022"),
+    points: (
+    [*Rebuilt and redesigned* critical web pages (*landing, login, and registration*) from scratch using *React* and *styled-components*, contributing to a major UI overhaul aimed at *improving user experience and performance* for field agents and administrators.],
+    [Collaborated remotely with supervisors to integrate the new *React-based frontend* with the platform’s evolving product direction, *replacing legacy code with scalable, maintainable components*.],
+    )
+)
+
+#let furaha = make-experience(
+    company: "Furaha System",
+    location: "Tangerang Selatan",
+    role: "Frontend Web Developer",
+    job-type: "Part-time",
+    dates: dates-helper("February 2021", "October 2022"),
+    points: (
+    [Engineered *complex exam pages* for a comprehensive E-Learning platform using *Next.js*, incorporating *navigation bars*, *dynamic question-sidebars*, and *real-time answer tracking*.],
+    [Collaborated with *cross-functional teams* and *maintained regular progress updates*, ensuring alignment with project milestones and timely delivery of platform enhancements.],
+    )
+)
