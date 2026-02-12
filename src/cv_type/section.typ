@@ -44,17 +44,29 @@
 ]
 
 #let experiences(
-  experiences: ()
+  experiences: (),
+  // variant: "default"
 ) = [
   == Experience
   #for exp in experiences [
+    #let selected-points = {
+      if type(exp.points) == dictionary {
+        // If it's a dictionary, try to find the specific variant.
+        // Fallback to "default" if the specific variant isn't found.
+        exp.points.at(variant, default: exp.points.at("default"))
+      } else {
+        // If it's just an array (legacy support), use it directly
+        exp.points
+      }
+    }
+
     #template.experience(
       company: exp.company,
       dates: exp.dates,
       role: exp.role,
       job-type: exp.job-type,
       location: exp.location,
-      points: exp.points
+      points: selected-points
     )
   ]
 ]

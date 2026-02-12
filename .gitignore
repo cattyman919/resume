@@ -10,3 +10,4 @@ build_cv
 .cache
 /go-modules
 /.go-build-cache
+watch

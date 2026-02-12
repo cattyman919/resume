@@ -3,6 +3,16 @@
 #import "./cv_type/section.typ"
 #import "./cv_type/cv_type.typ"
 
+// 1. Get the target CV type from CLI inputs (defaults to "default")
+#let target-type = sys.inputs.at("type", default: "default")
+
+// 2. Fetch the specific configuration from the map we created in Step 1
+#let selected-cv = cv_type.cv-map.at(
+  target-type,
+  default: cv_type.default
+)
+
+
 #show: resume.with(
   author: name,
   location: location,
@@ -18,6 +28,7 @@
   personal-info-position: center,
 )
 
-#for sec in cv_type.cv-default.layout{
+// 3. Render the layout defined in the selected CV
+#for sec in selected-cv.layout {
   [#sec]
 }

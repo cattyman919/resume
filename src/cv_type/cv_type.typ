@@ -4,11 +4,39 @@
 #import "../config/projects.typ"
 #import "section.typ"
 
-// TODO
-// Default Personal info
-// We might need to make this more flexible and configurable later for every CV type
+// Helper: Select specific points from an experience
+#let pick(exp, indices) = {
+  let selected-points = ()
+
+  // Handle cases where points might be a dictionary (legacy support)
+  let source-points = if type(exp.points) == dictionary {
+    exp.points.at("default", default: ())
+  } else {
+    exp.points
+  }
+
+  // Loop through the requested indices and grab them
+  for i in indices {
+    // Safety check to avoid crashing if index is out of bounds
+    if i < source-points.len() {
+      selected-points.push(source-points.at(i))
+    }
+  }
+
+  // Return a new dictionary merging the old experience with the NEW points
+  return exp + (points: selected-points)
+}
+
 #let cv(
-  layout: () ,
+  // Default Layout
+  layout: (
+    section.experiences,
+    section.educations,
+    section.projects,
+    section.skills,
+    section.certificates,
+    section.awards,
+  ),
   experiences: (),
   projects: (),
 ) = {
@@ -16,7 +44,6 @@
   let set-value(sec) = {
     if sec == section.experiences{
       return section.experiences(experiences: experiences)
-      // return experiences
     } else if sec == section.projects{
       return section.projects(projects:projects)
     } else{
@@ -32,18 +59,10 @@
   )
 }
 
-#let cv-default = cv(
-  layout: (
-    // section.research-interests,
-    section.experiences,
-    section.educations,
-    section.projects,
-    section.skills,
-    section.certificates,
-    section.awards
-  ),
+
+#let default = cv(
   experiences: (
-      experiences.xlsmart,
+      pick(experiences.xlsmart, range(0,5) + (6, 8, 10, 12, 15)),
       experiences.superbank,
       experiences.xlaxiata,
       experiences.bank-victoria
@@ -54,14 +73,7 @@
   )
 )
 
-#let cv-frontend = cv(
-  layout: (
-    section.experiences,
-    section.educations,
-    section.projects,
-    section.skills,
-    section.awards,
-  ),
+#let frontend = cv(
   experiences: (
       experiences.superbank,
       experiences.xlaxiata,
@@ -73,4 +85,11 @@
     projects.jaga,
     projects.yazi
   )
+)
+
+#let cv-map = (
+  "default": default,
+  "frontend": frontend,
+  // Add more types here as you define them, e.g.:
+  // "devops": cv-devops,
 )

@@ -8,7 +8,7 @@
   role: str,
   job-type: str,
   dates: "",
-  points: array
+  points: ()
 ) = {
   (
     company: company,
@@ -29,9 +29,9 @@
     points: (
     [*Engineered* a high-concurrency *Go* tool to automate weekly End-of-Support (EOS) and capacity reporting across *~100 AWS accounts* and *~100 GCP projects*, *slashing manual report generation time from 45 minutes to under 3 minutes*.],
     [*Built* a *Go* utility to *audit Kubernetes clusters* at scale, querying *EKS clusters* to gather *PodDisruptionBudget (PDB)* and *HPA* data for cross-team resilience analysis.],
+    [*Developed* 'Kluster-Compare', a *full-stack internal tool* (*Go* backend, *Next.js* frontend) to visualize and *diff Kubernetes manifests* between live clusters (*Rancher*) and GitOps states (*ArgoCD*), streamlining *Blue/Green deployment validation*.],
     [*Designed and implemented* key *Grafana* dashboards to centralize observability, visualizing *CPU/Memory* from multiple *Prometheus* datasources and tracking *AWS service capacity* (EC2, RDS, EKS).],
     [*Investigated and resolved* a production *memory leak* in a microservice by performing deep-dive analysis and tracing using *Datadog* and *Kubernetes CLI* tools.],
-    [*Developed* 'Kluster-Compare', a *full-stack internal tool* (*Go* backend, *Next.js* frontend) to visualize and *diff Kubernetes manifests* between live clusters (*Rancher*) and GitOps states (*ArgoCD*), streamlining *Blue/Green deployment validation*.],
 
     // 2. Docker & CI/CD - From the Dockerfile optimization in logs
     [*Optimized container deployments* by implementing *multi-stage Docker builds* (using scratch/distroless images) for internal tooling, reducing image size and *hardening security posture* for Kubernetes deployments.],
