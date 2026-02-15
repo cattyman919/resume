@@ -77,11 +77,7 @@ func (ep *ExperienceParser) Parse() []model.Experience {
 					experience.JobType = jobType
 
 				case strings.HasPrefix(line, "dates:"):
-					line = strings.TrimPrefix(line, "dates: dates-helper")
-					line = strings.TrimPrefix(line, "(")
-					line = strings.TrimSuffix(line, "),")
-
-					fromDate, afterDate := getDateString(line)
+					fromDate, afterDate := getDatesString(line)
 					experience.FromDate = fromDate
 					experience.AfterDate = afterDate
 
@@ -115,12 +111,17 @@ func (ep *ExperienceParser) Parse() []model.Experience {
 	return experiences
 }
 
-func getDateString(input string) (string, string) {
+func getDatesString(line string) (string, string) {
+	line = strings.TrimPrefix(line, "dates: dates-helper")
+	line = strings.TrimPrefix(line, "(")
+	line = strings.TrimSuffix(line, "),")
+
 	secondPart := false
+
 	fromDate := ""
 	afterDate := ""
 
-	runes := []rune(input)
+	runes := []rune(line)
 
 	for i := 0; i < len(runes); i++ {
 		ch := runes[i]
@@ -131,10 +132,10 @@ func getDateString(input string) (string, string) {
 				innerCh := runes[j]
 				if innerCh == '"' {
 					if !secondPart {
-						fromDate = input[i+1 : j]
+						fromDate = line[i+1 : j]
 						secondPart = true
 					} else {
-						afterDate = input[i+1 : j]
+						afterDate = line[i+1 : j]
 					}
 					break
 				}
