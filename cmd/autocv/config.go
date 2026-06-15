@@ -1,15 +1,18 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
+	"text/template"
 
 	"github.com/cattyman919/autocv/internal/domain"
 	yaml "github.com/goccy/go-yaml"
+	"github.com/joho/godotenv"
 )
 
 type CVConfig struct {
@@ -19,6 +22,12 @@ type CVConfig struct {
 }
 
 func parseConfigs() (*CVConfig, error) {
+	if err := godotenv.Load(); err != nil {
+		slog.Warn("Failed to load .env", "Err", err.Error())
+	} else {
+		slog.Info("Loaded .env")
+	}
+
 	configPath := "config"
 	dirCvTypes, err := os.ReadDir(filepath.Join(configPath, "types"))
 	if err != nil {
@@ -36,26 +45,47 @@ func parseConfigs() (*CVConfig, error) {
 		cvType domain.CVType
 	}
 
+	// Dynamic Template Environment Variables
+	funcMap := template.FuncMap{
+		"env": os.Getenv,
+	}
+
+	tmpl := template.New("dynamicEnv").Funcs(funcMap)
+
 	resultChan := make(chan ResultChan, len(dirCvTypes)+1)
 	var wg sync.WaitGroup
 
 	// Read General Cfg
 	wg.Go(func() {
 		generalCfgPath := filepath.Join(configPath, "general.yaml")
-		generalCfgBytes, err := os.ReadFile(generalCfgPath)
+
+		// Parse the file
+		tmplParsed, err := tmpl.ParseFiles(generalCfgPath)
 		if err != nil {
 			resultChan <- ResultChan{
-				err: fmt.Errorf("Failed to open %s: %w", generalCfgPath, err),
+				err: fmt.Errorf("Failed to parse template %s: %w", generalCfgPath, err),
 			}
 			return
 		}
 
-		if err := yaml.Unmarshal(generalCfgBytes, &generalCfg); err != nil {
+		// Execute template first then parse yaml
+		var buf bytes.Buffer
+		templateName := filepath.Base(generalCfgPath) // "general.yaml"
+
+		if err := tmplParsed.ExecuteTemplate(&buf, templateName, nil); err != nil {
+			resultChan <- ResultChan{
+				err: fmt.Errorf("Failed to execute template %s: %w", generalCfgPath, err),
+			}
+			return
+		}
+
+		if err := yaml.Unmarshal(buf.Bytes(), &generalCfg); err != nil {
 			resultChan <- ResultChan{
 				err: fmt.Errorf("Failed to parse %s: %w", generalCfgPath, err),
 			}
 			return
 		}
+
 	})
 
 	// Read Settings Cfg

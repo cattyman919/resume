@@ -21,7 +21,7 @@ const (
 
 func GenerateCVType(cvData *domain.CVTypeData, tmpl *template.Template) error {
 
-	slog.Info("Generating CV", "CV Type", cvData.Type)
+	slog.Info("Generating CV", "Type", cvData.Type)
 
 	cvTemplatePath := filepath.Join("src")
 	cvOutputPath := filepath.Join("build_cv", cvData.Type)
@@ -116,7 +116,7 @@ func GeneratePDF(cvData *domain.CVTypeData) error {
 		)
 	}
 
-	slog.Info("Generated CV", "Target PDF", targetPDF)
+	slog.Info("Generated CV", "Output", outputPath)
 
 	return nil
 }

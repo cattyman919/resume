@@ -1,3 +1,8 @@
+# use the env function to pass in
+# sensitive information to the fields
+#
+# will load .env if it exists
+
 settings:
   font: "Charter"
 
@@ -5,7 +10,7 @@ personal_info:
   name: Seno Pamungkas Rahman
   location: Tangerang Selatan
   email: senop.rahman@gmail.com
-  phone: "[REDACTED_PHONE_NUMBER]"
+  phone: '{{ env "PHONE_NUMBER" }}'
   website: senop.dev
   linkedin: seno-pamungkas-rahman-714341192
   linkedin_handle: Seno

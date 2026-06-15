@@ -1,6 +1,12 @@
 *.log
 *.aux
 repomix*
+
+.env
+*.env
+
+!.example.env
+
 out
 .git
 bin/*
