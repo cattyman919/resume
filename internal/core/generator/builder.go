@@ -11,8 +11,8 @@ import (
 
 	"github.com/ledongthuc/pdf"
 
-	"github.com/cattyman919/autocv/internal/domain"
-	"github.com/cattyman919/autocv/internal/utils"
+	"github.com/cattyman919/autocv/internal/core/domain"
+	"github.com/cattyman919/autocv/internal/core/utils"
 )
 
 const (

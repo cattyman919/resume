@@ -1,4 +1,4 @@
-package main
+package core
 
 import (
 	"fmt"
@@ -7,12 +7,19 @@ import (
 	"os"
 	"os/exec"
 	"sync"
+	"text/template"
 	"time"
 
-	"github.com/cattyman919/autocv/internal/domain"
-	"github.com/cattyman919/autocv/internal/generator"
+	"github.com/cattyman919/autocv/internal/core/config"
+	"github.com/cattyman919/autocv/internal/core/domain"
+	"github.com/cattyman919/autocv/internal/core/generator"
 	"github.com/lmittmann/tint"
 )
+
+type App struct {
+	cvConfig *config.CVConfig
+	template *template.Template
+}
 
 func initLogger() {
 	w := os.Stdout
@@ -25,7 +32,7 @@ func initLogger() {
 	))
 }
 
-func main() {
+func NewApp() (*App, error) {
 	initLogger()
 
 	if _, err := exec.LookPath("typst"); err != nil {
@@ -33,30 +40,40 @@ func main() {
 		fmt.Println("")
 		fmt.Println("Please install tyspt compiler first before running the program")
 		fmt.Println("https://typst.app/open-source/")
-		return
+		return nil, err
 	}
 
-	cvCfg, err := parseConfigs()
+	cvCfg, err := config.NewConfig()
 	if err != nil {
 		slog.Error("Error Parsing Config", "Err", err)
+		log.Fatalln(err)
 	}
 
 	tmpl, err := generator.NewTemplate()
 	if err != nil {
+		slog.Error("Error Creating Template", "Err", err)
 		log.Fatalln(err)
 	}
 
+	return &App{
+		cvConfig: cvCfg,
+		template: tmpl,
+	}, nil
+}
+
+func (a *App) Run() {
+
 	var wg sync.WaitGroup
 
-	for _, cvType := range cvCfg.cvTypesCfg {
+	for _, cvType := range a.cvConfig.CVTypesCfg {
 		cvData := domain.CVTypeData{
-			General:  &cvCfg.generalCfg,
-			Settings: &cvCfg.settingsCfg,
+			General:  &a.cvConfig.GeneralCfg,
+			Settings: &a.cvConfig.SettingsCfg,
 			CVType:   cvType,
 		}
 
 		wg.Go(func() {
-			err := generator.GenerateCVType(&cvData, tmpl)
+			err := generator.GenerateCVType(&cvData, a.template)
 			if err != nil {
 				slog.Error("Error generating CV Type", "err", err)
 			}
@@ -69,4 +86,5 @@ func main() {
 	}
 
 	wg.Wait()
+
 }

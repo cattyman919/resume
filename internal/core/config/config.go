@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"bytes"
@@ -10,18 +10,18 @@ import (
 	"sync"
 	"text/template"
 
-	"github.com/cattyman919/autocv/internal/domain"
+	"github.com/cattyman919/autocv/internal/core/domain"
 	yaml "github.com/goccy/go-yaml"
 	"github.com/joho/godotenv"
 )
 
 type CVConfig struct {
-	settingsCfg domain.CVSettings
-	generalCfg  domain.CVGeneral
-	cvTypesCfg  []domain.CVType
+	SettingsCfg domain.CVSettings
+	GeneralCfg  domain.CVGeneral
+	CVTypesCfg  []domain.CVType
 }
 
-func parseConfigs() (*CVConfig, error) {
+func NewConfig() (*CVConfig, error) {
 	if err := godotenv.Load(); err != nil {
 		slog.Warn("Failed to load .env", "Err", err.Error())
 	} else {
@@ -157,8 +157,8 @@ func parseConfigs() (*CVConfig, error) {
 	slog.Debug("Parse Config Success")
 
 	return &CVConfig{
-		settingsCfg: settingsCfg,
-		generalCfg:  generalCfg,
-		cvTypesCfg:  cvTypesCfg,
+		SettingsCfg: settingsCfg,
+		GeneralCfg:  generalCfg,
+		CVTypesCfg:  cvTypesCfg,
 	}, nil
 }
