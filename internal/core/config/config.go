@@ -123,7 +123,7 @@ func NewConfig() (*CVConfig, error) {
 			}
 
 			cvTypeCfg := domain.CVType{
-				Type: strings.TrimSuffix(cvType.Name(), ".yaml"),
+				TypeName: strings.TrimSuffix(cvType.Name(), ".yaml"),
 			}
 
 			if err := yaml.Unmarshal(cvTypeBytes, &cvTypeCfg); err != nil {

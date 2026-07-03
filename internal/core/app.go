@@ -17,8 +17,8 @@ import (
 )
 
 type App struct {
-	cvConfig *config.CVConfig
-	template *template.Template
+	CVConfig *config.CVConfig
+	Template *template.Template
 }
 
 func initLogger() {
@@ -56,8 +56,8 @@ func NewApp() (*App, error) {
 	}
 
 	return &App{
-		cvConfig: cvCfg,
-		template: tmpl,
+		CVConfig: cvCfg,
+		Template: tmpl,
 	}, nil
 }
 
@@ -65,15 +65,15 @@ func (a *App) Run() {
 
 	var wg sync.WaitGroup
 
-	for _, cvType := range a.cvConfig.CVTypesCfg {
+	for _, cvType := range a.CVConfig.CVTypesCfg {
 		cvData := domain.CVTypeData{
-			General:  &a.cvConfig.GeneralCfg,
-			Settings: &a.cvConfig.SettingsCfg,
+			General:  &a.CVConfig.GeneralCfg,
+			Settings: &a.CVConfig.SettingsCfg,
 			CVType:   cvType,
 		}
 
 		wg.Go(func() {
-			err := generator.GenerateCVType(&cvData, a.template)
+			err := generator.GenerateCVType(&cvData, a.Template)
 			if err != nil {
 				slog.Error("Error generating CV Type", "err", err)
 			}

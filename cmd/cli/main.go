@@ -7,10 +7,10 @@ import (
 )
 
 func main() {
-	app, err := core.NewApp()
+	coreApp, err := core.NewApp()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	app.Run()
+	coreApp.Run()
 }

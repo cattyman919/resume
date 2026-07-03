@@ -21,10 +21,10 @@ const (
 
 func GenerateCVType(cvData *domain.CVTypeData, tmpl *template.Template) error {
 
-	slog.Info("Generating CV", "Type", cvData.Type)
+	slog.Info("Generating CV", "Type", cvData.TypeName)
 
 	cvTemplatePath := filepath.Join("src")
-	cvOutputPath := filepath.Join("build_cv", cvData.Type)
+	cvOutputPath := filepath.Join("build_cv", cvData.TypeName)
 
 	utils.CopyDir(cvTemplatePath, cvOutputPath)
 
@@ -64,9 +64,9 @@ func GenerateCVType(cvData *domain.CVTypeData, tmpl *template.Template) error {
 
 func GeneratePDF(cvData *domain.CVTypeData) error {
 
-	targetPDF := fmt.Sprintf("%s - CV (%s).pdf", cvData.General.PersonalInfo.Name, cvData.Type)
+	targetPDF := fmt.Sprintf("%s - CV (%s).pdf", cvData.General.PersonalInfo.Name, cvData.TypeName)
 
-	cvPath := filepath.Join("build_cv", cvData.Type, "main.typ")
+	cvPath := filepath.Join("build_cv", cvData.TypeName, "main.typ")
 	outputPath := filepath.Join("out", targetPDF)
 
 	if err := os.Mkdir("out", 0755); err != nil && !strings.Contains(err.Error(), "exists") {
@@ -108,7 +108,7 @@ func GeneratePDF(cvData *domain.CVTypeData) error {
 		slog.Warn(
 			"PDF has more pages than max value",
 			"CV",
-			cvData.CVType.Type,
+			cvData.CVType.TypeName,
 			"Total Pages",
 			totalPages,
 			"Max Pages Value",
