@@ -12,5 +12,5 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	coreApp.Run()
+	coreApp.GenerateAllCVs()
 }

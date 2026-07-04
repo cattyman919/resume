@@ -19,7 +19,7 @@ const (
 	FOLDER_PERMISSION = 0755
 )
 
-func GenerateCVType(cvData *domain.CVTypeData, tmpl *template.Template) error {
+func GenerateCVTypeTemplate(cvData *domain.CVTypeData, tmpl *template.Template) error {
 
 	slog.Info("Generating CV", "Type", cvData.TypeName)
 

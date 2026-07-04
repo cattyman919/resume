@@ -1,47 +1,78 @@
 package gui
 
 import (
+	"image"
 	"image/color"
 
-	"fyne.io/fyne/v2"
-	fyneApp "fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/canvas"
-	"fyne.io/fyne/v2/container"
+	gioApp "gioui.org/app"
+	"gioui.org/op"
+	"gioui.org/op/clip"
+	"gioui.org/op/paint"
+	"gioui.org/text"
+	"gioui.org/widget/material"
 	"github.com/cattyman919/autocv/internal/core"
 )
 
-type App struct {
+var (
+	background = color.NRGBA{R: 0xC0, G: 0xC0, B: 0xC0, A: 0xFF}
+	red        = color.NRGBA{R: 0xC0, G: 0x40, B: 0x40, A: 0xFF}
+	green      = color.NRGBA{R: 0x40, G: 0xC0, B: 0x40, A: 0xFF}
+	blue       = color.NRGBA{R: 0x40, G: 0x40, B: 0xC0, A: 0xFF}
+)
+
+type app struct {
 	coreApp *core.App
-	window  fyne.Window
+	window  *gioApp.Window
 }
 
-func NewApp() (*App, error) {
+func NewApp() (*app, error) {
 	coreApp, err := core.NewApp()
 	if err != nil {
 		return nil, err
 	}
 
-	guiApp := fyneApp.New()
-	w := guiApp.NewWindow("AutoCV")
+	window := new(gioApp.Window)
 
-	return &App{
+	return &app{
 		coreApp: coreApp,
-		window:  w,
+		window:  window,
 	}, nil
 }
 
-func (a *App) Run() {
-	w := a.window
+func (a *app) Run() error {
+	window := a.window
+	theme := material.NewTheme()
+	var ops op.Ops
+	for {
+		switch e := window.Event().(type) {
+		case gioApp.DestroyEvent:
+			return e.Err
+		case gioApp.FrameEvent:
+			// This graphics context is used for managing the rendering state.
+			gtx := gioApp.NewContext(&ops, e)
 
-	green := color.NRGBA{R: 0, G: 180, B: 0, A: 255}
-	yamlConfig := canvas.NewText("CV Type Config", green)
-	pdfViewer := canvas.NewText("PDF viewer", green)
+			// Define an large label with an appropriate text:
+			title := material.H1(theme, "Hello, Gio")
 
-	mainContent := container.NewHSplit(yamlConfig, pdfViewer)
+			// Change the color of the label.
+			maroon := color.NRGBA{R: 127, G: 0, B: 0, A: 255}
+			title.Color = maroon
 
-	content := container.NewHSplit(sidebarView(a.coreApp.CVConfig), mainContent)
-	content.Offset = 0.12
+			// Change the position of the label.
+			title.Alignment = text.Middle
 
-	w.SetContent(content)
-	w.ShowAndRun()
+			// Draw the label to the graphics context.
+			title.Layout(gtx)
+			drawRedRect(&ops)
+
+			// Pass the drawing operations to the GPU.
+			e.Frame(gtx.Ops)
+		}
+	}
+}
+
+func drawRedRect(ops *op.Ops) {
+	defer clip.Rect{Max: image.Pt(100, 100)}.Push(ops).Pop()
+	paint.ColorOp{Color: color.NRGBA{R: 0x80, A: 0xFF}}.Add(ops)
+	paint.PaintOp{}.Add(ops)
 }

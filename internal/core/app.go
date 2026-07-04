@@ -61,7 +61,8 @@ func NewApp() (*App, error) {
 	}, nil
 }
 
-func (a *App) Run() {
+// Concurrently generate all the CV's
+func (a *App) GenerateAllCVs() {
 
 	var wg sync.WaitGroup
 
@@ -73,7 +74,7 @@ func (a *App) Run() {
 		}
 
 		wg.Go(func() {
-			err := generator.GenerateCVType(&cvData, a.Template)
+			err := generator.GenerateCVTypeTemplate(&cvData, a.Template)
 			if err != nil {
 				slog.Error("Error generating CV Type", "err", err)
 			}
@@ -87,4 +88,25 @@ func (a *App) Run() {
 
 	wg.Wait()
 
+}
+
+func (a *App) GenerateCV(cvType *domain.CVType) error {
+	cvData := domain.CVTypeData{
+		General:  &a.CVConfig.GeneralCfg,
+		Settings: &a.CVConfig.SettingsCfg,
+		CVType:   *cvType,
+	}
+	err := generator.GenerateCVTypeTemplate(&cvData, a.Template)
+	if err != nil {
+		slog.Error("Error generating CV Type", "err", err)
+		return err
+	}
+
+	err = generator.GeneratePDF(&cvData)
+	if err != nil {
+		slog.Error("Error generating PDF CV Type", "err", err)
+		return err
+	}
+
+	return nil
 }
