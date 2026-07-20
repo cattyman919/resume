@@ -1,29 +1,11 @@
 let debounceTimers = {};
-let defaultDebounceMs = 50;
-const DEBOUNCE_KEY = 'autocv-debounce-ms';
+const DEBOUNCE_MS = 50;
 let currentZoom = 1.0;
 let currentPdf = null;
 
-(function() {
-	const stored = localStorage.getItem(DEBOUNCE_KEY);
-	if (stored) {
-		const val = parseInt(stored, 10);
-		if (!isNaN(val) && val >= 0 && val <= 5000) defaultDebounceMs = val;
-	}
-})();
-
-function getDebounceMs() {
-	return defaultDebounceMs;
-}
-
-function setDebounceMs(ms) {
-	defaultDebounceMs = Math.max(0, Math.min(5000, ms));
-	localStorage.setItem(DEBOUNCE_KEY, String(defaultDebounceMs));
-}
-
 function debounceGenerate(typeName) {
 	if (debounceTimers[typeName]) clearTimeout(debounceTimers[typeName]);
-	debounceTimers[typeName] = setTimeout(() => generatePDF(typeName), getDebounceMs());
+	debounceTimers[typeName] = setTimeout(() => generatePDF(typeName), DEBOUNCE_MS);
 }
 
 function generatePDF(typeName) {
@@ -273,25 +255,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	document.getElementById('btn-zoom-in')?.addEventListener('click', zoomIn);
 	document.getElementById('btn-zoom-out')?.addEventListener('click', zoomOut);
 	document.getElementById('btn-zoom-fit')?.addEventListener('click', zoomFit);
-
-	const debounceRange = document.getElementById('debounce-range');
-	const debounceInput = document.getElementById('debounce-input');
-	if (debounceRange && debounceInput) {
-		debounceRange.value = defaultDebounceMs;
-		debounceInput.value = defaultDebounceMs;
-		debounceRange.addEventListener('input', function () {
-			const val = parseInt(this.value, 10);
-			setDebounceMs(val);
-			debounceInput.value = defaultDebounceMs;
-		});
-		debounceInput.addEventListener('change', function () {
-			const val = parseInt(this.value, 10);
-			if (isNaN(val)) return;
-			setDebounceMs(val);
-			this.value = defaultDebounceMs;
-			debounceRange.value = defaultDebounceMs;
-		});
-	}
 });
 
 document.body.addEventListener('htmx:afterSettle', function() {
