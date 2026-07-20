@@ -70,7 +70,7 @@ func EditorPage(typeName string, typeNames []string, general *domain.CVGeneral, 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"flex items-center gap-2\"><div class=\"flex items-center gap-1 text-xs text-gray-500\"><label for=\"debounce-ms\">Delay:</label> <input id=\"debounce-ms\" type=\"number\" min=\"100\" max=\"5000\" step=\"100\" value=\"500\" class=\"w-16 border rounded px-1 py-0.5 text-xs text-center\"> <span>ms</span></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"flex items-center gap-2\"><div class=\"flex items-center gap-1 text-xs text-gray-500\"><label for=\"debounce-ms\">Delay:</label> <input id=\"debounce-ms\" type=\"number\" min=\"100\" max=\"5000\" step=\"50\" value=\"50\" class=\"w-16 border rounded px-1 py-0.5 text-xs text-center\"> <span>ms</span></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
