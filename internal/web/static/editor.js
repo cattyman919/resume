@@ -162,7 +162,6 @@ function initSortable() {
 	document.querySelectorAll('.sortable-list:not(.sortable-initialized)').forEach(el => {
 		el.classList.add('sortable-initialized');
 		new Sortable(el, {
-			handle: '.drag-handle',
 			animation: 150,
 			ghostClass: 'sortable-ghost',
 			chosenClass: 'sortable-chosen',
