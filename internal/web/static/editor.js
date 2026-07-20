@@ -14,20 +14,26 @@ function debounceGenerate(typeName) {
 
 function generatePDF(typeName) {
 	setPdfStatus('generating');
+	if (window.AutoCV && window.AutoCV.showToast) window.AutoCV.showToast('Generating PDF...', 'info', 2000);
 	fetch('/api/generate/' + typeName, { method: 'POST' })
 		.then(r => r.json())
 		.then(data => {
 			if (data.status === 'done') {
 				loadPdf(typeName);
 				setPdfStatus('success');
+				if (window.AutoCV && window.AutoCV.showToast) window.AutoCV.showToast('PDF generated successfully', 'success');
 			} else if (data.status === 'error') {
 				setPdfStatus('error', data.message || 'Generation failed');
+				if (window.AutoCV && window.AutoCV.showToast) window.AutoCV.showToast('PDF generation failed: ' + (data.message || 'Unknown error'), 'error');
 			} else if (data.status === 'already_generating') {
 				setPdfStatus('generating');
 				setTimeout(() => debounceGenerate(typeName), 1000);
 			}
 		})
-		.catch(err => setPdfStatus('error', err.message));
+		.catch(err => {
+			setPdfStatus('error', err.message);
+			if (window.AutoCV && window.AutoCV.showToast) window.AutoCV.showToast('Network error: ' + err.message, 'error');
+		});
 }
 
 function loadPdf(typeName) {
@@ -266,9 +272,21 @@ document.body.addEventListener('htmx:afterRequest', function(event) {
 	try {
 		const path = event.detail?.pathInfo?.requestPath || event.detail?.xhr?.responseURL || '';
 		if (path.includes('/api/generate')) return;
-		const triggerHeader = event.detail?.xhr?.getResponseHeader('HX-Trigger');
+		const xhr = event.detail?.xhr;
+		const triggerHeader = xhr?.getResponseHeader('HX-Trigger');
 		if (triggerHeader === 'pdf-regenerate') {
 			debounceGenerate(document.body.dataset.currentType);
+		}
+		if (xhr && xhr.status >= 200 && xhr.status < 300 && !path.includes('/api/cv-type/')) {
+			if (window.AutoCV && window.AutoCV.showToast) {
+				const section = path.split('/').pop() || path.split('/').slice(-2).join('/');
+				window.AutoCV.showToast('Saved: ' + section, 'success', 1500);
+			}
+		}
+		if (xhr && xhr.status >= 400) {
+			if (window.AutoCV && window.AutoCV.showToast) {
+				window.AutoCV.showToast('Save failed', 'error');
+			}
 		}
 	} catch(e) {
 		console.error('htmx:afterRequest error:', e);

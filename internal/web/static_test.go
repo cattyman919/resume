@@ -29,6 +29,8 @@ func TestStaticFilesServed(t *testing.T) {
 		{"/static/app.js", http.StatusOK},
 		{"/static/editor.js", http.StatusOK},
 		{"/static/split-panel.js", http.StatusOK},
+		{"/static/toast.js", http.StatusOK},
+		{"/static/shortcuts.js", http.StatusOK},
 		{"/static/nonexistent.css", http.StatusNotFound},
 	}
 
@@ -220,11 +222,87 @@ func TestDarkModeCSSOverrides(t *testing.T) {
 		"panel-divider",
 		"mobile-tab",
 		"pdf-controls",
+		"toast-container",
+		"toast--success",
+		"toast--error",
+		"kbd",
+		"form-input:invalid",
 	}
 
 	for _, token := range darkTokens {
 		if !strings.Contains(body, token) {
 			t.Errorf("styles.css .dark block missing: %q", token)
+		}
+	}
+}
+
+func TestToastJS(t *testing.T) {
+	staticFS, err := fs.Sub(testStaticFiles, "static")
+	if err != nil {
+		t.Fatalf("fs.Sub error = %v", err)
+	}
+	fileServer := http.StripPrefix("/static/", http.FileServer(http.FS(staticFS)))
+	mux := http.NewServeMux()
+	mux.Handle("/static/", fileServer)
+
+	req := httptest.NewRequest(http.MethodGet, "/static/toast.js", nil)
+	w := httptest.NewRecorder()
+	mux.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", w.Code, http.StatusOK)
+	}
+
+	body := w.Body.String()
+	wantTokens := []string{
+		"showToast",
+		"toast-container",
+		"toast--",
+		"toast--visible",
+		"toast--exit",
+		"escapeHtml",
+		"success",
+		"error",
+		"warning",
+		"info",
+	}
+
+	for _, token := range wantTokens {
+		if !strings.Contains(body, token) {
+			t.Errorf("toast.js missing token: %q", token)
+		}
+	}
+}
+
+func TestShortcutsJS(t *testing.T) {
+	staticFS, err := fs.Sub(testStaticFiles, "static")
+	if err != nil {
+		t.Fatalf("fs.Sub error = %v", err)
+	}
+	fileServer := http.StripPrefix("/static/", http.FileServer(http.FS(staticFS)))
+	mux := http.NewServeMux()
+	mux.Handle("/static/", fileServer)
+
+	req := httptest.NewRequest(http.MethodGet, "/static/shortcuts.js", nil)
+	w := httptest.NewRecorder()
+	mux.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", w.Code, http.StatusOK)
+	}
+
+	body := w.Body.String()
+	wantTokens := []string{
+		"Keyboard Shortcuts",
+		"toggleTheme",
+		"generatePDF",
+		"shortcut-help",
+		"metaKey",
+	}
+
+	for _, token := range wantTokens {
+		if !strings.Contains(body, token) {
+			t.Errorf("shortcuts.js missing token: %q", token)
 		}
 	}
 }

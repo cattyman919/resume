@@ -32,6 +32,8 @@ templ EditorPage(typeName string, typeNames []string, general *domain.CVGeneral,
 			<script src="/static/app.js"></script>
 			<script src="/static/editor.js"></script>
 			<script src="/static/split-panel.js"></script>
+			<script src="/static/toast.js"></script>
+			<script src="/static/shortcuts.js"></script>
 		</head>
 		<body class="h-screen flex flex-col overflow-hidden" data-current-type={ typeName }
 			style="background-color: var(--color-background); color: var(--color-foreground);">
@@ -584,8 +586,9 @@ templ AwardsSection(awards []domain.Award) {
 
 templ inputField(name string, label string, value string, placeholder string) {
 	<div class="flex flex-col space-y-0.5">
-		<label class="form-label">{ label }</label>
-		<input type="text" name={ name } value={ value } placeholder={ placeholder } class="form-input"/>
+		<label class="form-label" for={ "field-" + name }>{ label }</label>
+		<input type={ inputFieldType(name) } name={ name } id={ "field-" + name } value={ value } placeholder={ placeholder } class="form-input"
+			pattern={ inputPattern(name) }/>
 	</div>
 }
 
@@ -725,4 +728,24 @@ func expCompanyLabel(exp domain.Experience) string {
 		return "at " + exp.Company
 	}
 	return ""
+}
+
+func inputFieldType(name string) string {
+	switch name {
+	case "email":
+		return "email"
+	case "accent_color":
+		return "color"
+	default:
+		return "text"
+	}
+}
+
+func inputPattern(name string) string {
+	switch name {
+	case "email":
+		return "[^@]+@[^@]+\\.[^@]+"
+	default:
+		return ""
+	}
 }
