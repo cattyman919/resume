@@ -1,0 +1,451 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --color-primary: #0F172A;
+  --color-on-primary: #FFFFFF;
+  --color-secondary: #334155;
+  --color-on-secondary: #FFFFFF;
+  --color-accent: #0369A1;
+  --color-on-accent: #FFFFFF;
+  --color-background: #F8FAFC;
+  --color-foreground: #020617;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F1F5F9;
+  --color-muted: #E8ECF1;
+  --color-muted-foreground: #64748B;
+  --color-border: #E2E8F0;
+  --color-destructive: #DC2626;
+  --color-on-destructive: #FFFFFF;
+  --color-success: #16A34A;
+  --color-warning: #EA580C;
+  --color-ring: #0369A1;
+  --color-badge-shared-bg: #DBEAFE;
+  --color-badge-shared-text: #1D4ED8;
+  --color-badge-type-bg: #F3E8FF;
+  --color-badge-type-text: #7C3AED;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-8: 48px;
+
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-size-caption: 0.6875rem;
+  --font-size-label: 0.75rem;
+  --font-size-body: 0.8125rem;
+  --font-size-section: 0.875rem;
+  --font-size-title: 1.5rem;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow: 300ms ease;
+
+  --pdf-viewer-bg: #CBD5E1;
+}
+
+.dark {
+  --color-primary: #E2E8F0;
+  --color-on-primary: #0F172A;
+  --color-secondary: #CBD5E1;
+  --color-on-secondary: #0F172A;
+  --color-accent: #38BDF8;
+  --color-on-accent: #0C4A6E;
+  --color-background: #0F172A;
+  --color-foreground: #F8FAFC;
+  --color-surface: #1E293B;
+  --color-surface-hover: #334155;
+  --color-muted: #334155;
+  --color-muted-foreground: #94A3B8;
+  --color-border: #334155;
+  --color-destructive: #EF4444;
+  --color-on-destructive: #FFFFFF;
+  --color-success: #22C55E;
+  --color-warning: #FB923C;
+  --color-ring: #38BDF8;
+  --color-badge-shared-bg: #1E3A5F;
+  --color-badge-shared-text: #93C5FD;
+  --color-badge-type-bg: #3B1F6E;
+  --color-badge-type-text: #C4B5FD;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+
+  --pdf-viewer-bg: #1E293B;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--transition-slow) ease-out;
+}
+
+.accordion-content.open {
+  max-height: 5000px;
+  transition: max-height 0.5s ease-in;
+}
+
+.drag-handle {
+  cursor: grab;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.sortable-ghost {
+  opacity: 0.4;
+}
+
+.sortable-chosen {
+  box-shadow: 0 0 0 2px var(--color-accent);
+}
+
+.pdf-pages-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding-bottom: var(--space-6);
+}
+
+.pdf-page-wrapper {
+  background: white;
+  box-shadow: var(--shadow-md);
+  border-radius: 2px;
+}
+
+.pdf-page-wrapper canvas {
+  display: block;
+}
+
+.env-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: 9999px;
+  font-size: var(--font-size-caption);
+  background: var(--color-badge-shared-bg);
+  color: var(--color-badge-shared-text);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--transition-fast);
+}
+
+.env-badge:hover {
+  opacity: 0.85;
+}
+
+.env-toggle {
+  font-size: var(--font-size-caption);
+  color: var(--color-muted-foreground);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.section-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  overflow: hidden;
+}
+
+.section-card:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-sm);
+}
+
+.section-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: between;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-muted);
+  border: none;
+  border-bottom: 1px solid transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.section-header:hover {
+  background: var(--color-surface-hover);
+}
+
+.section-header[data-state="open"] {
+  border-bottom-color: var(--color-border);
+}
+
+.section-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px var(--space-2);
+  border-radius: 9999px;
+  font-size: var(--font-size-caption);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.section-badge--shared {
+  background: var(--color-badge-shared-bg);
+  color: var(--color-badge-shared-text);
+}
+
+.section-badge--type {
+  background: var(--color-badge-type-bg);
+  color: var(--color-badge-type-text);
+}
+
+.section-content {
+  padding: var(--space-3);
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  color: var(--color-muted-foreground);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+
+.icon-btn:hover {
+  background: var(--color-muted);
+  color: var(--color-foreground);
+}
+
+.icon-btn--destructive:hover {
+  background: #FEE2E2;
+  color: var(--color-destructive);
+}
+
+.dark .icon-btn--destructive:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.accordion-icon {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  color: var(--color-muted-foreground);
+}
+
+.accordion-icon[data-state="open"] .icon-chevron-down {
+  display: inline-block;
+}
+
+.accordion-icon[data-state="open"] .icon-chevron-right {
+  display: none;
+}
+
+.accordion-icon[data-state="closed"] .icon-chevron-down {
+  display: none;
+}
+
+.accordion-icon[data-state="closed"] .icon-chevron-right {
+  display: inline-block;
+}
+
+.form-input {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-body);
+  font-family: var(--font-family);
+  background: var(--color-surface);
+  color: var(--color-foreground);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-ring);
+  box-shadow: 0 0 0 3px rgba(3, 105, 161, 0.15);
+}
+
+.dark .form-input:focus {
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+.form-input::placeholder {
+  color: var(--color-muted-foreground);
+}
+
+.form-label {
+  display: block;
+  font-size: var(--font-size-label);
+  font-weight: 500;
+  color: var(--color-muted-foreground);
+  margin-bottom: var(--space-1);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-label);
+  font-weight: 500;
+  font-family: var(--font-family);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-muted-foreground);
+  border-color: var(--color-border);
+}
+
+.btn-ghost:hover {
+  background: var(--color-muted);
+  color: var(--color-foreground);
+}
+
+.btn-destructive {
+  background: var(--color-destructive);
+  color: var(--color-on-destructive);
+}
+
+.btn-destructive:hover {
+  opacity: 0.9;
+}
+
+.pdf-status-bar {
+  background: var(--color-muted);
+  color: var(--color-muted-foreground);
+  font-size: var(--font-size-label);
+  padding: var(--space-1) var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.pdf-error-bar {
+  background: #FEF2F2;
+  border-bottom: 1px solid #FECACA;
+  color: #991B1B;
+  font-size: var(--font-size-body);
+  padding: var(--space-2) var(--space-4);
+  flex-shrink: 0;
+}
+
+.dark .pdf-error-bar {
+  background: rgba(239, 68, 68, 0.1);
+  border-bottom-color: rgba(239, 68, 68, 0.3);
+  color: #FCA5A5;
+}
+
+.pdf-viewer {
+  flex: 1;
+  overflow: auto;
+  background: var(--pdf-viewer-bg);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: fadeIn var(--transition-fast) ease-out;
+}
+
+.dark .modal-backdrop {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-content {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  width: 24rem;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp var(--transition-normal) ease-out;
+  border: 1px solid var(--color-border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accordion-content,
+  .section-card,
+  .section-header,
+  .icon-btn,
+  .form-input,
+  .btn,
+  .modal-backdrop,
+  .modal-content {
+    transition: none;
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --font-size-body: 0.875rem;
+    --font-size-label: 0.8125rem;
+  }
+}

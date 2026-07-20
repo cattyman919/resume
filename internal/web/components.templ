@@ -13,61 +13,76 @@ templ EditorPage(typeName string, typeNames []string, general *domain.CVGeneral,
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<title>AutoCV — { cvType.TypeName }</title>
+			<link rel="stylesheet" href="/static/styles.css"/>
 			<script src="https://cdn.tailwindcss.com"></script>
+			<script>
+				tailwind.config = {
+					darkMode: 'class',
+					theme: {
+						extend: {
+							fontFamily: {
+								sans: ['Inter', 'system-ui', 'sans-serif'],
+							},
+						},
+					},
+				}
+			</script>
 			<script src="https://unpkg.com/htmx.org@2.0.4"></script>
 			<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
-			<style>
-				.accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
-				.accordion-content.open { max-height: 5000px; transition: max-height 0.5s ease-in; }
-				.drag-handle { cursor: grab; }
-				.drag-handle:active { cursor: grabbing; }
-				.sortable-ghost { opacity: 0.4; }
-				.sortable-chosen { box-shadow: 0 0 0 2px #3b82f6; }
-				#pdf-canvas { display: block; margin: 0 auto; }
-				.pdf-page-nav { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.5rem; }
-				.pdf-pages-container { display: flex; flex-direction: column; align-items: center; gap: 12px; padding-bottom: 24px; }
-				.pdf-page-wrapper { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.06); border-radius: 2px; }
-				.pdf-page-wrapper canvas { display: block; }
-				.env-badge { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.7rem; background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; cursor: pointer; user-select: none; }
-				.env-badge:hover { background: #fde68a; }
-				.env-toggle { font-size: 0.65rem; color: #6b7280; cursor: pointer; text-decoration: underline; }
-			</style>
+			<script src="/static/app.js"></script>
+			<script src="/static/editor.js"></script>
 		</head>
-		<body class="bg-gray-100 h-screen flex flex-col overflow-hidden" data-current-type={ typeName }>
-			<header class="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between shrink-0">
+		<body class="h-screen flex flex-col overflow-hidden" data-current-type={ typeName }
+			style="background-color: var(--color-background); color: var(--color-foreground);">
+			<header class="shrink-0 flex items-center justify-between px-4 py-2"
+				style="background-color: var(--color-surface); border-bottom: 1px solid var(--color-border);">
 				<div class="flex items-center gap-3">
-					<h1 class="text-lg font-bold text-gray-800">AutoCV</h1>
+					<h1 class="text-lg font-bold" style="color: var(--color-foreground);">AutoCV</h1>
 					@CVTypeSelector(typeName, typeNames)
 				</div>
 				<div class="flex items-center gap-2">
-					<div class="flex items-center gap-1 text-xs text-gray-500">
-						<label for="debounce-ms">Delay:</label>
-						<input id="debounce-ms" type="number" min="100" max="5000" step="50" value="50" class="w-16 border rounded px-1 py-0.5 text-xs text-center"/>
-						<span>ms</span>
-					</div>
-					if !typstAvailable {
-						<span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Typst not installed — PDF preview disabled</span>
+					<button id="btn-theme-toggle" class="icon-btn" title="Toggle dark mode" aria-label="Toggle dark mode">
+						@IconSun()
+						@IconMoon()
+					</button>
+					if typstAvailable {
+						<button class="btn btn-primary" id="btn-generate-pdf">
+							@IconPlay()
+							Generate
+						</button>
 					}
-					<button class="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" id="btn-create-cv">+ New CV</button>
+					if !typstAvailable {
+						<span class="text-xs px-2 py-1 rounded"
+							style="background: var(--color-badge-shared-bg); color: var(--color-badge-shared-text);">
+							Typst not installed
+						</span>
+					}
+					<button class="btn btn-ghost" id="btn-create-cv">
+						@IconPlus()
+						New CV
+					</button>
 				</div>
 			</header>
 
 			<main class="flex flex-1 overflow-hidden">
-				<div id="editor-panel" class="w-1/2 overflow-y-auto border-r border-gray-200 bg-white p-4">
+				<div id="editor-panel" class="w-1/2 overflow-y-auto p-4"
+					style="background-color: var(--color-surface); border-right: 1px solid var(--color-border);">
 					@EditorPanel(typeName, general, settings, cvType, envFields)
 				</div>
 
-				<div id="pdf-panel" class="w-1/2 flex flex-col bg-gray-50">
-					<div id="pdf-status" class="bg-gray-200 text-gray-600 text-xs px-4 py-1 flex items-center gap-2 shrink-0">
-						<span id="pdf-status-icon">&#9679;</span>
+				<div id="pdf-panel" class="w-1/2 flex flex-col" style="background-color: var(--color-background);">
+					<div id="pdf-status" class="pdf-status-bar">
+						<span id="pdf-status-icon">
+							<svg width="8" height="8" viewBox="0 0 8 8"><circle class="status-dot" cx="4" cy="4" r="4" fill="#94A3B8"/></svg>
+						</span>
 						<span id="pdf-status-text">Idle</span>
 					</div>
-					<div id="pdf-error" class="hidden bg-red-50 border-b border-red-200 text-red-700 text-sm px-4 py-2 shrink-0"></div>
-					<div id="pdf-viewer" class="flex-1 overflow-auto bg-gray-200">
+					<div id="pdf-error" class="hidden pdf-error-bar"></div>
+					<div id="pdf-viewer" class="pdf-viewer">
 						if typstAvailable {
 							<div id="pdf-pages-container" class="pdf-pages-container"></div>
 						} else {
-							<div class="flex items-center justify-center h-full text-gray-400">
+							<div class="flex items-center justify-center h-full" style="color: var(--color-muted-foreground);">
 								<p>Install Typst to enable PDF preview</p>
 							</div>
 						}
@@ -75,303 +90,80 @@ templ EditorPage(typeName string, typeNames []string, general *domain.CVGeneral,
 				</div>
 			</main>
 
-			<div id="create-cv-dialog" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-				<div class="bg-white rounded-lg p-6 w-96 shadow-xl">
-					<h3 class="text-lg font-bold mb-4">Create New CV Type</h3>
-					<div class="mb-3">
-						<label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-						<input id="new-cv-name" type="text" class="w-full border rounded px-3 py-2 text-sm" placeholder="e.g. backend_v2"/>
-					</div>
-					<div class="mb-4">
-						<label class="block text-sm font-medium text-gray-700 mb-1">Clone from</label>
-						<select id="new-cv-clone" class="w-full border rounded px-3 py-2 text-sm">
-							<option value="">Blank</option>
-							for _, name := range typeNames {
-								<option value={ name }>{ name }</option>
-							}
-						</select>
-					</div>
-					<div class="flex justify-end gap-2">
-						<button class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800" id="btn-create-cancel">Cancel</button>
-						<button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-							hx-post="/api/cv-type/create"
-							hx-vals='js:{type_name: document.getElementById("new-cv-name").value, clone_from: document.getElementById("new-cv-clone").value}'
-							hx-target="#cv-type-selector"
-							hx-swap="outerHTML"
-							id="btn-create-confirm">Create</button>
-					</div>
-				</div>
-			</div>
-
-			<div id="rename-cv-dialog" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-				<div class="bg-white rounded-lg p-6 w-96 shadow-xl">
-					<h3 class="text-lg font-bold mb-4">Rename CV Type</h3>
-					<input type="hidden" id="rename-cv-old" value={ typeName }/>
-					<div class="mb-4">
-						<label class="block text-sm font-medium text-gray-700 mb-1">New Name</label>
-						<input id="rename-cv-new" type="text" class="w-full border rounded px-3 py-2 text-sm" value={ typeName }/>
-					</div>
-					<div class="flex justify-end gap-2">
-						<button class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800" id="btn-rename-cancel">Cancel</button>
-						<button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-							hx-post="/api/cv-type/rename"
-							hx-vals='js:{old_name: document.getElementById("rename-cv-old").value, new_name: document.getElementById("rename-cv-new").value}'
-							hx-target="#cv-type-selector"
-							hx-swap="outerHTML"
-							id="btn-rename-confirm">Rename</button>
-					</div>
-				</div>
-			</div>
-
-			<div id="delete-cv-dialog" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-				<div class="bg-white rounded-lg p-6 w-96 shadow-xl">
-					<h3 class="text-lg font-bold mb-4">Delete CV Type</h3>
-					<p class="text-sm text-gray-600 mb-4">Are you sure you want to delete <strong id="delete-cv-name"></strong>? This cannot be undone.</p>
-					<div class="flex justify-end gap-2">
-						<button class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800" id="btn-delete-cancel">Cancel</button>
-						<button id="delete-cv-confirm" class="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
-							hx-post="/api/cv-type/delete"
-							hx-target="#cv-type-selector"
-							hx-swap="outerHTML">Delete</button>
-					</div>
-				</div>
-			</div>
-
-			<script>
-				let debounceTimers = {};
-				let defaultDebounceMs = 500;
-
-				function getDebounceMs() {
-					const input = document.getElementById('debounce-ms');
-					if (input) {
-						const val = parseInt(input.value, 10);
-						if (!isNaN(val) && val >= 100) return val;
-					}
-					return defaultDebounceMs;
-				}
-
-				function debounceGenerate(typeName) {
-					if (debounceTimers[typeName]) clearTimeout(debounceTimers[typeName]);
-					debounceTimers[typeName] = setTimeout(() => generatePDF(typeName), getDebounceMs());
-				}
-
-				function generatePDF(typeName) {
-					setPdfStatus('generating');
-					fetch('/api/generate/' + typeName, { method: 'POST' })
-						.then(r => r.json())
-						.then(data => {
-							if (data.status === 'done') {
-								loadPdf(typeName);
-								setPdfStatus('success');
-							} else if (data.status === 'error') {
-								setPdfStatus('error', data.message || 'Generation failed');
-							} else if (data.status === 'already_generating') {
-								setPdfStatus('generating');
-								setTimeout(() => debounceGenerate(typeName), 1000);
-							}
-						})
-						.catch(err => setPdfStatus('error', err.message));
-				}
-
-				function loadPdf(typeName) {
-					const url = '/api/pdf/' + typeName + '?t=' + Date.now();
-					if (typeof pdfjsLib !== 'undefined') {
-						pdfjsLib.getDocument(url).promise.then(pdf => {
-							window.pdfDoc = pdf;
-							renderAllPages(pdf);
-						}).catch(err => setPdfStatus('error', err.message));
-					}
-				}
-
-				function renderAllPages(pdf) {
-					const container = document.getElementById('pdf-pages-container');
-					if (!container) return;
-					container.innerHTML = '';
-					const viewerWidth = document.getElementById('pdf-viewer').clientWidth - 40;
-					const dpr = window.devicePixelRatio || 1;
-					let rendered = 0;
-					for (let i = 1; i <= pdf.numPages; i++) {
-						const wrapper = document.createElement('div');
-						wrapper.className = 'pdf-page-wrapper';
-						const canvas = document.createElement('canvas');
-						wrapper.appendChild(canvas);
-						container.appendChild(wrapper);
-						pdf.getPage(i).then(page => {
-							const baseViewport = page.getViewport({scale: 1});
-							const scale = viewerWidth / baseViewport.width;
-							const viewport = page.getViewport({scale: scale});
-							canvas.width = Math.floor(viewport.width * dpr);
-							canvas.height = Math.floor(viewport.height * dpr);
-							canvas.style.width = Math.floor(viewport.width) + 'px';
-							canvas.style.height = Math.floor(viewport.height) + 'px';
-							const ctx = canvas.getContext('2d');
-							ctx.scale(dpr, dpr);
-							page.render({canvasContext: ctx, viewport: viewport}).promise.then(() => {
-								rendered++;
-								if (rendered === pdf.numPages) {
-									document.getElementById('pdf-status-text').textContent = 'Generated (' + pdf.numPages + ' page' + (pdf.numPages > 1 ? 's' : '') + ')';
+			<div id="create-cv-dialog" class="hidden">
+				<div class="modal-backdrop">
+					<div class="modal-content">
+						<h3 class="text-lg font-bold mb-4" style="color: var(--color-foreground);">Create New CV Type</h3>
+						<div class="mb-3">
+							<label class="form-label" for="new-cv-name">Name</label>
+							<input id="new-cv-name" type="text" class="form-input" placeholder="e.g. backend_v2"/>
+						</div>
+						<div class="mb-4">
+							<label class="form-label" for="new-cv-clone">Clone from</label>
+							<select id="new-cv-clone" class="form-input">
+								<option value="">Blank</option>
+								for _, name := range typeNames {
+									<option value={ name }>{ name }</option>
 								}
-							});
-						});
-					}
-				}
+							</select>
+						</div>
+						<div class="flex justify-end gap-2">
+							<button class="btn btn-ghost" id="btn-create-cancel">Cancel</button>
+							<button class="btn btn-primary"
+								hx-post="/api/cv-type/create"
+								hx-vals='js:{type_name: document.getElementById("new-cv-name").value, clone_from: document.getElementById("new-cv-clone").value}'
+								hx-target="#cv-type-selector"
+								hx-swap="outerHTML"
+								id="btn-create-confirm">Create</button>
+						</div>
+					</div>
+				</div>
+			</div>
 
-				function setPdfStatus(status, msg) {
-					const icon = document.getElementById('pdf-status-icon');
-					const text = document.getElementById('pdf-status-text');
-					const errorEl = document.getElementById('pdf-error');
-					if (status === 'idle') { icon.textContent = '\u25CF'; icon.style.color = '#9ca3af'; text.textContent = 'Idle'; }
-					else if (status === 'generating') { icon.textContent = '\u25CF'; icon.style.color = '#f59e0b'; text.textContent = 'Generating...'; }
-					else if (status === 'success') { icon.textContent = '\u25CF'; icon.style.color = '#22c55e'; text.textContent = 'Generated'; }
-					else if (status === 'error') { icon.textContent = '\u25CF'; icon.style.color = '#ef4444'; text.textContent = 'Failed'; errorEl.textContent = msg || 'Unknown error'; errorEl.classList.remove('hidden'); }
-					if (status !== 'error') errorEl.classList.add('hidden');
-				}
+			<div id="rename-cv-dialog" class="hidden">
+				<div class="modal-backdrop">
+					<div class="modal-content">
+						<h3 class="text-lg font-bold mb-4" style="color: var(--color-foreground);">Rename CV Type</h3>
+						<input type="hidden" id="rename-cv-old" value={ typeName }/>
+						<div class="mb-4">
+							<label class="form-label" for="rename-cv-new">New Name</label>
+							<input id="rename-cv-new" type="text" class="form-input" value={ typeName }/>
+						</div>
+						<div class="flex justify-end gap-2">
+							<button class="btn btn-ghost" id="btn-rename-cancel">Cancel</button>
+							<button class="btn btn-primary"
+								hx-post="/api/cv-type/rename"
+								hx-vals='js:{old_name: document.getElementById("rename-cv-old").value, new_name: document.getElementById("rename-cv-new").value}'
+								hx-target="#cv-type-selector"
+								hx-swap="outerHTML"
+								id="btn-rename-confirm">Rename</button>
+						</div>
+					</div>
+				</div>
+			</div>
 
-				function toggleAccordion(id) {
-					const content = document.getElementById(id);
-					const icon = document.getElementById(id + '-icon');
-					if (!content) return;
-					if (content.classList.contains('open')) { content.classList.remove('open'); if (icon) icon.textContent = '\u25B6'; }
-					else { content.classList.add('open'); if (icon) icon.textContent = '\u25BC'; }
-				}
-
-				function toggleEnvValue(inputId, envVar, resolved) {
-					const input = document.getElementById(inputId);
-					const toggle = document.getElementById(inputId + '-toggle');
-					if (!input) return;
-					if (input.dataset.showingEnv === 'true') {
-						input.value = resolved;
-						input.dataset.showingEnv = 'false';
-						input.readOnly = false;
-						if (toggle) toggle.textContent = 'Show env template';
-					} else {
-						input.value = '{' + '{ env "' + envVar + '" }' + '}';
-						input.dataset.showingEnv = 'true';
-						input.readOnly = true;
-						if (toggle) toggle.textContent = 'Show resolved value';
-					}
-				}
-
-				function initSortable() {
-					document.querySelectorAll('.sortable-list:not(.sortable-initialized)').forEach(el => {
-						el.classList.add('sortable-initialized');
-						new Sortable(el, {
-							handle: '.drag-handle',
-							animation: 150,
-							ghostClass: 'sortable-ghost',
-							chosenClass: 'sortable-chosen',
-							onEnd: function(evt) {
-								const typeName = el.dataset.typeName;
-								const items = el.querySelectorAll('[data-layout]');
-								const layouts = Array.from(items).map(i => i.dataset.layout);
-								fetch('/api/layout/' + typeName, {
-									method: 'POST',
-									headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-									body: 'data=' + encodeURIComponent(JSON.stringify(layouts))
-								}).then(() => debounceGenerate(typeName));
-							}
-						});
-					});
-				}
-
-				function initAccordions() {
-					document.querySelectorAll('[data-accordion]').forEach(btn => {
-						if (btn.dataset.accordionBound) return;
-						btn.dataset.accordionBound = 'true';
-						btn.addEventListener('click', function(e) {
-							e.preventDefault();
-							e.stopPropagation();
-							toggleAccordion(btn.dataset.accordion);
-						});
-					});
-				}
-
-				function initEnvToggles() {
-					document.querySelectorAll('[data-env-toggle]').forEach(toggle => {
-						if (toggle.dataset.envBound) return;
-						toggle.dataset.envBound = 'true';
-						toggle.addEventListener('click', function(e) {
-							e.preventDefault();
-							toggleEnvValue(toggle.dataset.envToggle, toggle.dataset.envVar, toggle.dataset.envResolved);
-						});
-					});
-				}
-
-				document.addEventListener('DOMContentLoaded', function() {
-					const currentType = document.body.dataset.currentType;
-					initSortable();
-					initAccordions();
-					initEnvToggles();
-
-					if (document.getElementById('pdf-pages-container')) {
-						import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs').then(module => {
-							window.pdfjsLib = module;
-							module.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs';
-							loadPdf(currentType);
-						}).catch(err => console.error('Failed to load PDF.js:', err));
-					}
-
-					document.getElementById('btn-create-cv')?.addEventListener('click', () => {
-						document.getElementById('create-cv-dialog').classList.remove('hidden');
-					});
-					document.getElementById('btn-create-cancel')?.addEventListener('click', () => {
-						document.getElementById('create-cv-dialog').classList.add('hidden');
-					});
-					document.getElementById('btn-create-confirm')?.addEventListener('click', () => {
-						document.getElementById('create-cv-dialog').classList.add('hidden');
-					});
-
-					document.getElementById('btn-rename-cv')?.addEventListener('click', () => {
-						document.getElementById('rename-cv-dialog').classList.remove('hidden');
-					});
-					document.getElementById('btn-rename-cancel')?.addEventListener('click', () => {
-						document.getElementById('rename-cv-dialog').classList.add('hidden');
-					});
-					document.getElementById('btn-rename-confirm')?.addEventListener('click', () => {
-						document.getElementById('rename-cv-dialog').classList.add('hidden');
-					});
-
-					document.getElementById('btn-delete-cv')?.addEventListener('click', () => {
-						const name = document.body.dataset.currentType;
-						document.getElementById('delete-cv-name').textContent = name;
-						document.getElementById('delete-cv-confirm').setAttribute('hx-vals', '{"type_name": "' + name + '"}');
-						document.getElementById('delete-cv-dialog').classList.remove('hidden');
-					});
-					document.getElementById('btn-delete-cancel')?.addEventListener('click', () => {
-						document.getElementById('delete-cv-dialog').classList.add('hidden');
-					});
-
-					document.getElementById('debounce-ms')?.addEventListener('change', function() {
-						defaultDebounceMs = getDebounceMs();
-					});
-				});
-
-				document.body.addEventListener('htmx:afterSettle', function() {
-					initSortable();
-					initAccordions();
-					initEnvToggles();
-				});
-
-				document.body.addEventListener('htmx:afterRequest', function(event) {
-					try {
-						const path = event.detail?.pathInfo?.requestPath || event.detail?.xhr?.responseURL || '';
-						if (path.includes('/api/generate')) return;
-						const triggerHeader = event.detail?.xhr?.getResponseHeader('HX-Trigger');
-						if (triggerHeader === 'pdf-regenerate') {
-							debounceGenerate(document.body.dataset.currentType);
-						}
-					} catch(e) {
-						console.error('htmx:afterRequest error:', e);
-					}
-				});
-			</script>
+			<div id="delete-cv-dialog" class="hidden">
+				<div class="modal-backdrop">
+					<div class="modal-content">
+						<h3 class="text-lg font-bold mb-4" style="color: var(--color-foreground);">Delete CV Type</h3>
+						<p class="text-sm mb-4" style="color: var(--color-muted-foreground);">Are you sure you want to delete <strong id="delete-cv-name" style="color: var(--color-foreground);"></strong>? This cannot be undone.</p>
+						<div class="flex justify-end gap-2">
+							<button class="btn btn-ghost" id="btn-delete-cancel">Cancel</button>
+							<button id="delete-cv-confirm" class="btn btn-destructive"
+								hx-post="/api/cv-type/delete"
+								hx-target="#cv-type-selector"
+								hx-swap="outerHTML">Delete</button>
+						</div>
+					</div>
+				</div>
+			</div>
 		</body>
 	</html>
 }
 
 templ CVTypeSelector(typeName string, typeNames []string) {
 	<div id="cv-type-selector" class="flex items-center gap-2">
-		<select id="cv-type-dropdown" class="border rounded px-2 py-1 text-sm"
+		<select id="cv-type-dropdown" class="form-input" style="width: auto; padding: 4px 8px; font-size: var(--font-size-label);"
 			onchange="window.location.href='/cv/'+this.value">
 			for _, name := range typeNames {
 				if name == typeName {
@@ -381,8 +173,12 @@ templ CVTypeSelector(typeName string, typeNames []string) {
 				}
 			}
 		</select>
-		<button class="text-xs text-gray-500 hover:text-blue-600" id="btn-rename-cv" title="Rename">&#9998;</button>
-		<button class="text-xs text-gray-500 hover:text-red-600" id="btn-delete-cv" title="Delete">&#10005;</button>
+		<button class="icon-btn" id="btn-rename-cv" title="Rename" aria-label="Rename CV type">
+			@IconPencil()
+		</button>
+		<button class="icon-btn icon-btn--destructive" id="btn-delete-cv" title="Delete" aria-label="Delete CV type">
+			@IconX()
+		</button>
 	</div>
 }
 
@@ -402,19 +198,30 @@ templ EditorPanel(typeName string, general *domain.CVGeneral, settings *domain.C
 }
 
 templ LayoutSection(typeName string, layouts []domain.Layout) {
-	<div class="border rounded-lg">
-		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion="layout-section">
-			<span class="font-medium text-sm text-gray-700">Layout Order</span>
-			<span id="layout-section-icon" class="text-xs text-gray-400">&#9660;</span>
+	<div class="section-card">
+		<button class="section-header" data-accordion="layout-section" data-state="open">
+			<div class="flex items-center gap-2 flex-1">
+				@IconLayout()
+				<span class="font-medium text-sm" style="color: var(--color-foreground);">Layout Order</span>
+				<span class="section-badge section-badge--type">Type</span>
+			</div>
+			<span id="layout-section-icon" class="accordion-icon" data-state="open">
+				@IconChevronDown()
+				@IconChevronRight()
+			</span>
 		</button>
 		<div id="layout-section" class="accordion-content open">
-			<div class="p-3">
+			<div class="section-content">
 				<div class="sortable-list space-y-1" data-type-name={ typeName }>
 					for i, layout := range layouts {
-						<div class="flex items-center gap-2 bg-white border rounded px-3 py-2 text-sm" data-layout={ string(layout) }>
-							<span class="drag-handle text-gray-400 cursor-grab">&#9776;</span>
-							<span class="text-gray-700">{ string(layout) }</span>
-							<span class="text-xs text-gray-400 ml-auto">#{ fmt.Sprintf("%d", i+1) }</span>
+						<div class="flex items-center gap-2 rounded-md px-3 py-2 text-sm"
+							style="background: var(--color-muted); border: 1px solid var(--color-border);"
+							data-layout={ string(layout) }>
+							<span class="drag-handle" style="color: var(--color-muted-foreground); cursor: grab;">
+								@IconGripVertical()
+							</span>
+							<span style="color: var(--color-foreground);">{ string(layout) }</span>
+							<span class="ml-auto text-xs" style="color: var(--color-muted-foreground);">#{ fmt.Sprintf("%d", i+1) }</span>
 						</div>
 					}
 				</div>
@@ -424,13 +231,17 @@ templ LayoutSection(typeName string, layouts []domain.Layout) {
 }
 
 templ PersonalInfoSection(general *domain.CVGeneral, envFields map[string]string) {
-	<div class="border rounded-lg">
-		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion="personal-info-section">
-			<div class="flex items-center gap-2">
-				<span class="font-medium text-sm text-gray-700">Personal Info</span>
-				<span class="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">Shared</span>
+	<div class="section-card">
+		<button class="section-header" data-accordion="personal-info-section" data-state="closed">
+			<div class="flex items-center gap-2 flex-1">
+				@IconUser()
+				<span class="font-medium text-sm" style="color: var(--color-foreground);">Personal Info</span>
+				<span class="section-badge section-badge--shared">Shared</span>
 			</div>
-			<span id="personal-info-section-icon" class="text-xs text-gray-400">&#9654;</span>
+			<span id="personal-info-section-icon" class="accordion-icon" data-state="closed">
+				@IconChevronDown()
+				@IconChevronRight()
+			</span>
 		</button>
 		<div id="personal-info-section" class="accordion-content">
 			@PersonalInfoForm(general, envFields)
@@ -439,7 +250,7 @@ templ PersonalInfoSection(general *domain.CVGeneral, envFields map[string]string
 }
 
 templ PersonalInfoForm(general *domain.CVGeneral, envFields map[string]string) {
-	<form class="p-3 space-y-2"
+	<form class="section-content space-y-2"
 		hx-post="/api/personal-info"
 		hx-trigger="change, keyup changed delay:500ms from:input"
 		hx-target="#personal-info-section"
@@ -458,13 +269,17 @@ templ PersonalInfoForm(general *domain.CVGeneral, envFields map[string]string) {
 }
 
 templ SettingsSection(settings *domain.CVSettings) {
-	<div class="border rounded-lg">
-		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion="settings-section">
-			<div class="flex items-center gap-2">
-				<span class="font-medium text-sm text-gray-700">Settings</span>
-				<span class="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">Shared</span>
+	<div class="section-card">
+		<button class="section-header" data-accordion="settings-section" data-state="closed">
+			<div class="flex items-center gap-2 flex-1">
+				@IconSettings()
+				<span class="font-medium text-sm" style="color: var(--color-foreground);">Settings</span>
+				<span class="section-badge section-badge--shared">Shared</span>
 			</div>
-			<span id="settings-section-icon" class="text-xs text-gray-400">&#9654;</span>
+			<span id="settings-section-icon" class="accordion-icon" data-state="closed">
+				@IconChevronDown()
+				@IconChevronRight()
+			</span>
 		</button>
 		<div id="settings-section" class="accordion-content">
 			@SettingsForm(settings)
@@ -473,7 +288,7 @@ templ SettingsSection(settings *domain.CVSettings) {
 }
 
 templ SettingsForm(settings *domain.CVSettings) {
-	<form class="p-3 space-y-2"
+	<form class="section-content space-y-2"
 		hx-post="/api/settings"
 		hx-trigger="change, keyup changed delay:500ms from:input"
 		hx-target="#settings-section"
@@ -484,53 +299,75 @@ templ SettingsForm(settings *domain.CVSettings) {
 }
 
 templ DescriptionSection(typeName string, description string) {
-	<div class="border rounded-lg">
-		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion={ "description-section-" + typeName }>
-			<span class="font-medium text-sm text-gray-700">Description</span>
-			<span id={ "description-section-" + typeName + "-icon" } class="text-xs text-gray-400">&#9654;</span>
+	<div class="section-card">
+		<button class="section-header" data-accordion={ "description-section-" + typeName } data-state="closed">
+			<div class="flex items-center gap-2 flex-1">
+				@IconFileText()
+				<span class="font-medium text-sm" style="color: var(--color-foreground);">Description</span>
+				<span class="section-badge section-badge--type">Type</span>
+			</div>
+			<span id={ "description-section-" + typeName + "-icon" } class="accordion-icon" data-state="closed">
+				@IconChevronDown()
+				@IconChevronRight()
+			</span>
 		</button>
 		<div id={ "description-section-" + typeName } class="accordion-content">
-			<form class="p-3"
+			<form class="section-content"
 				hx-post={ "/api/description/" + typeName }
 				hx-trigger="change, keyup changed delay:500ms from:textarea"
 				hx-swap="none">
-				<textarea name="description" class="w-full border rounded px-3 py-2 text-sm h-24">{ description }</textarea>
+				<textarea name="description" class="form-input" style="height: 6rem;">{ description }</textarea>
 			</form>
 		</div>
 	</div>
 }
 
 templ ExperiencesSection(typeName string, experiences []domain.Experience) {
-	<div class="border rounded-lg">
-		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion={ "experiences-section-" + typeName }>
-			<span class="font-medium text-sm text-gray-700">Experiences ({ fmt.Sprintf("%d", len(experiences)) })</span>
-			<span id={ "experiences-section-" + typeName + "-icon" } class="text-xs text-gray-400">&#9654;</span>
+	<div class="section-card">
+		<button class="section-header" data-accordion={ "experiences-section-" + typeName } data-state="closed">
+			<div class="flex items-center gap-2 flex-1">
+				@IconBriefcase()
+				<span class="font-medium text-sm" style="color: var(--color-foreground);">Experiences ({ fmt.Sprintf("%d", len(experiences)) })</span>
+				<span class="section-badge section-badge--type">Type</span>
+			</div>
+			<span id={ "experiences-section-" + typeName + "-icon" } class="accordion-icon" data-state="closed">
+				@IconChevronDown()
+				@IconChevronRight()
+			</span>
 		</button>
 		<div id={ "experiences-section-" + typeName } class="accordion-content">
-			<div class="p-3 space-y-2">
+			<div class="section-content space-y-2">
 				for i, exp := range experiences {
 					@ExperienceEntry(typeName, i, exp)
 				}
-				<button class="text-xs text-blue-600 hover:text-blue-800"
+				<button class="btn btn-ghost text-xs"
 					hx-post={ "/api/experience/" + typeName + "/add" }
 					hx-target={ "#experiences-section-" + typeName }
-					hx-swap="innerHTML">+ Add Experience</button>
+					hx-swap="innerHTML">
+					@IconPlus()
+					Add Experience
+				</button>
 			</div>
 		</div>
 	</div>
 }
 
 templ ExperienceEntry(typeName string, index int, exp domain.Experience) {
-	<div class="border rounded p-3 bg-gray-50">
+	<div class="rounded-lg p-3" style="background: var(--color-muted); border: 1px solid var(--color-border);">
 		<div class="flex items-center justify-between mb-2">
-			<button class="text-sm font-medium text-gray-700 flex items-center gap-1" data-accordion={ fmt.Sprintf("exp-%s-%d", typeName, index) }>
-				<span id={ fmt.Sprintf("exp-%s-%d-icon", typeName, index) } class="text-xs text-gray-400">&#9654;</span>
+			<button class="text-sm font-medium flex items-center gap-1" style="color: var(--color-foreground);" data-accordion={ fmt.Sprintf("exp-%s-%d", typeName, index) }>
+				<span id={ fmt.Sprintf("exp-%s-%d-icon", typeName, index) } class="accordion-icon" data-state="closed" style="padding: 2px;">
+					@IconChevronDown()
+					@IconChevronRight()
+				</span>
 				{ exp.Role } { expCompanyLabel(exp) }
 			</button>
-			<button class="text-xs text-red-500 hover:text-red-700"
+			<button class="btn btn-ghost text-xs icon-btn--destructive"
 				hx-post={ fmt.Sprintf("/api/experience/%s/%d/delete", typeName, index) }
 				hx-target={ fmt.Sprintf("#experiences-section-%s", typeName) }
-				hx-swap="innerHTML">Remove</button>
+				hx-swap="innerHTML">
+				@IconTrash()
+			</button>
 		</div>
 		<div id={ fmt.Sprintf("exp-%s-%d", typeName, index) } class="accordion-content">
 			<form class="space-y-2"
@@ -545,8 +382,8 @@ templ ExperienceEntry(typeName string, index int, exp domain.Experience) {
 				</div>
 				@inputField("dates", "Dates", exp.Dates, "")
 				<div>
-					<label class="block text-xs font-medium text-gray-600 mb-1">Points (one per line)</label>
-					<textarea name="points" class="w-full border rounded px-3 py-2 text-sm h-32">{ strings.Join(exp.Points, "\n") }</textarea>
+					<label class="form-label">Points (one per line)</label>
+					<textarea name="points" class="form-input" style="height: 8rem;">{ strings.Join(exp.Points, "\n") }</textarea>
 				</div>
 			</form>
 		</div>
@@ -554,36 +391,51 @@ templ ExperienceEntry(typeName string, index int, exp domain.Experience) {
 }
 
 templ ProjectsSection(typeName string, projects []domain.Project) {
-	<div class="border rounded-lg">
-		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion={ "projects-section-" + typeName }>
-			<span class="font-medium text-sm text-gray-700">Projects ({ fmt.Sprintf("%d", len(projects)) })</span>
-			<span id={ "projects-section-" + typeName + "-icon" } class="text-xs text-gray-400">&#9654;</span>
+	<div class="section-card">
+		<button class="section-header" data-accordion={ "projects-section-" + typeName } data-state="closed">
+			<div class="flex items-center gap-2 flex-1">
+				@IconCode()
+				<span class="font-medium text-sm" style="color: var(--color-foreground);">Projects ({ fmt.Sprintf("%d", len(projects)) })</span>
+				<span class="section-badge section-badge--type">Type</span>
+			</div>
+			<span id={ "projects-section-" + typeName + "-icon" } class="accordion-icon" data-state="closed">
+				@IconChevronDown()
+				@IconChevronRight()
+			</span>
 		</button>
 		<div id={ "projects-section-" + typeName } class="accordion-content">
-			<div class="p-3 space-y-2">
+			<div class="section-content space-y-2">
 				for i, proj := range projects {
 					@ProjectEntry(typeName, i, proj)
 				}
-				<button class="text-xs text-blue-600 hover:text-blue-800"
+				<button class="btn btn-ghost text-xs"
 					hx-post={ "/api/project/" + typeName + "/add" }
 					hx-target={ "#projects-section-" + typeName }
-					hx-swap="innerHTML">+ Add Project</button>
+					hx-swap="innerHTML">
+					@IconPlus()
+					Add Project
+				</button>
 			</div>
 		</div>
 	</div>
 }
 
 templ ProjectEntry(typeName string, index int, proj domain.Project) {
-	<div class="border rounded p-3 bg-gray-50">
+	<div class="rounded-lg p-3" style="background: var(--color-muted); border: 1px solid var(--color-border);">
 		<div class="flex items-center justify-between mb-2">
-			<button class="text-sm font-medium text-gray-700 flex items-center gap-1" data-accordion={ fmt.Sprintf("proj-%s-%d", typeName, index) }>
-				<span id={ fmt.Sprintf("proj-%s-%d-icon", typeName, index) } class="text-xs text-gray-400">&#9654;</span>
+			<button class="text-sm font-medium flex items-center gap-1" style="color: var(--color-foreground);" data-accordion={ fmt.Sprintf("proj-%s-%d", typeName, index) }>
+				<span id={ fmt.Sprintf("proj-%s-%d-icon", typeName, index) } class="accordion-icon" data-state="closed" style="padding: 2px;">
+					@IconChevronDown()
+					@IconChevronRight()
+				</span>
 				{ proj.Name }
 			</button>
-			<button class="text-xs text-red-500 hover:text-red-700"
+			<button class="btn btn-ghost text-xs icon-btn--destructive"
 				hx-post={ fmt.Sprintf("/api/project/%s/%d/delete", typeName, index) }
 				hx-target={ fmt.Sprintf("#projects-section-%s", typeName) }
-				hx-swap="innerHTML">Remove</button>
+				hx-swap="innerHTML">
+				@IconTrash()
+			</button>
 		</div>
 		<div id={ fmt.Sprintf("proj-%s-%d", typeName, index) } class="accordion-content">
 			<form class="space-y-2"
@@ -596,8 +448,8 @@ templ ProjectEntry(typeName string, index int, proj domain.Project) {
 				</div>
 				@inputField("github_handle", "GitHub Handle", proj.GithubHandle, "")
 				<div>
-					<label class="block text-xs font-medium text-gray-600 mb-1">Points (one per line)</label>
-					<textarea name="points" class="w-full border rounded px-3 py-2 text-sm h-32">{ strings.Join(proj.Points, "\n") }</textarea>
+					<label class="form-label">Points (one per line)</label>
+					<textarea name="points" class="form-input" style="height: 8rem;">{ strings.Join(proj.Points, "\n") }</textarea>
 				</div>
 			</form>
 		</div>
@@ -605,20 +457,24 @@ templ ProjectEntry(typeName string, index int, proj domain.Project) {
 }
 
 templ SkillsSection(skills []domain.SkillGroup) {
-	<div class="border rounded-lg">
-		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion="skills-section">
-			<div class="flex items-center gap-2">
-				<span class="font-medium text-sm text-gray-700">Skills</span>
-				<span class="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">Shared</span>
+	<div class="section-card">
+		<button class="section-header" data-accordion="skills-section" data-state="closed">
+			<div class="flex items-center gap-2 flex-1">
+				@IconStar()
+				<span class="font-medium text-sm" style="color: var(--color-foreground);">Skills</span>
+				<span class="section-badge section-badge--shared">Shared</span>
 			</div>
-			<span id="skills-section-icon" class="text-xs text-gray-400">&#9654;</span>
+			<span id="skills-section-icon" class="accordion-icon" data-state="closed">
+				@IconChevronDown()
+				@IconChevronRight()
+			</span>
 		</button>
 		<div id="skills-section" class="accordion-content">
-			<div class="p-3 space-y-3">
+			<div class="section-content space-y-3">
 				for _, sg := range skills {
 					<div>
-						<div class="text-xs font-medium text-gray-600 mb-1">{ sg.Title }</div>
-						<div class="text-sm text-gray-800">{ strings.Join(sg.Items, ", ") }</div>
+						<div class="form-label mb-1">{ sg.Title }</div>
+						<div class="text-sm" style="color: var(--color-foreground);">{ strings.Join(sg.Items, ", ") }</div>
 					</div>
 				}
 			</div>
@@ -627,21 +483,25 @@ templ SkillsSection(skills []domain.SkillGroup) {
 }
 
 templ EducationSection(educations []domain.Education) {
-	<div class="border rounded-lg">
-		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion="education-section">
-			<div class="flex items-center gap-2">
-				<span class="font-medium text-sm text-gray-700">Education</span>
-				<span class="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">Shared</span>
+	<div class="section-card">
+		<button class="section-header" data-accordion="education-section" data-state="closed">
+			<div class="flex items-center gap-2 flex-1">
+				@IconGraduationCap()
+				<span class="font-medium text-sm" style="color: var(--color-foreground);">Education</span>
+				<span class="section-badge section-badge--shared">Shared</span>
 			</div>
-			<span id="education-section-icon" class="text-xs text-gray-400">&#9654;</span>
+			<span id="education-section-icon" class="accordion-icon" data-state="closed">
+				@IconChevronDown()
+				@IconChevronRight()
+			</span>
 		</button>
 		<div id="education-section" class="accordion-content">
-			<div class="p-3 space-y-2">
+			<div class="section-content space-y-2">
 				for _, edu := range educations {
-					<div class="border rounded p-3 bg-gray-50">
-						<div class="text-sm font-medium text-gray-700">{ edu.Institution }</div>
-						<div class="text-xs text-gray-500">{ edu.Degree } &middot; { edu.Dates }</div>
-						<div class="text-xs text-gray-500">GPA: { edu.Gpa }</div>
+					<div class="rounded-lg p-3" style="background: var(--color-muted); border: 1px solid var(--color-border);">
+						<div class="text-sm font-medium" style="color: var(--color-foreground);">{ edu.Institution }</div>
+						<div class="text-xs" style="color: var(--color-muted-foreground);">{ edu.Degree } &middot; { edu.Dates }</div>
+						<div class="text-xs" style="color: var(--color-muted-foreground);">GPA: { edu.Gpa }</div>
 					</div>
 				}
 			</div>
@@ -650,18 +510,22 @@ templ EducationSection(educations []domain.Education) {
 }
 
 templ CertificatesSection(certs []domain.Certificate) {
-	<div class="border rounded-lg">
-		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion="certificates-section">
-			<div class="flex items-center gap-2">
-				<span class="font-medium text-sm text-gray-700">Certificates</span>
-				<span class="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">Shared</span>
+	<div class="section-card">
+		<button class="section-header" data-accordion="certificates-section" data-state="closed">
+			<div class="flex items-center gap-2 flex-1">
+				@IconAward()
+				<span class="font-medium text-sm" style="color: var(--color-foreground);">Certificates</span>
+				<span class="section-badge section-badge--shared">Shared</span>
 			</div>
-			<span id="certificates-section-icon" class="text-xs text-gray-400">&#9654;</span>
+			<span id="certificates-section-icon" class="accordion-icon" data-state="closed">
+				@IconChevronDown()
+				@IconChevronRight()
+			</span>
 		</button>
 		<div id="certificates-section" class="accordion-content">
-			<div class="p-3 space-y-1">
+			<div class="section-content space-y-1">
 				for _, cert := range certs {
-					<div class="text-sm text-gray-700">{ cert.Name } <span class="text-xs text-gray-400">({ cert.Year })</span></div>
+					<div class="text-sm" style="color: var(--color-foreground);">{ cert.Name } <span class="text-xs" style="color: var(--color-muted-foreground);">({ cert.Year })</span></div>
 				}
 			</div>
 		</div>
@@ -669,22 +533,26 @@ templ CertificatesSection(certs []domain.Certificate) {
 }
 
 templ AwardsSection(awards []domain.Award) {
-	<div class="border rounded-lg">
-		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion="awards-section">
-			<div class="flex items-center gap-2">
-				<span class="font-medium text-sm text-gray-700">Awards</span>
-				<span class="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">Shared</span>
+	<div class="section-card">
+		<button class="section-header" data-accordion="awards-section" data-state="closed">
+			<div class="flex items-center gap-2 flex-1">
+				@IconTrophy()
+				<span class="font-medium text-sm" style="color: var(--color-foreground);">Awards</span>
+				<span class="section-badge section-badge--shared">Shared</span>
 			</div>
-			<span id="awards-section-icon" class="text-xs text-gray-400">&#9654;</span>
+			<span id="awards-section-icon" class="accordion-icon" data-state="closed">
+				@IconChevronDown()
+				@IconChevronRight()
+			</span>
 		</button>
 		<div id="awards-section" class="accordion-content">
-			<div class="p-3 space-y-2">
+			<div class="section-content space-y-2">
 				for _, award := range awards {
-					<div class="border rounded p-3 bg-gray-50">
-						<div class="text-sm font-medium text-gray-700">{ award.Title }</div>
-						<div class="text-xs text-gray-500">{ award.Organization } &middot; { award.Date }</div>
+					<div class="rounded-lg p-3" style="background: var(--color-muted); border: 1px solid var(--color-border);">
+						<div class="text-sm font-medium" style="color: var(--color-foreground);">{ award.Title }</div>
+						<div class="text-xs" style="color: var(--color-muted-foreground);">{ award.Organization } &middot; { award.Date }</div>
 						for _, point := range award.Points {
-							<div class="text-xs text-gray-600 mt-1 pl-2 border-l-2 border-gray-200">{ point }</div>
+							<div class="text-xs mt-1 pl-2" style="color: var(--color-muted-foreground); border-left: 2px solid var(--color-border);">{ point }</div>
 						}
 					</div>
 				}
@@ -695,24 +563,23 @@ templ AwardsSection(awards []domain.Award) {
 
 templ inputField(name string, label string, value string, placeholder string) {
 	<div class="flex flex-col space-y-0.5">
-		<label class="text-xs font-medium text-gray-600">{ label }</label>
-		<input type="text" name={ name } value={ value } placeholder={ placeholder }
-			class="border rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"/>
+		<label class="form-label">{ label }</label>
+		<input type="text" name={ name } value={ value } placeholder={ placeholder } class="form-input"/>
 	</div>
 }
 
 templ envInputField(name string, label string, value string, envFields map[string]string) {
 	<div class="flex flex-col space-y-0.5">
 		<div class="flex items-center gap-2">
-			<label class="text-xs font-medium text-gray-600">{ label }</label>
+			<label class="form-label">{ label }</label>
 			if isEnvField(value, envFields) {
 				<span class="env-badge" title={ fmt.Sprintf("Uses env var: %s", getEnvVarName(value, envFields)) }>
-					&#128274; ENV: { getEnvVarName(value, envFields) }
+					@IconLock()
+					ENV: { getEnvVarName(value, envFields) }
 				</span>
 			}
 		</div>
-		<input type="text" id={ "field-" + name } name={ name } value={ value }
-			class="border rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"/>
+		<input type="text" id={ "field-" + name } name={ name } value={ value } class="form-input"/>
 		if isEnvField(value, envFields) {
 			<span id={ "field-" + name + "-toggle" } class="env-toggle"
 				data-env-toggle={ "field-" + name }
@@ -722,13 +589,97 @@ templ envInputField(name string, label string, value string, envFields map[strin
 	</div>
 }
 
+templ IconSun() {
+	<svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+}
+
+templ IconMoon() {
+	<svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+}
+
+templ IconChevronDown() {
+	<svg class="icon-chevron-down" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+}
+
+templ IconChevronRight() {
+	<svg class="icon-chevron-right" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+}
+
+templ IconPencil() {
+	<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+}
+
+templ IconX() {
+	<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+}
+
+templ IconPlus() {
+	<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+}
+
+templ IconGripVertical() {
+	<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+}
+
+templ IconPlay() {
+	<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+}
+
+templ IconTrash() {
+	<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+}
+
+templ IconLock() {
+	<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+}
+
+templ IconLayout() {
+	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+}
+
+templ IconUser() {
+	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+}
+
+templ IconSettings() {
+	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+}
+
+templ IconFileText() {
+	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+}
+
+templ IconBriefcase() {
+	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+}
+
+templ IconCode() {
+	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+}
+
+templ IconStar() {
+	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+}
+
+templ IconGraduationCap() {
+	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+}
+
+templ IconAward() {
+	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+}
+
+templ IconTrophy() {
+	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+}
+
 func isEnvField(value string, envFields map[string]string) bool {
 	for raw := range envFields {
 		if strings.Contains(value, raw) || value == raw {
 			return true
 		}
 	}
-	return strings.Contains(value, "{{ env ")
+	return strings.Contains(value, "{"+"{ env ")
 }
 
 func getEnvVarName(value string, envFields map[string]string) string {

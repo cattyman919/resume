@@ -1,8 +1,10 @@
 package web
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"log/slog"
 	"net/http"
 	"os"
@@ -17,6 +19,9 @@ import (
 	"github.com/cattyman919/autocv/internal/core/config"
 	"github.com/cattyman919/autocv/internal/core/domain"
 )
+
+//go:embed static
+var staticFiles embed.FS
 
 type App struct {
 	core          *core.App
@@ -82,6 +87,12 @@ func NewApp() (*App, error) {
 	router.Post("/api/cv-type/delete", app.handleDeleteCVType)
 
 	router.Get("/api/env-resolve", app.handleEnvResolve)
+
+	staticFS, err := fs.Sub(staticFiles, "static")
+	if err != nil {
+		return nil, fmt.Errorf("failed to create static file system: %w", err)
+	}
+	router.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.FS(staticFS))))
 
 	app.router = router
 
