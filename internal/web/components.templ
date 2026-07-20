@@ -92,6 +92,11 @@ templ EditorPage(typeName string, typeNames []string, general *domain.CVGeneral,
 							<svg width="8" height="8" viewBox="0 0 8 8"><circle class="status-dot" cx="4" cy="4" r="4" fill="#94A3B8"/></svg>
 						</span>
 						<span id="pdf-status-text">Idle</span>
+						<div class="debounce-control">
+							<label for="debounce-range">Auto-generate delay</label>
+							<input id="debounce-range" type="range" min="100" max="3000" step="100" value="500"/>
+							<span id="debounce-value" class="debounce-value">0.5s</span>
+						</div>
 					</div>
 					<div id="pdf-error" class="hidden pdf-error-bar"></div>
 					<div id="pdf-viewer" class="pdf-viewer">
