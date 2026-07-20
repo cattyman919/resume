@@ -34,6 +34,7 @@ templ EditorPage(typeName string, typeNames []string, general *domain.CVGeneral,
 			<script src="/static/split-panel.js"></script>
 			<script src="/static/toast.js"></script>
 			<script src="/static/shortcuts.js"></script>
+			<script src="/static/search.js"></script>
 		</head>
 		<body class="h-screen flex flex-col overflow-hidden" data-current-type={ typeName }
 			style="background-color: var(--color-background); color: var(--color-foreground);">
@@ -44,6 +45,7 @@ templ EditorPage(typeName string, typeNames []string, general *domain.CVGeneral,
 					@CVTypeSelector(typeName, typeNames)
 				</div>
 				<div class="flex items-center gap-2">
+					<span id="save-status" class="save-status"></span>
 					<button id="btn-theme-toggle" class="icon-btn" title="Toggle dark mode" aria-label="Toggle dark mode">
 						@IconSun()
 						@IconMoon()
@@ -73,9 +75,15 @@ templ EditorPage(typeName string, typeNames []string, general *domain.CVGeneral,
 			</div>
 
 			<main id="main-layout" class="flex flex-1 overflow-hidden">
-				<div id="editor-panel" class="overflow-y-auto p-4"
+				<div id="editor-panel" class="overflow-y-auto flex flex-col"
 					style="background-color: var(--color-surface);">
-					@EditorPanel(typeName, general, settings, cvType, envFields)
+					<div class="section-search">
+						@IconSearch()
+						<input id="section-search" type="text" placeholder="Search sections..."/>
+					</div>
+					<div class="p-4">
+						@EditorPanel(typeName, general, settings, cvType, envFields)
+					</div>
 				</div>
 
 				<div id="pdf-panel" class="flex flex-col" style="background-color: var(--color-background);">
@@ -210,13 +218,13 @@ templ EditorPanel(typeName string, general *domain.CVGeneral, settings *domain.C
 		@LayoutSection(typeName, cvType.Layouts)
 		@PersonalInfoSection(general, envFields)
 		@SettingsSection(settings)
-		@DescriptionSection(typeName, cvType.Description)
-		@ExperiencesSection(typeName, cvType.Experiences)
-		@ProjectsSection(typeName, cvType.Projects)
-		@SkillsSection(general.Skills)
-		@EducationSection(general.Educations)
-		@CertificatesSection(general.Certifications)
-		@AwardsSection(general.Awards)
+		@DescriptionSection(typeName, cvType.Description, cvType.Layouts)
+		@ExperiencesSection(typeName, cvType.Experiences, cvType.Layouts)
+		@ProjectsSection(typeName, cvType.Projects, cvType.Layouts)
+		@SkillsSection(general.Skills, cvType.Layouts)
+		@EducationSection(general.Educations, cvType.Layouts)
+		@CertificatesSection(general.Certifications, cvType.Layouts)
+		@AwardsSection(general.Awards, cvType.Layouts)
 	</div>
 }
 
@@ -321,13 +329,14 @@ templ SettingsForm(settings *domain.CVSettings) {
 	</form>
 }
 
-templ DescriptionSection(typeName string, description string) {
+templ DescriptionSection(typeName string, description string, layouts []domain.Layout) {
 	<div class="section-card">
 		<button class="section-header" data-accordion={ "description-section-" + typeName } data-state="closed">
 			<div class="flex items-center gap-2 flex-1">
 				@IconFileText()
 				<span class="font-medium text-sm" style="color: var(--color-foreground);">Description</span>
 				<span class="section-badge section-badge--type">Type</span>
+				@layoutIndicator("description", layouts)
 			</div>
 			<span id={ "description-section-" + typeName + "-icon" } class="accordion-icon" data-state="closed">
 				@IconChevronDown()
@@ -345,13 +354,14 @@ templ DescriptionSection(typeName string, description string) {
 	</div>
 }
 
-templ ExperiencesSection(typeName string, experiences []domain.Experience) {
+templ ExperiencesSection(typeName string, experiences []domain.Experience, layouts []domain.Layout) {
 	<div class="section-card">
 		<button class="section-header" data-accordion={ "experiences-section-" + typeName } data-state="closed">
 			<div class="flex items-center gap-2 flex-1">
 				@IconBriefcase()
 				<span class="font-medium text-sm" style="color: var(--color-foreground);">Experiences ({ fmt.Sprintf("%d", len(experiences)) })</span>
 				<span class="section-badge section-badge--type">Type</span>
+				@layoutIndicator("experiences", layouts)
 			</div>
 			<span id={ "experiences-section-" + typeName + "-icon" } class="accordion-icon" data-state="closed">
 				@IconChevronDown()
@@ -413,13 +423,14 @@ templ ExperienceEntry(typeName string, index int, exp domain.Experience) {
 	</div>
 }
 
-templ ProjectsSection(typeName string, projects []domain.Project) {
+templ ProjectsSection(typeName string, projects []domain.Project, layouts []domain.Layout) {
 	<div class="section-card">
 		<button class="section-header" data-accordion={ "projects-section-" + typeName } data-state="closed">
 			<div class="flex items-center gap-2 flex-1">
 				@IconCode()
 				<span class="font-medium text-sm" style="color: var(--color-foreground);">Projects ({ fmt.Sprintf("%d", len(projects)) })</span>
 				<span class="section-badge section-badge--type">Type</span>
+				@layoutIndicator("projects", layouts)
 			</div>
 			<span id={ "projects-section-" + typeName + "-icon" } class="accordion-icon" data-state="closed">
 				@IconChevronDown()
@@ -479,13 +490,14 @@ templ ProjectEntry(typeName string, index int, proj domain.Project) {
 	</div>
 }
 
-templ SkillsSection(skills []domain.SkillGroup) {
+templ SkillsSection(skills []domain.SkillGroup, layouts []domain.Layout) {
 	<div class="section-card">
 		<button class="section-header" data-accordion="skills-section" data-state="closed">
 			<div class="flex items-center gap-2 flex-1">
 				@IconStar()
 				<span class="font-medium text-sm" style="color: var(--color-foreground);">Skills</span>
 				<span class="section-badge section-badge--shared">Shared</span>
+				@layoutIndicator("skills", layouts)
 			</div>
 			<span id="skills-section-icon" class="accordion-icon" data-state="closed">
 				@IconChevronDown()
@@ -505,13 +517,14 @@ templ SkillsSection(skills []domain.SkillGroup) {
 	</div>
 }
 
-templ EducationSection(educations []domain.Education) {
+templ EducationSection(educations []domain.Education, layouts []domain.Layout) {
 	<div class="section-card">
 		<button class="section-header" data-accordion="education-section" data-state="closed">
 			<div class="flex items-center gap-2 flex-1">
 				@IconGraduationCap()
 				<span class="font-medium text-sm" style="color: var(--color-foreground);">Education</span>
 				<span class="section-badge section-badge--shared">Shared</span>
+				@layoutIndicator("educations", layouts)
 			</div>
 			<span id="education-section-icon" class="accordion-icon" data-state="closed">
 				@IconChevronDown()
@@ -532,13 +545,14 @@ templ EducationSection(educations []domain.Education) {
 	</div>
 }
 
-templ CertificatesSection(certs []domain.Certificate) {
+templ CertificatesSection(certs []domain.Certificate, layouts []domain.Layout) {
 	<div class="section-card">
 		<button class="section-header" data-accordion="certificates-section" data-state="closed">
 			<div class="flex items-center gap-2 flex-1">
 				@IconAward()
 				<span class="font-medium text-sm" style="color: var(--color-foreground);">Certificates</span>
 				<span class="section-badge section-badge--shared">Shared</span>
+				@layoutIndicator("certificates", layouts)
 			</div>
 			<span id="certificates-section-icon" class="accordion-icon" data-state="closed">
 				@IconChevronDown()
@@ -555,13 +569,14 @@ templ CertificatesSection(certs []domain.Certificate) {
 	</div>
 }
 
-templ AwardsSection(awards []domain.Award) {
+templ AwardsSection(awards []domain.Award, layouts []domain.Layout) {
 	<div class="section-card">
 		<button class="section-header" data-accordion="awards-section" data-state="closed">
 			<div class="flex items-center gap-2 flex-1">
 				@IconTrophy()
 				<span class="font-medium text-sm" style="color: var(--color-foreground);">Awards</span>
 				<span class="section-badge section-badge--shared">Shared</span>
+				@layoutIndicator("awards", layouts)
 			</div>
 			<span id="awards-section-icon" class="accordion-icon" data-state="closed">
 				@IconChevronDown()
@@ -647,6 +662,10 @@ templ IconMinus() {
 
 templ IconMaximize() {
 	<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
+}
+
+templ IconSearch() {
+	<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
 }
 
 templ IconGripVertical() {
@@ -747,5 +766,22 @@ func inputPattern(name string) string {
 		return "[^@]+@[^@]+\\.[^@]+"
 	default:
 		return ""
+	}
+}
+
+func isInLayout(section string, layouts []domain.Layout) bool {
+	for _, l := range layouts {
+		if string(l) == section {
+			return true
+		}
+	}
+	return false
+}
+
+templ layoutIndicator(section string, layouts []domain.Layout) {
+	if isInLayout(section, layouts) {
+		<span class="layout-indicator layout-indicator--active">In layout</span>
+	} else {
+		<span class="layout-indicator layout-indicator--inactive">Not in layout</span>
 	}
 }

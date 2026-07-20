@@ -31,6 +31,7 @@ func TestStaticFilesServed(t *testing.T) {
 		{"/static/split-panel.js", http.StatusOK},
 		{"/static/toast.js", http.StatusOK},
 		{"/static/shortcuts.js", http.StatusOK},
+		{"/static/search.js", http.StatusOK},
 		{"/static/nonexistent.css", http.StatusNotFound},
 	}
 
@@ -227,6 +228,9 @@ func TestDarkModeCSSOverrides(t *testing.T) {
 		"toast--error",
 		"kbd",
 		"form-input:invalid",
+		"section-search",
+		"save-status",
+		"layout-indicator",
 	}
 
 	for _, token := range darkTokens {

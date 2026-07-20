@@ -167,7 +167,7 @@ func (a *App) handleExperiencesPartial(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "CV type not found", http.StatusNotFound)
 		return
 	}
-	component := ExperiencesSection(typeName, cvType.Experiences)
+	component := ExperiencesSection(typeName, cvType.Experiences, cvType.Layouts)
 	component.Render(r.Context(), w)
 }
 
@@ -178,27 +178,27 @@ func (a *App) handleProjectsPartial(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "CV type not found", http.StatusNotFound)
 		return
 	}
-	component := ProjectsSection(typeName, cvType.Projects)
+	component := ProjectsSection(typeName, cvType.Projects, cvType.Layouts)
 	component.Render(r.Context(), w)
 }
 
 func (a *App) handleSkillsPartial(w http.ResponseWriter, r *http.Request) {
-	component := SkillsSection(a.core.CVConfig.GeneralCfg.Skills)
+	component := SkillsSection(a.core.CVConfig.GeneralCfg.Skills, nil)
 	component.Render(r.Context(), w)
 }
 
 func (a *App) handleEducationPartial(w http.ResponseWriter, r *http.Request) {
-	component := EducationSection(a.core.CVConfig.GeneralCfg.Educations)
+	component := EducationSection(a.core.CVConfig.GeneralCfg.Educations, nil)
 	component.Render(r.Context(), w)
 }
 
 func (a *App) handleCertificatesPartial(w http.ResponseWriter, r *http.Request) {
-	component := CertificatesSection(a.core.CVConfig.GeneralCfg.Certifications)
+	component := CertificatesSection(a.core.CVConfig.GeneralCfg.Certifications, nil)
 	component.Render(r.Context(), w)
 }
 
 func (a *App) handleAwardsPartial(w http.ResponseWriter, r *http.Request) {
-	component := AwardsSection(a.core.CVConfig.GeneralCfg.Awards)
+	component := AwardsSection(a.core.CVConfig.GeneralCfg.Awards, nil)
 	component.Render(r.Context(), w)
 }
 
@@ -220,7 +220,7 @@ func (a *App) handleDescriptionPartial(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "CV type not found", http.StatusNotFound)
 		return
 	}
-	component := DescriptionSection(typeName, cvType.Description)
+	component := DescriptionSection(typeName, cvType.Description, cvType.Layouts)
 	component.Render(r.Context(), w)
 }
 
@@ -287,7 +287,7 @@ func (a *App) handleSaveExperiences(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	component := ExperiencesSection(typeName, cvType.Experiences)
+	component := ExperiencesSection(typeName, cvType.Experiences, cvType.Layouts)
 	component.Render(r.Context(), w)
 }
 
@@ -356,7 +356,7 @@ func (a *App) handleAddExperience(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	component := ExperiencesSection(typeName, cvType.Experiences)
+	component := ExperiencesSection(typeName, cvType.Experiences, cvType.Layouts)
 	component.Render(r.Context(), w)
 }
 
@@ -381,7 +381,7 @@ func (a *App) handleDeleteExperience(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	component := ExperiencesSection(typeName, cvType.Experiences)
+	component := ExperiencesSection(typeName, cvType.Experiences, cvType.Layouts)
 	component.Render(r.Context(), w)
 }
 
@@ -404,7 +404,7 @@ func (a *App) handleSaveProjects(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	component := ProjectsSection(typeName, cvType.Projects)
+	component := ProjectsSection(typeName, cvType.Projects, cvType.Layouts)
 	component.Render(r.Context(), w)
 }
 
@@ -469,7 +469,7 @@ func (a *App) handleAddProject(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	component := ProjectsSection(typeName, cvType.Projects)
+	component := ProjectsSection(typeName, cvType.Projects, cvType.Layouts)
 	component.Render(r.Context(), w)
 }
 
@@ -494,7 +494,7 @@ func (a *App) handleDeleteProject(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	component := ProjectsSection(typeName, cvType.Projects)
+	component := ProjectsSection(typeName, cvType.Projects, cvType.Layouts)
 	component.Render(r.Context(), w)
 }
 
@@ -510,7 +510,7 @@ func (a *App) handleSaveSkills(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	component := SkillsSection(a.core.CVConfig.GeneralCfg.Skills)
+	component := SkillsSection(a.core.CVConfig.GeneralCfg.Skills, nil)
 	component.Render(r.Context(), w)
 }
 
@@ -526,7 +526,7 @@ func (a *App) handleSaveEducation(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	component := EducationSection(a.core.CVConfig.GeneralCfg.Educations)
+	component := EducationSection(a.core.CVConfig.GeneralCfg.Educations, nil)
 	component.Render(r.Context(), w)
 }
 
@@ -542,7 +542,7 @@ func (a *App) handleSaveCertificates(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	component := CertificatesSection(a.core.CVConfig.GeneralCfg.Certifications)
+	component := CertificatesSection(a.core.CVConfig.GeneralCfg.Certifications, nil)
 	component.Render(r.Context(), w)
 }
 
@@ -558,7 +558,7 @@ func (a *App) handleSaveAwards(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	component := AwardsSection(a.core.CVConfig.GeneralCfg.Awards)
+	component := AwardsSection(a.core.CVConfig.GeneralCfg.Awards, nil)
 	component.Render(r.Context(), w)
 }
 

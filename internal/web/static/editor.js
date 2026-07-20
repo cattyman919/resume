@@ -282,13 +282,49 @@ document.body.addEventListener('htmx:afterRequest', function(event) {
 				const section = path.split('/').pop() || path.split('/').slice(-2).join('/');
 				window.AutoCV.showToast('Saved: ' + section, 'success', 1500);
 			}
+			updateSaveStatus('saved');
 		}
 		if (xhr && xhr.status >= 400) {
 			if (window.AutoCV && window.AutoCV.showToast) {
 				window.AutoCV.showToast('Save failed', 'error');
 			}
+			updateSaveStatus('error');
 		}
 	} catch(e) {
 		console.error('htmx:afterRequest error:', e);
 	}
 });
+
+document.body.addEventListener('htmx:beforeRequest', function(event) {
+	const path = event.detail?.pathInfo?.requestPath || '';
+	if (!path.includes('/api/generate') && !path.includes('/api/cv-type/')) {
+		updateSaveStatus('saving');
+	}
+});
+
+function updateSaveStatus(status) {
+	const el = document.getElementById('save-status');
+	if (!el) return;
+	if (status === 'saving') {
+		el.className = 'save-status saving';
+		el.innerHTML = '<div class="spinner"></div> Saving...';
+	} else if (status === 'saved') {
+		el.className = 'save-status saved';
+		el.textContent = 'Saved';
+		setTimeout(function() {
+			if (el.classList.contains('saved')) {
+				el.className = 'save-status';
+				el.textContent = '';
+			}
+		}, 2000);
+	} else if (status === 'error') {
+		el.className = 'save-status error';
+		el.textContent = 'Error';
+		setTimeout(function() {
+			if (el.classList.contains('error')) {
+				el.className = 'save-status';
+				el.textContent = '';
+			}
+		}, 3000);
+	}
+}
