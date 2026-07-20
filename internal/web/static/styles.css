@@ -449,3 +449,122 @@ body {
     --font-size-label: 0.8125rem;
   }
 }
+
+.panel-divider {
+  width: 6px;
+  cursor: col-resize;
+  background: var(--color-border);
+  position: relative;
+  flex-shrink: 0;
+  transition: background-color var(--transition-fast);
+  z-index: 1;
+}
+
+.panel-divider:hover,
+.panel-divider.active {
+  background: var(--color-accent);
+}
+
+.panel-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 24px;
+  border-radius: 1px;
+  background: var(--color-muted-foreground);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.panel-divider:hover::before,
+.panel-divider.active::before {
+  opacity: 1;
+}
+
+.panel-divider:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: -2px;
+}
+
+#mobile-tabs {
+  display: none;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.mobile-tab {
+  flex: 1;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-label);
+  font-weight: 500;
+  font-family: var(--font-family);
+  color: var(--color-muted-foreground);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.mobile-tab:hover {
+  color: var(--color-foreground);
+}
+
+.mobile-tab.active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
+.pdf-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-4);
+  background: var(--color-muted);
+  border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.pdf-controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  color: var(--color-muted-foreground);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.pdf-controls button:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-foreground);
+}
+
+.pdf-controls .zoom-display {
+  font-size: var(--font-size-caption);
+  color: var(--color-muted-foreground);
+  min-width: 3rem;
+  text-align: center;
+}
+
+.pdf-controls .page-info {
+  font-size: var(--font-size-caption);
+  color: var(--color-muted-foreground);
+  margin-left: auto;
+}
+
+@media (max-width: 768px) {
+  #editor-panel {
+    width: 100% !important;
+  }
+  #pdf-panel {
+    width: 100% !important;
+  }
+}

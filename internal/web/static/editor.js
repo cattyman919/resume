@@ -1,5 +1,7 @@
 let debounceTimers = {};
 let defaultDebounceMs = 500;
+let currentZoom = 1.0;
+let currentPdf = null;
 
 function getDebounceMs() {
 	return defaultDebounceMs;
@@ -32,9 +34,18 @@ function loadPdf(typeName) {
 	const url = '/api/pdf/' + typeName + '?t=' + Date.now();
 	if (typeof pdfjsLib !== 'undefined') {
 		pdfjsLib.getDocument(url).promise.then(pdf => {
+			currentPdf = pdf;
 			window.pdfDoc = pdf;
 			renderAllPages(pdf);
+			updatePageInfo(pdf);
 		}).catch(err => setPdfStatus('error', err.message));
+	}
+}
+
+function updatePageInfo(pdf) {
+	const el = document.getElementById('page-info');
+	if (el && pdf) {
+		el.textContent = pdf.numPages + ' page' + (pdf.numPages > 1 ? 's' : '');
 	}
 }
 
@@ -53,7 +64,7 @@ function renderAllPages(pdf) {
 		container.appendChild(wrapper);
 		pdf.getPage(i).then(page => {
 			const baseViewport = page.getViewport({scale: 1});
-			const scale = viewerWidth / baseViewport.width;
+			const scale = (viewerWidth / baseViewport.width) * currentZoom;
 			const viewport = page.getViewport({scale: scale});
 			canvas.width = Math.floor(viewport.width * dpr);
 			canvas.height = Math.floor(viewport.height * dpr);
@@ -69,6 +80,22 @@ function renderAllPages(pdf) {
 			});
 		});
 	}
+}
+
+function setZoom(zoom) {
+	currentZoom = Math.max(0.5, Math.min(3.0, zoom));
+	const display = document.getElementById('zoom-display');
+	if (display) display.textContent = Math.round(currentZoom * 100) + '%';
+	if (currentPdf) renderAllPages(currentPdf);
+}
+
+function zoomIn() { setZoom(currentZoom + 0.1); }
+function zoomOut() { setZoom(currentZoom - 0.1); }
+function zoomFit() {
+	currentZoom = 1.0;
+	if (currentPdf) renderAllPages(currentPdf);
+	const display = document.getElementById('zoom-display');
+	if (display) display.textContent = '100%';
 }
 
 function setPdfStatus(status, msg) {
@@ -223,6 +250,10 @@ document.addEventListener('DOMContentLoaded', function() {
 	document.getElementById('btn-generate-pdf')?.addEventListener('click', function() {
 		generatePDF(document.body.dataset.currentType);
 	});
+
+	document.getElementById('btn-zoom-in')?.addEventListener('click', zoomIn);
+	document.getElementById('btn-zoom-out')?.addEventListener('click', zoomOut);
+	document.getElementById('btn-zoom-fit')?.addEventListener('click', zoomFit);
 });
 
 document.body.addEventListener('htmx:afterSettle', function() {

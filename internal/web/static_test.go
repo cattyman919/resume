@@ -28,6 +28,7 @@ func TestStaticFilesServed(t *testing.T) {
 		{"/static/styles.css", http.StatusOK},
 		{"/static/app.js", http.StatusOK},
 		{"/static/editor.js", http.StatusOK},
+		{"/static/split-panel.js", http.StatusOK},
 		{"/static/nonexistent.css", http.StatusNotFound},
 	}
 
@@ -145,11 +146,52 @@ func TestEditorJSFunctions(t *testing.T) {
 		"openDialog",
 		"closeDialog",
 		"Escape",
+		"zoomIn",
+		"zoomOut",
+		"zoomFit",
+		"currentZoom",
+		"updatePageInfo",
 	}
 
 	for _, token := range wantTokens {
 		if !strings.Contains(body, token) {
 			t.Errorf("editor.js missing token: %q", token)
+		}
+	}
+}
+
+func TestSplitPanelJS(t *testing.T) {
+	staticFS, err := fs.Sub(testStaticFiles, "static")
+	if err != nil {
+		t.Fatalf("fs.Sub error = %v", err)
+	}
+	fileServer := http.StripPrefix("/static/", http.FileServer(http.FS(staticFS)))
+	mux := http.NewServeMux()
+	mux.Handle("/static/", fileServer)
+
+	req := httptest.NewRequest(http.MethodGet, "/static/split-panel.js", nil)
+	w := httptest.NewRecorder()
+	mux.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", w.Code, http.StatusOK)
+	}
+
+	body := w.Body.String()
+	wantTokens := []string{
+		"autocv-panel-sizes",
+		"panel-divider",
+		"mobile-tab",
+		"editor-panel",
+		"pdf-panel",
+		"localStorage",
+		"ArrowLeft",
+		"ArrowRight",
+	}
+
+	for _, token := range wantTokens {
+		if !strings.Contains(body, token) {
+			t.Errorf("split-panel.js missing token: %q", token)
 		}
 	}
 }
@@ -175,6 +217,9 @@ func TestDarkModeCSSOverrides(t *testing.T) {
 		"--color-background: #0F172A",
 		"--color-surface: #1E293B",
 		"--color-foreground: #F8FAFC",
+		"panel-divider",
+		"mobile-tab",
+		"pdf-controls",
 	}
 
 	for _, token := range darkTokens {

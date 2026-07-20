@@ -31,6 +31,7 @@ templ EditorPage(typeName string, typeNames []string, general *domain.CVGeneral,
 			<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
 			<script src="/static/app.js"></script>
 			<script src="/static/editor.js"></script>
+			<script src="/static/split-panel.js"></script>
 		</head>
 		<body class="h-screen flex flex-col overflow-hidden" data-current-type={ typeName }
 			style="background-color: var(--color-background); color: var(--color-foreground);">
@@ -64,13 +65,18 @@ templ EditorPage(typeName string, typeNames []string, general *domain.CVGeneral,
 				</div>
 			</header>
 
-			<main class="flex flex-1 overflow-hidden">
-				<div id="editor-panel" class="w-1/2 overflow-y-auto p-4"
-					style="background-color: var(--color-surface); border-right: 1px solid var(--color-border);">
+			<div id="mobile-tabs">
+				<button class="mobile-tab active" data-tab="editor">Editor</button>
+				<button class="mobile-tab" data-tab="preview">Preview</button>
+			</div>
+
+			<main id="main-layout" class="flex flex-1 overflow-hidden">
+				<div id="editor-panel" class="overflow-y-auto p-4"
+					style="background-color: var(--color-surface);">
 					@EditorPanel(typeName, general, settings, cvType, envFields)
 				</div>
 
-				<div id="pdf-panel" class="w-1/2 flex flex-col" style="background-color: var(--color-background);">
+				<div id="pdf-panel" class="flex flex-col" style="background-color: var(--color-background);">
 					<div id="pdf-status" class="pdf-status-bar">
 						<span id="pdf-status-icon">
 							<svg width="8" height="8" viewBox="0 0 8 8"><circle class="status-dot" cx="4" cy="4" r="4" fill="#94A3B8"/></svg>
@@ -87,6 +93,21 @@ templ EditorPage(typeName string, typeNames []string, general *domain.CVGeneral,
 							</div>
 						}
 					</div>
+					if typstAvailable {
+						<div class="pdf-controls">
+							<button id="btn-zoom-out" title="Zoom out" aria-label="Zoom out">
+								@IconMinus()
+							</button>
+							<span id="zoom-display" class="zoom-display">100%</span>
+							<button id="btn-zoom-in" title="Zoom in" aria-label="Zoom in">
+								@IconPlus()
+							</button>
+							<button id="btn-zoom-fit" title="Fit to width" aria-label="Fit to width">
+								@IconMaximize()
+							</button>
+							<span id="page-info" class="page-info"></span>
+						</div>
+					}
 				</div>
 			</main>
 
@@ -615,6 +636,14 @@ templ IconX() {
 
 templ IconPlus() {
 	<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+}
+
+templ IconMinus() {
+	<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+}
+
+templ IconMaximize() {
+	<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
 }
 
 templ IconGripVertical() {
