@@ -1,0 +1,748 @@
+package web
+
+import (
+	"fmt"
+	"strings"
+
+	"github.com/cattyman919/autocv/internal/core/domain"
+)
+
+templ EditorPage(typeName string, typeNames []string, general *domain.CVGeneral, settings *domain.CVSettings, cvType *domain.CVType, typstAvailable bool, envFields map[string]string) {
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>AutoCV — { cvType.TypeName }</title>
+			<script src="https://cdn.tailwindcss.com"></script>
+			<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+			<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+			<style>
+				.accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+				.accordion-content.open { max-height: 5000px; transition: max-height 0.5s ease-in; }
+				.drag-handle { cursor: grab; }
+				.drag-handle:active { cursor: grabbing; }
+				.sortable-ghost { opacity: 0.4; }
+				.sortable-chosen { box-shadow: 0 0 0 2px #3b82f6; }
+				#pdf-canvas { display: block; margin: 0 auto; }
+				.pdf-page-nav { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.5rem; }
+				.pdf-pages-container { display: flex; flex-direction: column; align-items: center; gap: 12px; padding-bottom: 24px; }
+				.pdf-page-wrapper { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.06); border-radius: 2px; }
+				.pdf-page-wrapper canvas { display: block; }
+				.env-badge { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.7rem; background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; cursor: pointer; user-select: none; }
+				.env-badge:hover { background: #fde68a; }
+				.env-toggle { font-size: 0.65rem; color: #6b7280; cursor: pointer; text-decoration: underline; }
+			</style>
+		</head>
+		<body class="bg-gray-100 h-screen flex flex-col overflow-hidden" data-current-type={ typeName }>
+			<header class="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between shrink-0">
+				<div class="flex items-center gap-3">
+					<h1 class="text-lg font-bold text-gray-800">AutoCV</h1>
+					@CVTypeSelector(typeName, typeNames)
+				</div>
+				<div class="flex items-center gap-2">
+					<div class="flex items-center gap-1 text-xs text-gray-500">
+						<label for="debounce-ms">Delay:</label>
+						<input id="debounce-ms" type="number" min="100" max="5000" step="100" value="500" class="w-16 border rounded px-1 py-0.5 text-xs text-center"/>
+						<span>ms</span>
+					</div>
+					if !typstAvailable {
+						<span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Typst not installed — PDF preview disabled</span>
+					}
+					<button class="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" id="btn-create-cv">+ New CV</button>
+				</div>
+			</header>
+
+			<main class="flex flex-1 overflow-hidden">
+				<div id="editor-panel" class="w-1/2 overflow-y-auto border-r border-gray-200 bg-white p-4">
+					@EditorPanel(typeName, general, settings, cvType, envFields)
+				</div>
+
+				<div id="pdf-panel" class="w-1/2 flex flex-col bg-gray-50">
+					<div id="pdf-status" class="bg-gray-200 text-gray-600 text-xs px-4 py-1 flex items-center gap-2 shrink-0">
+						<span id="pdf-status-icon">&#9679;</span>
+						<span id="pdf-status-text">Idle</span>
+					</div>
+					<div id="pdf-error" class="hidden bg-red-50 border-b border-red-200 text-red-700 text-sm px-4 py-2 shrink-0"></div>
+					<div id="pdf-viewer" class="flex-1 overflow-auto bg-gray-200">
+						if typstAvailable {
+							<div id="pdf-pages-container" class="pdf-pages-container"></div>
+						} else {
+							<div class="flex items-center justify-center h-full text-gray-400">
+								<p>Install Typst to enable PDF preview</p>
+							</div>
+						}
+					</div>
+				</div>
+			</main>
+
+			<div id="create-cv-dialog" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+				<div class="bg-white rounded-lg p-6 w-96 shadow-xl">
+					<h3 class="text-lg font-bold mb-4">Create New CV Type</h3>
+					<div class="mb-3">
+						<label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+						<input id="new-cv-name" type="text" class="w-full border rounded px-3 py-2 text-sm" placeholder="e.g. backend_v2"/>
+					</div>
+					<div class="mb-4">
+						<label class="block text-sm font-medium text-gray-700 mb-1">Clone from</label>
+						<select id="new-cv-clone" class="w-full border rounded px-3 py-2 text-sm">
+							<option value="">Blank</option>
+							for _, name := range typeNames {
+								<option value={ name }>{ name }</option>
+							}
+						</select>
+					</div>
+					<div class="flex justify-end gap-2">
+						<button class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800" id="btn-create-cancel">Cancel</button>
+						<button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+							hx-post="/api/cv-type/create"
+							hx-vals='js:{type_name: document.getElementById("new-cv-name").value, clone_from: document.getElementById("new-cv-clone").value}'
+							hx-target="#cv-type-selector"
+							hx-swap="outerHTML"
+							id="btn-create-confirm">Create</button>
+					</div>
+				</div>
+			</div>
+
+			<div id="rename-cv-dialog" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+				<div class="bg-white rounded-lg p-6 w-96 shadow-xl">
+					<h3 class="text-lg font-bold mb-4">Rename CV Type</h3>
+					<input type="hidden" id="rename-cv-old" value={ typeName }/>
+					<div class="mb-4">
+						<label class="block text-sm font-medium text-gray-700 mb-1">New Name</label>
+						<input id="rename-cv-new" type="text" class="w-full border rounded px-3 py-2 text-sm" value={ typeName }/>
+					</div>
+					<div class="flex justify-end gap-2">
+						<button class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800" id="btn-rename-cancel">Cancel</button>
+						<button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+							hx-post="/api/cv-type/rename"
+							hx-vals='js:{old_name: document.getElementById("rename-cv-old").value, new_name: document.getElementById("rename-cv-new").value}'
+							hx-target="#cv-type-selector"
+							hx-swap="outerHTML"
+							id="btn-rename-confirm">Rename</button>
+					</div>
+				</div>
+			</div>
+
+			<div id="delete-cv-dialog" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+				<div class="bg-white rounded-lg p-6 w-96 shadow-xl">
+					<h3 class="text-lg font-bold mb-4">Delete CV Type</h3>
+					<p class="text-sm text-gray-600 mb-4">Are you sure you want to delete <strong id="delete-cv-name"></strong>? This cannot be undone.</p>
+					<div class="flex justify-end gap-2">
+						<button class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800" id="btn-delete-cancel">Cancel</button>
+						<button id="delete-cv-confirm" class="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+							hx-post="/api/cv-type/delete"
+							hx-target="#cv-type-selector"
+							hx-swap="outerHTML">Delete</button>
+					</div>
+				</div>
+			</div>
+
+			<script>
+				let debounceTimers = {};
+				let defaultDebounceMs = 500;
+
+				function getDebounceMs() {
+					const input = document.getElementById('debounce-ms');
+					if (input) {
+						const val = parseInt(input.value, 10);
+						if (!isNaN(val) && val >= 100) return val;
+					}
+					return defaultDebounceMs;
+				}
+
+				function debounceGenerate(typeName) {
+					if (debounceTimers[typeName]) clearTimeout(debounceTimers[typeName]);
+					debounceTimers[typeName] = setTimeout(() => generatePDF(typeName), getDebounceMs());
+				}
+
+				function generatePDF(typeName) {
+					setPdfStatus('generating');
+					fetch('/api/generate/' + typeName, { method: 'POST' })
+						.then(r => r.json())
+						.then(data => {
+							if (data.status === 'done') {
+								loadPdf(typeName);
+								setPdfStatus('success');
+							} else if (data.status === 'error') {
+								setPdfStatus('error', data.message || 'Generation failed');
+							} else if (data.status === 'already_generating') {
+								setPdfStatus('generating');
+								setTimeout(() => debounceGenerate(typeName), 1000);
+							}
+						})
+						.catch(err => setPdfStatus('error', err.message));
+				}
+
+				function loadPdf(typeName) {
+					const url = '/api/pdf/' + typeName + '?t=' + Date.now();
+					if (typeof pdfjsLib !== 'undefined') {
+						pdfjsLib.getDocument(url).promise.then(pdf => {
+							window.pdfDoc = pdf;
+							renderAllPages(pdf);
+						}).catch(err => setPdfStatus('error', err.message));
+					}
+				}
+
+				function renderAllPages(pdf) {
+					const container = document.getElementById('pdf-pages-container');
+					if (!container) return;
+					container.innerHTML = '';
+					const viewerWidth = document.getElementById('pdf-viewer').clientWidth - 40;
+					const dpr = window.devicePixelRatio || 1;
+					let rendered = 0;
+					for (let i = 1; i <= pdf.numPages; i++) {
+						const wrapper = document.createElement('div');
+						wrapper.className = 'pdf-page-wrapper';
+						const canvas = document.createElement('canvas');
+						wrapper.appendChild(canvas);
+						container.appendChild(wrapper);
+						pdf.getPage(i).then(page => {
+							const baseViewport = page.getViewport({scale: 1});
+							const scale = viewerWidth / baseViewport.width;
+							const viewport = page.getViewport({scale: scale});
+							canvas.width = Math.floor(viewport.width * dpr);
+							canvas.height = Math.floor(viewport.height * dpr);
+							canvas.style.width = Math.floor(viewport.width) + 'px';
+							canvas.style.height = Math.floor(viewport.height) + 'px';
+							const ctx = canvas.getContext('2d');
+							ctx.scale(dpr, dpr);
+							page.render({canvasContext: ctx, viewport: viewport}).promise.then(() => {
+								rendered++;
+								if (rendered === pdf.numPages) {
+									document.getElementById('pdf-status-text').textContent = 'Generated (' + pdf.numPages + ' page' + (pdf.numPages > 1 ? 's' : '') + ')';
+								}
+							});
+						});
+					}
+				}
+
+				function setPdfStatus(status, msg) {
+					const icon = document.getElementById('pdf-status-icon');
+					const text = document.getElementById('pdf-status-text');
+					const errorEl = document.getElementById('pdf-error');
+					if (status === 'idle') { icon.textContent = '\u25CF'; icon.style.color = '#9ca3af'; text.textContent = 'Idle'; }
+					else if (status === 'generating') { icon.textContent = '\u25CF'; icon.style.color = '#f59e0b'; text.textContent = 'Generating...'; }
+					else if (status === 'success') { icon.textContent = '\u25CF'; icon.style.color = '#22c55e'; text.textContent = 'Generated'; }
+					else if (status === 'error') { icon.textContent = '\u25CF'; icon.style.color = '#ef4444'; text.textContent = 'Failed'; errorEl.textContent = msg || 'Unknown error'; errorEl.classList.remove('hidden'); }
+					if (status !== 'error') errorEl.classList.add('hidden');
+				}
+
+				function toggleAccordion(id) {
+					const content = document.getElementById(id);
+					const icon = document.getElementById(id + '-icon');
+					if (!content) return;
+					if (content.classList.contains('open')) { content.classList.remove('open'); if (icon) icon.textContent = '\u25B6'; }
+					else { content.classList.add('open'); if (icon) icon.textContent = '\u25BC'; }
+				}
+
+				function toggleEnvValue(inputId, envVar, resolved) {
+					const input = document.getElementById(inputId);
+					const toggle = document.getElementById(inputId + '-toggle');
+					if (!input) return;
+					if (input.dataset.showingEnv === 'true') {
+						input.value = resolved;
+						input.dataset.showingEnv = 'false';
+						input.readOnly = false;
+						if (toggle) toggle.textContent = 'Show env template';
+					} else {
+						input.value = '{' + '{ env "' + envVar + '" }' + '}';
+						input.dataset.showingEnv = 'true';
+						input.readOnly = true;
+						if (toggle) toggle.textContent = 'Show resolved value';
+					}
+				}
+
+				function initSortable() {
+					document.querySelectorAll('.sortable-list:not(.sortable-initialized)').forEach(el => {
+						el.classList.add('sortable-initialized');
+						new Sortable(el, {
+							handle: '.drag-handle',
+							animation: 150,
+							ghostClass: 'sortable-ghost',
+							chosenClass: 'sortable-chosen',
+							onEnd: function(evt) {
+								const typeName = el.dataset.typeName;
+								const items = el.querySelectorAll('[data-layout]');
+								const layouts = Array.from(items).map(i => i.dataset.layout);
+								fetch('/api/layout/' + typeName, {
+									method: 'POST',
+									headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+									body: 'data=' + encodeURIComponent(JSON.stringify(layouts))
+								}).then(() => debounceGenerate(typeName));
+							}
+						});
+					});
+				}
+
+				function initAccordions() {
+					document.querySelectorAll('[data-accordion]').forEach(btn => {
+						if (btn.dataset.accordionBound) return;
+						btn.dataset.accordionBound = 'true';
+						btn.addEventListener('click', function(e) {
+							e.preventDefault();
+							e.stopPropagation();
+							toggleAccordion(btn.dataset.accordion);
+						});
+					});
+				}
+
+				function initEnvToggles() {
+					document.querySelectorAll('[data-env-toggle]').forEach(toggle => {
+						if (toggle.dataset.envBound) return;
+						toggle.dataset.envBound = 'true';
+						toggle.addEventListener('click', function(e) {
+							e.preventDefault();
+							toggleEnvValue(toggle.dataset.envToggle, toggle.dataset.envVar, toggle.dataset.envResolved);
+						});
+					});
+				}
+
+				document.addEventListener('DOMContentLoaded', function() {
+					const currentType = document.body.dataset.currentType;
+					initSortable();
+					initAccordions();
+					initEnvToggles();
+
+					if (document.getElementById('pdf-pages-container')) {
+						import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs').then(module => {
+							window.pdfjsLib = module;
+							module.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs';
+							loadPdf(currentType);
+						}).catch(err => console.error('Failed to load PDF.js:', err));
+					}
+
+					document.getElementById('btn-create-cv')?.addEventListener('click', () => {
+						document.getElementById('create-cv-dialog').classList.remove('hidden');
+					});
+					document.getElementById('btn-create-cancel')?.addEventListener('click', () => {
+						document.getElementById('create-cv-dialog').classList.add('hidden');
+					});
+					document.getElementById('btn-create-confirm')?.addEventListener('click', () => {
+						document.getElementById('create-cv-dialog').classList.add('hidden');
+					});
+
+					document.getElementById('btn-rename-cv')?.addEventListener('click', () => {
+						document.getElementById('rename-cv-dialog').classList.remove('hidden');
+					});
+					document.getElementById('btn-rename-cancel')?.addEventListener('click', () => {
+						document.getElementById('rename-cv-dialog').classList.add('hidden');
+					});
+					document.getElementById('btn-rename-confirm')?.addEventListener('click', () => {
+						document.getElementById('rename-cv-dialog').classList.add('hidden');
+					});
+
+					document.getElementById('btn-delete-cv')?.addEventListener('click', () => {
+						const name = document.body.dataset.currentType;
+						document.getElementById('delete-cv-name').textContent = name;
+						document.getElementById('delete-cv-confirm').setAttribute('hx-vals', '{"type_name": "' + name + '"}');
+						document.getElementById('delete-cv-dialog').classList.remove('hidden');
+					});
+					document.getElementById('btn-delete-cancel')?.addEventListener('click', () => {
+						document.getElementById('delete-cv-dialog').classList.add('hidden');
+					});
+
+					document.getElementById('debounce-ms')?.addEventListener('change', function() {
+						defaultDebounceMs = getDebounceMs();
+					});
+				});
+
+				document.body.addEventListener('htmx:afterSettle', function() {
+					initSortable();
+					initAccordions();
+					initEnvToggles();
+				});
+
+				document.body.addEventListener('htmx:afterRequest', function(event) {
+					try {
+						const path = event.detail?.pathInfo?.requestPath || event.detail?.xhr?.responseURL || '';
+						if (path.includes('/api/generate')) return;
+						const triggerHeader = event.detail?.xhr?.getResponseHeader('HX-Trigger');
+						if (triggerHeader === 'pdf-regenerate') {
+							debounceGenerate(document.body.dataset.currentType);
+						}
+					} catch(e) {
+						console.error('htmx:afterRequest error:', e);
+					}
+				});
+			</script>
+		</body>
+	</html>
+}
+
+templ CVTypeSelector(typeName string, typeNames []string) {
+	<div id="cv-type-selector" class="flex items-center gap-2">
+		<select id="cv-type-dropdown" class="border rounded px-2 py-1 text-sm"
+			onchange="window.location.href='/cv/'+this.value">
+			for _, name := range typeNames {
+				if name == typeName {
+					<option value={ name } selected>{ name }</option>
+				} else {
+					<option value={ name }>{ name }</option>
+				}
+			}
+		</select>
+		<button class="text-xs text-gray-500 hover:text-blue-600" id="btn-rename-cv" title="Rename">&#9998;</button>
+		<button class="text-xs text-gray-500 hover:text-red-600" id="btn-delete-cv" title="Delete">&#10005;</button>
+	</div>
+}
+
+templ EditorPanel(typeName string, general *domain.CVGeneral, settings *domain.CVSettings, cvType *domain.CVType, envFields map[string]string) {
+	<div class="space-y-2">
+		@LayoutSection(typeName, cvType.Layouts)
+		@PersonalInfoSection(general, envFields)
+		@SettingsSection(settings)
+		@DescriptionSection(typeName, cvType.Description)
+		@ExperiencesSection(typeName, cvType.Experiences)
+		@ProjectsSection(typeName, cvType.Projects)
+		@SkillsSection(general.Skills)
+		@EducationSection(general.Educations)
+		@CertificatesSection(general.Certifications)
+		@AwardsSection(general.Awards)
+	</div>
+}
+
+templ LayoutSection(typeName string, layouts []domain.Layout) {
+	<div class="border rounded-lg">
+		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion="layout-section">
+			<span class="font-medium text-sm text-gray-700">Layout Order</span>
+			<span id="layout-section-icon" class="text-xs text-gray-400">&#9660;</span>
+		</button>
+		<div id="layout-section" class="accordion-content open">
+			<div class="p-3">
+				<div class="sortable-list space-y-1" data-type-name={ typeName }>
+					for i, layout := range layouts {
+						<div class="flex items-center gap-2 bg-white border rounded px-3 py-2 text-sm" data-layout={ string(layout) }>
+							<span class="drag-handle text-gray-400 cursor-grab">&#9776;</span>
+							<span class="text-gray-700">{ string(layout) }</span>
+							<span class="text-xs text-gray-400 ml-auto">#{ fmt.Sprintf("%d", i+1) }</span>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+templ PersonalInfoSection(general *domain.CVGeneral, envFields map[string]string) {
+	<div class="border rounded-lg">
+		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion="personal-info-section">
+			<div class="flex items-center gap-2">
+				<span class="font-medium text-sm text-gray-700">Personal Info</span>
+				<span class="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">Shared</span>
+			</div>
+			<span id="personal-info-section-icon" class="text-xs text-gray-400">&#9654;</span>
+		</button>
+		<div id="personal-info-section" class="accordion-content">
+			@PersonalInfoForm(general, envFields)
+		</div>
+	</div>
+}
+
+templ PersonalInfoForm(general *domain.CVGeneral, envFields map[string]string) {
+	<form class="p-3 space-y-2"
+		hx-post="/api/personal-info"
+		hx-trigger="change, keyup changed delay:500ms from:input"
+		hx-target="#personal-info-section"
+		hx-swap="innerHTML">
+		@inputField("name", "Name", general.PersonalInfo.Name, "")
+		@inputField("email", "Email", general.PersonalInfo.Email, "")
+		@envInputField("phone", "Phone", general.PersonalInfo.Phone, envFields)
+		@inputField("website", "Website", general.PersonalInfo.Website, "")
+		@inputField("linkedin", "LinkedIn", general.PersonalInfo.Linkedin, "")
+		@inputField("linkedin_handle", "LinkedIn Handle", general.PersonalInfo.LinkedinHandle, "")
+		@inputField("github", "GitHub", general.PersonalInfo.Github, "")
+		@inputField("github_handle", "GitHub Handle", general.PersonalInfo.GithubHandle, "")
+		@inputField("profile_pic", "Profile Picture", general.PersonalInfo.ProfilePic, "")
+		@inputField("location", "Location", general.PersonalInfo.Location, "")
+	</form>
+}
+
+templ SettingsSection(settings *domain.CVSettings) {
+	<div class="border rounded-lg">
+		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion="settings-section">
+			<div class="flex items-center gap-2">
+				<span class="font-medium text-sm text-gray-700">Settings</span>
+				<span class="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">Shared</span>
+			</div>
+			<span id="settings-section-icon" class="text-xs text-gray-400">&#9654;</span>
+		</button>
+		<div id="settings-section" class="accordion-content">
+			@SettingsForm(settings)
+		</div>
+	</div>
+}
+
+templ SettingsForm(settings *domain.CVSettings) {
+	<form class="p-3 space-y-2"
+		hx-post="/api/settings"
+		hx-trigger="change, keyup changed delay:500ms from:input"
+		hx-target="#settings-section"
+		hx-swap="innerHTML">
+		@inputField("font", "Font", settings.Font, "")
+		@inputField("accent_color", "Accent Color", settings.AccentColor, "")
+	</form>
+}
+
+templ DescriptionSection(typeName string, description string) {
+	<div class="border rounded-lg">
+		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion={ "description-section-" + typeName }>
+			<span class="font-medium text-sm text-gray-700">Description</span>
+			<span id={ "description-section-" + typeName + "-icon" } class="text-xs text-gray-400">&#9654;</span>
+		</button>
+		<div id={ "description-section-" + typeName } class="accordion-content">
+			<form class="p-3"
+				hx-post={ "/api/description/" + typeName }
+				hx-trigger="change, keyup changed delay:500ms from:textarea"
+				hx-swap="none">
+				<textarea name="description" class="w-full border rounded px-3 py-2 text-sm h-24">{ description }</textarea>
+			</form>
+		</div>
+	</div>
+}
+
+templ ExperiencesSection(typeName string, experiences []domain.Experience) {
+	<div class="border rounded-lg">
+		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion={ "experiences-section-" + typeName }>
+			<span class="font-medium text-sm text-gray-700">Experiences ({ fmt.Sprintf("%d", len(experiences)) })</span>
+			<span id={ "experiences-section-" + typeName + "-icon" } class="text-xs text-gray-400">&#9654;</span>
+		</button>
+		<div id={ "experiences-section-" + typeName } class="accordion-content">
+			<div class="p-3 space-y-2">
+				for i, exp := range experiences {
+					@ExperienceEntry(typeName, i, exp)
+				}
+				<button class="text-xs text-blue-600 hover:text-blue-800"
+					hx-post={ "/api/experience/" + typeName + "/add" }
+					hx-target={ "#experiences-section-" + typeName }
+					hx-swap="innerHTML">+ Add Experience</button>
+			</div>
+		</div>
+	</div>
+}
+
+templ ExperienceEntry(typeName string, index int, exp domain.Experience) {
+	<div class="border rounded p-3 bg-gray-50">
+		<div class="flex items-center justify-between mb-2">
+			<button class="text-sm font-medium text-gray-700 flex items-center gap-1" data-accordion={ fmt.Sprintf("exp-%s-%d", typeName, index) }>
+				<span id={ fmt.Sprintf("exp-%s-%d-icon", typeName, index) } class="text-xs text-gray-400">&#9654;</span>
+				{ exp.Role } { expCompanyLabel(exp) }
+			</button>
+			<button class="text-xs text-red-500 hover:text-red-700"
+				hx-post={ fmt.Sprintf("/api/experience/%s/%d/delete", typeName, index) }
+				hx-target={ fmt.Sprintf("#experiences-section-%s", typeName) }
+				hx-swap="innerHTML">Remove</button>
+		</div>
+		<div id={ fmt.Sprintf("exp-%s-%d", typeName, index) } class="accordion-content">
+			<form class="space-y-2"
+				hx-post={ fmt.Sprintf("/api/experience/%s/%d", typeName, index) }
+				hx-trigger="change, keyup changed delay:500ms from:input, from:textarea"
+				hx-swap="none">
+				<div class="grid grid-cols-2 gap-2">
+					@inputField("role", "Role", exp.Role, "")
+					@inputField("company", "Company", exp.Company, "")
+					@inputField("job_type", "Job Type", exp.JobType, "")
+					@inputField("location", "Location", exp.Location, "")
+				</div>
+				@inputField("dates", "Dates", exp.Dates, "")
+				<div>
+					<label class="block text-xs font-medium text-gray-600 mb-1">Points (one per line)</label>
+					<textarea name="points" class="w-full border rounded px-3 py-2 text-sm h-32">{ strings.Join(exp.Points, "\n") }</textarea>
+				</div>
+			</form>
+		</div>
+	</div>
+}
+
+templ ProjectsSection(typeName string, projects []domain.Project) {
+	<div class="border rounded-lg">
+		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion={ "projects-section-" + typeName }>
+			<span class="font-medium text-sm text-gray-700">Projects ({ fmt.Sprintf("%d", len(projects)) })</span>
+			<span id={ "projects-section-" + typeName + "-icon" } class="text-xs text-gray-400">&#9654;</span>
+		</button>
+		<div id={ "projects-section-" + typeName } class="accordion-content">
+			<div class="p-3 space-y-2">
+				for i, proj := range projects {
+					@ProjectEntry(typeName, i, proj)
+				}
+				<button class="text-xs text-blue-600 hover:text-blue-800"
+					hx-post={ "/api/project/" + typeName + "/add" }
+					hx-target={ "#projects-section-" + typeName }
+					hx-swap="innerHTML">+ Add Project</button>
+			</div>
+		</div>
+	</div>
+}
+
+templ ProjectEntry(typeName string, index int, proj domain.Project) {
+	<div class="border rounded p-3 bg-gray-50">
+		<div class="flex items-center justify-between mb-2">
+			<button class="text-sm font-medium text-gray-700 flex items-center gap-1" data-accordion={ fmt.Sprintf("proj-%s-%d", typeName, index) }>
+				<span id={ fmt.Sprintf("proj-%s-%d-icon", typeName, index) } class="text-xs text-gray-400">&#9654;</span>
+				{ proj.Name }
+			</button>
+			<button class="text-xs text-red-500 hover:text-red-700"
+				hx-post={ fmt.Sprintf("/api/project/%s/%d/delete", typeName, index) }
+				hx-target={ fmt.Sprintf("#projects-section-%s", typeName) }
+				hx-swap="innerHTML">Remove</button>
+		</div>
+		<div id={ fmt.Sprintf("proj-%s-%d", typeName, index) } class="accordion-content">
+			<form class="space-y-2"
+				hx-post={ fmt.Sprintf("/api/project/%s/%d", typeName, index) }
+				hx-trigger="change, keyup changed delay:500ms from:input, from:textarea"
+				hx-swap="none">
+				<div class="grid grid-cols-2 gap-2">
+					@inputField("name", "Name", proj.Name, "")
+					@inputField("github", "GitHub URL", proj.Github, "")
+				</div>
+				@inputField("github_handle", "GitHub Handle", proj.GithubHandle, "")
+				<div>
+					<label class="block text-xs font-medium text-gray-600 mb-1">Points (one per line)</label>
+					<textarea name="points" class="w-full border rounded px-3 py-2 text-sm h-32">{ strings.Join(proj.Points, "\n") }</textarea>
+				</div>
+			</form>
+		</div>
+	</div>
+}
+
+templ SkillsSection(skills []domain.SkillGroup) {
+	<div class="border rounded-lg">
+		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion="skills-section">
+			<div class="flex items-center gap-2">
+				<span class="font-medium text-sm text-gray-700">Skills</span>
+				<span class="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">Shared</span>
+			</div>
+			<span id="skills-section-icon" class="text-xs text-gray-400">&#9654;</span>
+		</button>
+		<div id="skills-section" class="accordion-content">
+			<div class="p-3 space-y-3">
+				for _, sg := range skills {
+					<div>
+						<div class="text-xs font-medium text-gray-600 mb-1">{ sg.Title }</div>
+						<div class="text-sm text-gray-800">{ strings.Join(sg.Items, ", ") }</div>
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+}
+
+templ EducationSection(educations []domain.Education) {
+	<div class="border rounded-lg">
+		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion="education-section">
+			<div class="flex items-center gap-2">
+				<span class="font-medium text-sm text-gray-700">Education</span>
+				<span class="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">Shared</span>
+			</div>
+			<span id="education-section-icon" class="text-xs text-gray-400">&#9654;</span>
+		</button>
+		<div id="education-section" class="accordion-content">
+			<div class="p-3 space-y-2">
+				for _, edu := range educations {
+					<div class="border rounded p-3 bg-gray-50">
+						<div class="text-sm font-medium text-gray-700">{ edu.Institution }</div>
+						<div class="text-xs text-gray-500">{ edu.Degree } &middot; { edu.Dates }</div>
+						<div class="text-xs text-gray-500">GPA: { edu.Gpa }</div>
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+}
+
+templ CertificatesSection(certs []domain.Certificate) {
+	<div class="border rounded-lg">
+		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion="certificates-section">
+			<div class="flex items-center gap-2">
+				<span class="font-medium text-sm text-gray-700">Certificates</span>
+				<span class="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">Shared</span>
+			</div>
+			<span id="certificates-section-icon" class="text-xs text-gray-400">&#9654;</span>
+		</button>
+		<div id="certificates-section" class="accordion-content">
+			<div class="p-3 space-y-1">
+				for _, cert := range certs {
+					<div class="text-sm text-gray-700">{ cert.Name } <span class="text-xs text-gray-400">({ cert.Year })</span></div>
+				}
+			</div>
+		</div>
+	</div>
+}
+
+templ AwardsSection(awards []domain.Award) {
+	<div class="border rounded-lg">
+		<button class="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 text-left" data-accordion="awards-section">
+			<div class="flex items-center gap-2">
+				<span class="font-medium text-sm text-gray-700">Awards</span>
+				<span class="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">Shared</span>
+			</div>
+			<span id="awards-section-icon" class="text-xs text-gray-400">&#9654;</span>
+		</button>
+		<div id="awards-section" class="accordion-content">
+			<div class="p-3 space-y-2">
+				for _, award := range awards {
+					<div class="border rounded p-3 bg-gray-50">
+						<div class="text-sm font-medium text-gray-700">{ award.Title }</div>
+						<div class="text-xs text-gray-500">{ award.Organization } &middot; { award.Date }</div>
+						for _, point := range award.Points {
+							<div class="text-xs text-gray-600 mt-1 pl-2 border-l-2 border-gray-200">{ point }</div>
+						}
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+}
+
+templ inputField(name string, label string, value string, placeholder string) {
+	<div class="flex flex-col space-y-0.5">
+		<label class="text-xs font-medium text-gray-600">{ label }</label>
+		<input type="text" name={ name } value={ value } placeholder={ placeholder }
+			class="border rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"/>
+	</div>
+}
+
+templ envInputField(name string, label string, value string, envFields map[string]string) {
+	<div class="flex flex-col space-y-0.5">
+		<div class="flex items-center gap-2">
+			<label class="text-xs font-medium text-gray-600">{ label }</label>
+			if isEnvField(value, envFields) {
+				<span class="env-badge" title={ fmt.Sprintf("Uses env var: %s", getEnvVarName(value, envFields)) }>
+					&#128274; ENV: { getEnvVarName(value, envFields) }
+				</span>
+			}
+		</div>
+		<input type="text" id={ "field-" + name } name={ name } value={ value }
+			class="border rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"/>
+		if isEnvField(value, envFields) {
+			<span id={ "field-" + name + "-toggle" } class="env-toggle"
+				data-env-toggle={ "field-" + name }
+				data-env-var={ getEnvVarName(value, envFields) }
+				data-env-resolved={ value }>Show env template</span>
+		}
+	</div>
+}
+
+func isEnvField(value string, envFields map[string]string) bool {
+	for raw := range envFields {
+		if strings.Contains(value, raw) || value == raw {
+			return true
+		}
+	}
+	return strings.Contains(value, "{{ env ")
+}
+
+func getEnvVarName(value string, envFields map[string]string) string {
+	for raw, varName := range envFields {
+		if strings.Contains(value, raw) || value == raw {
+			return varName
+		}
+	}
+	return ""
+}
+
+func expCompanyLabel(exp domain.Experience) string {
+	if exp.Company != "" {
+		return "at " + exp.Company
+	}
+	return ""
+}

@@ -5,3 +5,6 @@ cli:
 
 gui:
   go run cmd/gui/main.go
+
+web:
+  go run cmd/web/main.go

@@ -17,8 +17,10 @@ import (
 )
 
 type App struct {
-	CVConfig *config.CVConfig
-	Template *template.Template
+	CVConfig    *config.CVConfig
+	Template    *template.Template
+	TypstAvailable bool
+	mu         sync.Mutex
 }
 
 func initLogger() {
@@ -35,12 +37,10 @@ func initLogger() {
 func NewApp() (*App, error) {
 	initLogger()
 
+	typstAvailable := true
 	if _, err := exec.LookPath("typst"); err != nil {
-		slog.Error("Program `tyspt` compiler not found in $PATH")
-		fmt.Println("")
-		fmt.Println("Please install tyspt compiler first before running the program")
-		fmt.Println("https://typst.app/open-source/")
-		return nil, err
+		slog.Warn("Typst compiler not found in $PATH — PDF generation will be disabled")
+		typstAvailable = false
 	}
 
 	cvCfg, err := config.NewConfig()
@@ -56,14 +56,13 @@ func NewApp() (*App, error) {
 	}
 
 	return &App{
-		CVConfig: cvCfg,
-		Template: tmpl,
+		CVConfig:       cvCfg,
+		Template:       tmpl,
+		TypstAvailable: typstAvailable,
 	}, nil
 }
 
-// Concurrently generate all the CV's
 func (a *App) GenerateAllCVs() {
-
 	var wg sync.WaitGroup
 
 	for _, cvType := range a.CVConfig.CVTypesCfg {
@@ -83,14 +82,15 @@ func (a *App) GenerateAllCVs() {
 				slog.Error("Error generating PDF CV Type", "err", err)
 			}
 		})
-
 	}
 
 	wg.Wait()
-
 }
 
 func (a *App) GenerateCV(cvType *domain.CVType) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	cvData := domain.CVTypeData{
 		General:  &a.CVConfig.GeneralCfg,
 		Settings: &a.CVConfig.SettingsCfg,
@@ -109,4 +109,58 @@ func (a *App) GenerateCV(cvType *domain.CVType) error {
 	}
 
 	return nil
+}
+
+func (a *App) ReloadConfig() error {
+	cvCfg, err := config.NewConfig()
+	if err != nil {
+		return fmt.Errorf("error reloading config: %w", err)
+	}
+	a.CVConfig = cvCfg
+	return nil
+}
+
+func (a *App) GetCVType(typeName string) *domain.CVType {
+	for i := range a.CVConfig.CVTypesCfg {
+		if a.CVConfig.CVTypesCfg[i].TypeName == typeName {
+			return &a.CVConfig.CVTypesCfg[i]
+		}
+	}
+	return nil
+}
+
+func (a *App) GetCVTypeNames() []string {
+	names := make([]string, 0, len(a.CVConfig.CVTypesCfg))
+	for _, cvType := range a.CVConfig.CVTypesCfg {
+		names = append(names, cvType.TypeName)
+	}
+	return names
+}
+
+func (a *App) GetPDFPath(typeName string) string {
+	return fmt.Sprintf("%s - CV (%s).pdf", a.CVConfig.GeneralCfg.PersonalInfo.Name, typeName)
+}
+
+func (a *App) SaveGeneralConfig() error {
+	return config.SaveGeneralConfig(&a.CVConfig.GeneralCfg)
+}
+
+func (a *App) SaveSettingsConfig() error {
+	return config.SaveSettingsConfig(&a.CVConfig.SettingsCfg)
+}
+
+func (a *App) SaveCVTypeConfig(cvType *domain.CVType) error {
+	return config.SaveCVTypeConfig(cvType)
+}
+
+func (a *App) DeleteCVType(typeName string) error {
+	return config.DeleteCVType(typeName)
+}
+
+func (a *App) RenameCVType(oldName, newName string) error {
+	return config.RenameCVType(oldName, newName)
+}
+
+func (a *App) CreateCVType(typeName string, cloneFrom string) error {
+	return config.CreateCVType(typeName, cloneFrom)
 }

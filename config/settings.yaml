@@ -1,10 +1,2 @@
-# font: "Georgia"
-# font: "Calibri"
-# font: "Montserrat"
-# font: "Times New Roman"
-# font: "Helvetica"
-# font: "Bitstream Charter"
-font: "New Computer Modern"
-
+font: New Computer Modern
 accent-color: "#26428b"
-# accent-color: "#000000"

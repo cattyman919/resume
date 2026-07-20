@@ -1,24 +1,18 @@
-# use the env function to pass in
-# sensitive information to the fields
-#
-# will load .env if it exists
-
-settings:
-  font: "Charter"
-
 personal_info:
   name: Seno Pamungkas Rahman
-  location: Tangerang Selatan
   email: senop.rahman@gmail.com
   phone: '{{ env "PHONE_NUMBER" }}'
   website: senop.dev
   linkedin: seno-pamungkas-rahman-714341192
   linkedin_handle: Seno
   github: cattyman919
+  github_handle: ""
   profile_pic: profile.jpg
-
+  location: Tangerang Selatan
+description: ""
+research_interests: []
 skills:
-  - title: "Programming Languages"
+  - title: Programming Languages
     items:
       - Go
       - Rust
@@ -27,7 +21,7 @@ skills:
       - C++
       - Java
       - C
-  - title: "Cloud & DevOps"
+  - title: Cloud & DevOps
     items:
       - AWS
       - GCP
@@ -36,33 +30,31 @@ skills:
       - Terraform
       - Linux
       - Git
-  - title: "Web Frameworks"
+  - title: Web Frameworks
     items:
       - React
       - Next.js
       - NestJS
       - Spring Boot
       - Flutter
-  - title: "Databases"
+  - title: Databases
     items:
       - PostgreSQL
       - MySQL
       - NoSQL
-  - title: "Languages"
+  - title: Languages
     items:
       - Bahasa Indonesia (Native)
       - English (IELTS 7.0)
-
 certificates:
-  - year: "2025"
-    name: "Red Hat System Administration I & II (RH134 - RHA) - Ver. 9.3"
-  - year: "2023"
-    name: "CCNA: Enterprise Networking, Security, and Automation"
-  - year: "2023"
-    name: "CCNA: Switching, Routing, and Wireless Essentials"
-  - year: "2023"
-    name: "CCNA: Introduction to Networks"
-
+  - name: "Red Hat System Administration I & II (RH134 - RHA) - Ver. 9.3"
+    year: "2025"
+  - name: "CCNA: Enterprise Networking, Security, and Automation"
+    year: "2023"
+  - name: "CCNA: Switching, Routing, and Wireless Essentials"
+    year: "2023"
+  - name: "CCNA: Introduction to Networks"
+    year: "2023"
 education:
   - institution: Universitas Indonesia
     degree: Bachelor of Computer Engineering
@@ -71,11 +63,10 @@ education:
     details:
       - "**GPA:** 3.78/4.0"
       - "**Coursework:** Computer Architecture, Operating System, Database System, Real Time System and IoT, Computer Networks, Software Engineering, Cloud Computing"
-
 awards:
   - title: Top 10 Finalist Hackathon BI 2024
     organization: Bank Indonesia
     date: August 2024
     points:
-      - "Top 10 Finalist in **Bank Indonesia Hackathon 2024** **out of 2,200 participants and 450+ proposals**"
+      - Top 10 Finalist in **Bank Indonesia Hackathon 2024** **out of 2,200 participants and 450+ proposals**
       - "**Spearheaded the development of BitTrack's Frontend and UI/UX**, ensuring a seamless user experience and visually appealing design, while also **driving the business strategy and direction of the product**."

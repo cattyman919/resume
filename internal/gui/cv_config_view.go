@@ -3,6 +3,7 @@ package gui
 import (
 	g "github.com/AllenDang/giu"
 	"github.com/cattyman919/autocv/internal/core/domain"
+	"github.com/cattyman919/autocv/internal/gui/widget"
 )
 
 func (a *app) cv_config_view() g.Widget {
@@ -13,7 +14,11 @@ func (a *app) cv_config_view() g.Widget {
 			return g.Label(string(item))
 		})
 
-		cvLayoutWidget := g.ListClipper().Layout(layoutLabels...)
+		cvLayoutWidget := widget.ReorderableList("cv-layouts", a.selectedCV.Layouts).
+			Layout(layoutLabels...).
+			OnReorder(func(newLayouts []domain.Layout) {
+				a.selectedCV.Layouts = newLayouts
+			})
 
 		selectedCVConfigWidget = g.ListClipper().Layout(
 			g.Label("Layout"),

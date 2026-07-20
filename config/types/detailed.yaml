@@ -1,32 +1,34 @@
+typename: detailed
 layout:
-  - experiences
-  - educations
-  - skills
-  - certificates
-  - awards
-
+- educations
+- experiences
+- skills
+- certificates
+- awards
+description: ""
+projects: []
 experiences:
-  - company: XLSmart
-    location: Jakarta Selatan
-    role: Cloud Operations
-    dates: September 2025 - Present
-    job_type: Contract
-    points:
-      - "*Engineered* a high-concurrency *Go* tool to automate weekly End-of-Support (EOS) and capacity reporting across *~100 AWS accounts* and *~100 GCP projects*, *slashing manual report generation time from 45 minutes to under 3 minutes*."
-      - "*Built* a *Go* utility to *audit Kubernetes clusters* at scale, querying *EKS clusters* to gather *PodDisruptionBudget (PDB)* and *HPA* data for cross-team resilience analysis."
-      - "*Designed and implemented* key *Grafana* dashboards to centralize observability, visualizing *CPU/Memory* from multiple *Prometheus* datasources and tracking *AWS service capacity* (EC2, RDS, EKS)."
-      - "*Investigated and resolved* a production *memory leak* in a microservice by performing deep-dive analysis and tracing using *Datadog* and *Kubernetes CLI* tools."
-      - "*Developed* 'Kluster-Compare', a *full-stack internal tool* (*Go* backend, *Next.js* frontend) to visualize and *diff Kubernetes manifests* between live clusters (*Rancher*) and GitOps states (*ArgoCD*), streamlining *Blue/Green deployment validation*."
-      - "*Optimized container deployments* by implementing *multi-stage Docker builds* (using scratch/distroless images) for internal tooling, reducing image size and *hardening security posture* for Kubernetes deployments."
-      - "*Engineered* an automated *AMI compliance scanner* in *Go* to track *Amazon Linux 2 to 2023 migration* progress across *Karpenter* nodepools and *EKS Managed Node Groups* in *50+ AWS accounts*."
-      - "*Created* a *Grafana health-check automator* that validates *Prometheus datasource connectivity* via the *Grafana API*, ensuring high availability of observability dashboards for critical Telco applications."
-      - "*Conducted deep-dive performance assessments* on *AWS RDS*, identifying bottlenecks and recommending *composite indexing strategies* that optimized query execution for high-volume transaction tables."
-      - "*Integrated internal audit tools* with *Microsoft Graph API* to automatically generate and upload formatted *Excel reports* to SharePoint, eliminating manual data entry for weekly capacity reviews."
-      - "*Streamlined* operational reporting workflows by *automating data collection* from disparate cloud sources (AWS, GCP, K8s), significantly *reducing administrative overhead* for the Cloud Operations team."
-      - "*Refactored* legacy automation scripts into modular *Go packages*, improving *code maintainability*, error handling, and enabling easier collaboration within the engineering team."
-      - "*Orchestrated* the periodic patching and upgrade cycles for *EKS node groups*, ensuring compliance with *security standards* by migrating workloads from *Amazon Linux 2 to AL3*."
-      - "*Enhanced cloud security posture* by developing custom audit tools to detect exposed *Security Groups*, unencrypted *EBS volumes*, and *WAF* misconfigurations across a multi-account environment."
-      - "*Strengthened* access control mechanisms by implementing *AssumeRole* patterns in automation tools, removing the need for static long-lived credentials in scripts."
-      - "*Led cost-optimization initiatives* by building automated scanners to identify *underutilized EC2 instances* and detached *EBS volumes*, facilitating data-driven resource rightsizing decisions."
-      - "*Managed and maintained* Kubernetes infrastructure health, ensuring configuration consistency between *Blue/Green environments* via *ArgoCD* and *Rancher*."
-      - "*Improved system observability* by consolidating *Prometheus* metrics into unified *Grafana* dashboards, providing real-time visibility into *cluster health* and resource capacity planning."
+- role: Cloud Operations
+  job_type: Contract
+  company: XLSmart
+  location: Jakarta Selatan
+  dates: "September 2025 - Present"
+  points:
+  - "*Engineered* a high-concurrency *Go* tool to automate weekly End-of-Support (EOS) and capacity reporting across *~100 AWS accounts* and *~100 GCP projects*, *slashing manual report generation time from 45 minutes to under 3 minutes*."
+  - "*Built* a *Go* utility to *audit Kubernetes clusters* at scale, querying *EKS clusters* to gather *PodDisruptionBudget (PDB)* and *HPA* data for cross-team resilience analysis."
+  - "*Designed and implemented* key *Grafana* dashboards to centralize observability, visualizing *CPU/Memory* from multiple *Prometheus* datasources and tracking *AWS service capacity* (EC2, RDS, EKS)."
+  - "*Investigated and resolved* a production *memory leak* in a microservice by performing deep-dive analysis and tracing using *Datadog* and *Kubernetes CLI* tools."
+  - "*Developed* 'Kluster-Compare', a *full-stack internal tool* (*Go* backend, *Next.js* frontend) to visualize and *diff Kubernetes manifests* between live clusters (*Rancher*) and GitOps states (*ArgoCD*), streamlining *Blue/Green deployment validation*."
+  - "*Optimized container deployments* by implementing *multi-stage Docker builds* (using scratch/distroless images) for internal tooling, reducing image size and *hardening security posture* for Kubernetes deployments."
+  - "*Engineered* an automated *AMI compliance scanner* in *Go* to track *Amazon Linux 2 to 2023 migration* progress across *Karpenter* nodepools and *EKS Managed Node Groups* in *50+ AWS accounts*."
+  - "*Created* a *Grafana health-check automator* that validates *Prometheus datasource connectivity* via the *Grafana API*, ensuring high availability of observability dashboards for critical Telco applications."
+  - "*Conducted deep-dive performance assessments* on *AWS RDS*, identifying bottlenecks and recommending *composite indexing strategies* that optimized query execution for high-volume transaction tables."
+  - "*Integrated internal audit tools* with *Microsoft Graph API* to automatically generate and upload formatted *Excel reports* to SharePoint, eliminating manual data entry for weekly capacity reviews."
+  - "*Streamlined* operational reporting workflows by *automating data collection* from disparate cloud sources (AWS, GCP, K8s), significantly *reducing administrative overhead* for the Cloud Operations team."
+  - "*Refactored* legacy automation scripts into modular *Go packages*, improving *code maintainability*, error handling, and enabling easier collaboration within the engineering team."
+  - "*Orchestrated* the periodic patching and upgrade cycles for *EKS node groups*, ensuring compliance with *security standards* by migrating workloads from *Amazon Linux 2 to AL3*."
+  - "*Enhanced cloud security posture* by developing custom audit tools to detect exposed *Security Groups*, unencrypted *EBS volumes*, and *WAF* misconfigurations across a multi-account environment."
+  - "*Strengthened* access control mechanisms by implementing *AssumeRole* patterns in automation tools, removing the need for static long-lived credentials in scripts."
+  - "*Led cost-optimization initiatives* by building automated scanners to identify *underutilized EC2 instances* and detached *EBS volumes*, facilitating data-driven resource rightsizing decisions."
+  - "*Managed and maintained* Kubernetes infrastructure health, ensuring configuration consistency between *Blue/Green environments* via *ArgoCD* and *Rancher*."
+  - "*Improved system observability* by consolidating *Prometheus* metrics into unified *Grafana* dashboards, providing real-time visibility into *cluster health* and resource capacity planning."
