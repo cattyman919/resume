@@ -1,5 +1,5 @@
 let debounceTimers = {};
-let defaultDebounceMs = 500;
+let defaultDebounceMs = 50;
 const DEBOUNCE_KEY = 'autocv-debounce-ms';
 let currentZoom = 1.0;
 let currentPdf = null;
@@ -8,7 +8,7 @@ let currentPdf = null;
 	const stored = localStorage.getItem(DEBOUNCE_KEY);
 	if (stored) {
 		const val = parseInt(stored, 10);
-		if (!isNaN(val) && val >= 100 && val <= 3000) defaultDebounceMs = val;
+		if (!isNaN(val) && val >= 0 && val <= 5000) defaultDebounceMs = val;
 	}
 })();
 
@@ -17,13 +17,8 @@ function getDebounceMs() {
 }
 
 function setDebounceMs(ms) {
-	defaultDebounceMs = ms;
-	localStorage.setItem(DEBOUNCE_KEY, String(ms));
-}
-
-function formatDebounce(ms) {
-	if (ms < 1000) return (ms / 1000).toFixed(1) + 's';
-	return (ms / 1000).toFixed(1) + 's';
+	defaultDebounceMs = Math.max(0, Math.min(5000, ms));
+	localStorage.setItem(DEBOUNCE_KEY, String(defaultDebounceMs));
 }
 
 function debounceGenerate(typeName) {
@@ -280,14 +275,21 @@ document.addEventListener('DOMContentLoaded', function() {
 	document.getElementById('btn-zoom-fit')?.addEventListener('click', zoomFit);
 
 	const debounceRange = document.getElementById('debounce-range');
-	const debounceValue = document.getElementById('debounce-value');
-	if (debounceRange) {
+	const debounceInput = document.getElementById('debounce-input');
+	if (debounceRange && debounceInput) {
 		debounceRange.value = defaultDebounceMs;
-		if (debounceValue) debounceValue.textContent = formatDebounce(defaultDebounceMs);
+		debounceInput.value = defaultDebounceMs;
 		debounceRange.addEventListener('input', function () {
 			const val = parseInt(this.value, 10);
 			setDebounceMs(val);
-			if (debounceValue) debounceValue.textContent = formatDebounce(val);
+			debounceInput.value = defaultDebounceMs;
+		});
+		debounceInput.addEventListener('change', function () {
+			const val = parseInt(this.value, 10);
+			if (isNaN(val)) return;
+			setDebounceMs(val);
+			this.value = defaultDebounceMs;
+			debounceRange.value = defaultDebounceMs;
 		});
 	}
 });

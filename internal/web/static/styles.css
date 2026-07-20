@@ -432,6 +432,30 @@ body {
   font-weight: 500;
 }
 
+.debounce-input {
+  width: 3.5rem;
+  padding: 1px var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-foreground);
+  font-size: var(--font-size-caption);
+  font-family: var(--font-family);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.debounce-input:focus {
+  border-color: var(--color-ring);
+}
+
+.debounce-unit {
+  color: var(--color-muted-foreground);
+  font-size: var(--font-size-caption);
+}
+
 .pdf-error-bar {
   background: #FEF2F2;
   border-bottom: 1px solid #FECACA;
